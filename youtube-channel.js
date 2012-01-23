@@ -1,5 +1,6 @@
+resetProxy();
+
 $(document).ready(function() {
-	resetProxy();
 	
 	var checkRestricted = function(ignoreBlocked) 
 	{

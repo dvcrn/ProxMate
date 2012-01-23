@@ -1,6 +1,7 @@
-$(document).ready(function() {
-	resetProxy();
+// Before DOM loads
+resetProxy();
 
+$(document).ready(function() {
 	
 	// Check if there's a "unavailable" div
 	var ud = $("#watch-player-unavailable");
