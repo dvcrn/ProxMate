@@ -3,6 +3,7 @@
   "version": "1.0",
   "description": "Unblocks youtube and grooveshark :)",
   "background_page": "background.html",
+  "homepage_url": "http://personalitycores.com",
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/watch*"],
@@ -22,8 +23,14 @@
     }
   ],
   "browser_action": {
-    "default_icon": "icon.png"
-  },  
+    "name": "Click to enable / disable ProxMate",
+    "default_icon": "icon48.png"
+  },
+  "icons": {
+    "48": "icon48.png",
+    "16": "icon16.png",
+    "128": "icon128.png"
+   },
   "permissions": [
     "proxy"
   ]
