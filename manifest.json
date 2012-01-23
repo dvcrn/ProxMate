@@ -1,0 +1,30 @@
+{
+  "name": "ProxMate",
+  "version": "1.0",
+  "description": "Unblocks youtube and grooveshark :)",
+  "background_page": "background.html",
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": ["jquery-1.7.1.min.js","fx.js","youtube.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/results*"],
+      "js": ["jquery-1.7.1.min.js","fx.js","youtube-search.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/user/*"],
+      "js": ["jquery-1.7.1.min.js","fx.js","youtube-channel.js"]
+    },
+    {
+      "matches": ["*://*.grooveshark.com/*"],
+      "js": ["jquery-1.7.1.min.js","fx.js","grooveshark.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  },  
+  "permissions": [
+    "proxy"
+  ]
+}
