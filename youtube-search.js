@@ -1,5 +1,6 @@
+resetProxy();	
+
 $(document).ready(function() {
-	resetProxy();	
 
 	console.info($("#proxmate-button > span").html());
 	if (getUrlParam('unblocked') != "true")

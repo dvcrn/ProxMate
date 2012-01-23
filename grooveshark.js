@@ -1,3 +1,5 @@
+resetProxy();
+
 $(document).ready(function() {
 	// Check for the broken heart
 	var broken = $("#heartbroken");
@@ -13,6 +15,5 @@ $(document).ready(function() {
 	} else {
 		// Fire event to background page
 		// Will remove the proxy
-		resetProxy();
 	}
 });
