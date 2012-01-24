@@ -8,6 +8,7 @@ var proxyHTTPPref = "network.proxy.http";
 var proxyPortPref = "network.proxy.http_port";
 var proxyTypePref = "network.proxy.type";
 var pageworker = "";
+
 	
 exports.main = function() {
 
@@ -27,7 +28,7 @@ var globalProxifyUri = function(uri,reload) {
 	//console.log(require("preferences-service").get(proxyHTTPPref));
 	//console.log(require("preferences-service").get(proxyPortPref));
 	//console.log(require("preferences-service").get(proxyTypePref));
-	console.log("Reloading tab to uri: " + uri);
+	//console.log("Reloading tab to uri: " + uri);
 	tabs.activeTab.url = uri;
 	
 	//pageworker.port.emit('reloadUri', {"uri": encodeURI(uri),"reload":reload}); 
@@ -51,7 +52,7 @@ var globalResetProxy = function() {
   var widget = widgets.Widget({
     id: 'toggle-switch',
     label: 'ProxMate',
-    contentURL: selfData.url('widget/icon.png'),
+    contentURL: selfData.url('widget/icon-on.png'),
     contentScriptWhen: 'ready',
     contentScriptFile: selfData.url('widget/widget.js')
   });
@@ -76,10 +77,9 @@ var globalResetProxy = function() {
 						  selfData.url('youtube-channel.js'),
 						  selfData.url('youtube-search.js')],
 		onAttach: function onAttach(worker) {
-			console.log("Attaching content scripts");
 			pageworker = worker;
 			worker.on('message', function(data) {
-				console.log(data);
+				//console.log(data);
 			});
 			
 			worker.port.on('setproxy', function(data) {
