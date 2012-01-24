@@ -6,7 +6,7 @@ $(document).ready(function() {
 	if (broken.length > 0) {
 
 		// Change text
-		$("#content h2").html("Blah blah blah not available. <br /> ProxMate will unblock Grooveshark now!");
+		$("#content h2").html("Sorry Grooveshark :( We love you! <br /> ProxMate will unblock Grooveshark now!");
 
 		proxifyUri(window.location, true);
 	}
