@@ -13,7 +13,7 @@ $(document).ready(function() {
 			$("#unavailable-message").html("Blah blah blah not available.");
 
 			// Change Icon
-			$("#watch-player-unavailable-icon-container img").prop("src", chrome.extension.getURL("waitajax.gif"));
+			//$("#watch-player-unavailable-icon-container img").prop("src", selfData.url('widget/waitajax.gif'));
 
 			// Fire event to background page
 			// Will activate proxy page

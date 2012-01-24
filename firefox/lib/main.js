@@ -1,5 +1,5 @@
 var widgets = require('widget');
-var data = require('self').data;
+var selfData = require('self').data;
 var pageMod = require("page-mod");
 var tabs = require('tabs');
 
@@ -27,7 +27,7 @@ var globalProxifyUri = function(uri,reload) {
 	//console.log(require("preferences-service").get(proxyHTTPPref));
 	//console.log(require("preferences-service").get(proxyPortPref));
 	//console.log(require("preferences-service").get(proxyTypePref));
-	
+	console.log("Reloading tab to uri: " + uri);
 	tabs.activeTab.url = uri;
 	
 	//pageworker.port.emit('reloadUri', {"uri": encodeURI(uri),"reload":reload}); 
@@ -51,9 +51,9 @@ var globalResetProxy = function() {
   var widget = widgets.Widget({
     id: 'toggle-switch',
     label: 'ProxMate',
-    contentURL: data.url('widget/icon.png'),
+    contentURL: selfData.url('widget/icon.png'),
     contentScriptWhen: 'ready',
-    contentScriptFile: data.url('widget/widget.js')
+    contentScriptFile: selfData.url('widget/widget.js')
   });
  
   widget.port.on('left-click', function() {
@@ -69,12 +69,12 @@ var globalResetProxy = function() {
   var selector = pageMod.PageMod({
 	  include: ['*.grooveshark.com', '*.youtube.com'],
 	  contentScriptWhen: 'ready',
-	  contentScriptFile: [data.url('jquery.js'),
-						  data.url('proxy.js'),
-						  data.url('grooveshark.js'),
-						  data.url('youtube.js'),
-						  data.url('youtube-channel.js'),
-						  data.url('youtube-search.js')],
+	  contentScriptFile: [selfData.url('jquery.js'),
+						  selfData.url('proxy.js'),
+						  selfData.url('grooveshark.js'),
+						  selfData.url('youtube.js'),
+						  selfData.url('youtube-channel.js'),
+						  selfData.url('youtube-search.js')],
 		onAttach: function onAttach(worker) {
 			console.log("Attaching content scripts");
 			pageworker = worker;
