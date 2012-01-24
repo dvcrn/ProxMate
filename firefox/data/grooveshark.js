@@ -3,7 +3,6 @@ resetProxy();
 $(document).ready(function() {
 	// Check for the broken heart
 	var broken = $("#heartbroken");
-	console.log(broken.length);
 	if (broken.length > 0) {
 
 		// Change text
