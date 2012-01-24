@@ -10,7 +10,7 @@ $(document).ready(function() {
 		$(button).insertAfter($("#search-option-expander"));
 		$("#proxmate-button").click(function() {
 			var oldhtml = $("#proxmate-button span").html();
-			$("#proxmate-button span").html(oldhtml + " <img src='"+chrome.extension.getURL("load.gif")+"' />");
+			$("#proxmate-button span").html(oldhtml + " <img src='"+chrome.extension.getURL("images/load.gif")+"' />");
 
 			proxifyUri(window.location.href + "&unblocked=true");
 		});	

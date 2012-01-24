@@ -24,12 +24,12 @@
   ],
   "browser_action": {
     "name": "Click to enable / disable ProxMate",
-    "default_icon": "icon48.png"
+    "default_icon": "images/icon48.png"
   },
   "icons": {
-    "48": "icon48.png",
-    "16": "icon16.png",
-    "128": "icon128.png"
+    "48": "images/icon48.png",
+    "16": "images/icon16.png",
+    "128": "images/icon128.png"
    },
   "permissions": [
     "proxy"
