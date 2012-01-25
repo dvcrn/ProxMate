@@ -1,0 +1,13 @@
+.ButtonOn{
+    -moz-image-region: rect(0 16px 16px 0);
+    list-style-image: url("chrome://promate/skin/icon16.png");
+}
+
+toolbar[iconsize="small"] .ButtonOn {
+    list-style-image: url("chrome://proxmate/skin/icon16.png");
+}
+
+.ButtonOff{
+    -moz-image-region: rect(0 16px 16px 0);
+    list-style-image: url("chrome://proxmate/skin/icon16_gray.png");
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>proxmate@personalitycores.com</em:id>
+    <em:name>Proxmate</em:name>
+	<em:version>0.1</em:version>
+    <em:creator>s3xy</em:creator>
+    <em:type>2</em:type> <!-- Extension -->
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id> <!-- Firefox -->
+        <em:minVersion>4.*</em:minVersion>
+        <em:maxVersion>11.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+	<em:localized>
+      <Description> 
+        <em:locale>en-US</em:locale>
+        <em:name>Proxmate</em:name>
+        <em:description>Unblocks youtube and Grooveshark</em:description>
+      </Description>
+    </em:localized>
+    <em:localized>
+      <Description>
+        <em:locale>de-DE</em:locale>
+        <em:name>Proxmate</em:name>
+        <em:description>Etnsperrt youtube Videos und Grooveshark</em:description>
+      </Description>
+    </em:localized>
+    <em:optionsURL>chrome://proxmate/content/options.xul</em:optionsURL>
+    <em:aboutURL>chrome://proxmate/content/about.xul</em:aboutURL>
+	<em:iconURL>chrome://proxmate/skin/icon.png</em:iconURL>
+  </Description>
+</RDF>
