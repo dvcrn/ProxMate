@@ -2,50 +2,60 @@ resetProxy();
 
 var promise = sendAction("isEnabled");
 promise.done(function() {
+
 	if (promise.response.enabled != "true")
 		return;
 
 	$(document).ready(function() {
-		
-		var checkRestricted = function(ignoreBlocked) 
-		{
-			var ud = $("#playnav-restricted-title-div");
-			if (ud.length > 0)
-			{
-				if (getUrlParam('unblocked') != "true" || ignoreBlocked)
-				{
-					// Change text
-					$("#playnav-custom-error-message").html("Blah blah blah not available. <br /> ProxMate will unblock this now!");
+		var hashChange = false;
 
-					// This is required to avoid infinite hashchange loop
-					if (ignoreBlocked)
-					{
-						proxifyUri(window.location.href, true);
-					}
-					else 
-					{
-						// The proxy is now set. Reload the page :)
-						if (getUrlParam('feature') == "true") {
-							proxifyUri(window.location + "&unblocked=true");
-						} else {
-							proxifyUri(window.location + "?unblocked=true");
-						}	
-					}
+		var hashWrapper = function() {
+			hashChange = true;
+		}
+
+		window.onhashchange = hashWrapper;
+
+		var tick = function() 
+		{
+			var restricted = $("#playnav-custom-error-message");
+			var prestricted = $("#playnav-player-restricted");
+			
+			var rdisplay = restricted.css("display");
+			var pdisplay = prestricted.css("display");
+
+			var isRestricted = true;
+
+			if (rdisplay == "block" && pdisplay == "block") {
+				isRestricted = true;
+			} else {
+				isRestricted = false;
+			}
+
+
+			if (isRestricted) 
+			{
+				// Change text
+				$("#playnav-custom-error-message").html("Blah blah blah not available. <br /> ProxMate will unblock this now!");
+
+				// Wenn sich nur der hash geändert hat wird die seite direkt neu geladen
+				if (hashChange) 
+				{
+					proxifyUri(window.location, true);
 				}
 				else 
 				{
-					$("#playnav-custom-error-message").html("There might be a problem with this video :( Try ProxMate again later!");
+					// Dieses Snippet sollte innerhalb des channels nur einmal ausgefährt werden, da sich nurnoch der hash ändern wird
+					if (getUrlParam('feature') == "true") {
+						proxifyUri(window.location + "&unblocked=true");
+					} else {
+						proxifyUri(window.location + "?unblocked=true");
+					}		
 				}
 			}
 		}
 
-		var hashWrapper = function() {
-			checkRestricted(true);
-		}
-
-		checkRestricted(false);
-
-		window.onhashchange = hashWrapper;  
+		// Unschön, hässlich, und sollte bald entfernt werden!!!!!
+		setInterval(tick, 1000);
 
 	});
 
