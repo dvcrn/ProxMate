@@ -1,13 +1,19 @@
-resetProxy();
+var promise = sendAction("isEnabled");
 
-$(document).ready(function() {
-	// Check for the broken heart
-	var broken = $("#heartbroken");
-	if (broken.length > 0) {
+promise.done(function() {
+	if (promise.response.enabled != "true")
+		return;
 
-		// Change text
-		$("#content h2").html("Sorry Grooveshark :( We love you! <br /> ProxMate will unblock Grooveshark now!");
+	$(document).ready(function() {
+		// Check for the broken heart
+		var broken = $("#heartbroken");
+		if (broken.length > 0) {
 
-		proxifyUri(window.location, true);
-	}
+			// Change text
+			$("#content h2").html("Sorry Grooveshark :( We love you! <br /> ProxMate will unblock Grooveshark now!");
+
+			proxifyUri(window.location, true);
+		}
+	});	
+
 });

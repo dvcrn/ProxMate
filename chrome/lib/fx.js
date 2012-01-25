@@ -1,28 +1,22 @@
-var sendAction = function(actionString, uri, reload) {
+var sendAction = function(actionString) {
+
+	var defer = $.Deferred();
 
 	chrome.extension.sendRequest(
 		{
 			action: actionString
 		}, 
 		function(response) {
-			if (response.status) 
+			if (response) 
 			{
-				// Proxy is set
-				if (reload) {
-					window.location = uri;		
-					location.reload();	
-				} else {
-					window.location = uri;		
-				}
-				
+				// Response zum promise adden, damit später darauf zugegriffen werden kann
+				defer.response = response;
+				defer.resolve();
 			}
-			else 
-			{
-				// Proxy is gone
-			}
-	  		return response.status;
 		}
 	);
+
+	return defer;
 }
 
 var proxifyUri = function(uri, reload) 
@@ -36,7 +30,17 @@ var proxifyUri = function(uri, reload)
 		reload = true;
 	}
 
-	sendAction("setproxy", uri, reload);
+	var promise = sendAction("setproxy");
+	promise.done(function() {
+
+		if (reload) {
+			window.location = uri;		
+			location.reload();	
+		} else {
+			window.location = uri;		
+		}
+
+	});
 }
 
 var resetProxy = function() 

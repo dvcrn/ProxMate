@@ -4,11 +4,6 @@ var setPluginStatus = function()
 
 	console.info("Toggle: " + toggle);
 
-	if (toggle === undefined) 
-	{
-		localStorage["status"] = true;
-	}
-
 	// Wenn Toggle = False ist, das icon farbig machen
 	if (toggle == "true") {
 		chrome.browserAction.setIcon({
@@ -29,7 +24,7 @@ var setPluginStatus = function()
 
 // chrome mag anonyme funktionen nicht, also funktion definieren und direkt aufrufen
 
-var checkFirstStart = function() {
+var init = function() {
 	var firstStart = localStorage["firststart"];
 	console.info("FirstStart: " + firstStart);
 
@@ -41,8 +36,14 @@ var checkFirstStart = function() {
 
 		localStorage["firststart"] = false;
 	}
+
+	var status = localStorage["status"];
+	if (status === undefined) {
+		status = true;
+	}
 };
-checkFirstStart();
+
+init();
 
 chrome.browserAction.onClicked.addListener(setPluginStatus);
 
@@ -76,7 +77,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	}
 
 
-
+	// Zurücksetzen des Proxies
 	if (request.action == "resetproxy") 
 	{
 		var config = {
@@ -96,5 +97,14 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({
 			status: false
 		});	
+	}
+
+	// Statusabfrage ob das Plugin enabled oder disabled ist
+	if (request.action == "isEnabled")
+	{
+		var status = localStorage["status"];
+		sendResponse({
+			enabled: status
+		});
 	}
 });
