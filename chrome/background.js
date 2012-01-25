@@ -25,8 +25,9 @@ var setPluginStatus = function()
 // chrome mag anonyme funktionen nicht, also funktion definieren und direkt aufrufen
 
 var init = function() {
+
+	// Schauen ob der User das Plugin zum ersten mal verwendet
 	var firstStart = localStorage["firststart"];
-	console.info("FirstStart: " + firstStart);
 
 	if (firstStart === undefined || firstStart == "true") {
 		chrome.tabs.create(
@@ -37,10 +38,15 @@ var init = function() {
 		localStorage["firststart"] = false;
 	}
 
+	// Status anlegen falls er nicht existiert
+
 	var status = localStorage["status"];
 	if (status === undefined) {
 		status = true;
 	}
+
+	// Proxy auf System setzen falls einer gesetzt wurde.
+	chrome.proxy.settings.clear({});
 };
 
 init();
@@ -80,19 +86,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// Zurücksetzen des Proxies
 	if (request.action == "resetproxy") 
 	{
-		var config = {
-			mode: "system"
-		}
-
-		chrome.proxy.settings.set(
-			{
-				value: config, 
-				scope: 'regular'
-			},
-			function() {
-				
-			}
-		);
+		chrome.proxy.settings.clear({});
 
 		sendResponse({
 			status: false
