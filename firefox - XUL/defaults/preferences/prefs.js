@@ -1,0 +1,14 @@
+pref("extensions.proxmate.intpref_status", 1);
+pref("extensions.proxmate.intpref_firststart", 1);
+pref("extensions.proxmate.boolpref_shownotf", false);
+pref("extensions.proxmate.boolpref_showsslnotf", false);
+pref("extensions.proxmate.intpref_enabled", 0);
+pref("extensions.proxmate.intpref_http", 0);
+pref("extensions.proxmate.intpref_ssl", 0);
+pref("extensions.proxmate.intpref_ftp", 0);
+pref("extensions.proxmate.intpref_socks", 0);
+pref("extensions.proxmate.stringpref_http", '');
+pref("extensions.proxmate.stringpref_ssl", '');
+pref("extensions.proxmate.stringpref_ftp", '');
+pref("extensions.proxmate.stringpref_socks", '');
+pref("extensions.proxmate.boolpref_share", true);

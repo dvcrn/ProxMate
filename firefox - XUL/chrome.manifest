@@ -1,0 +1,8 @@
+content   proxmate                 chrome/content/
+skin      proxmate   classic/1.0   chrome/skin/
+locale    proxmate   en-US         chrome/locale/en-US/
+locale    proxmate   de         chrome/locale/de/
+
+
+overlay   chrome://browser/content/browser.xul   chrome://proxmate/content/ff-overlay.xul
+style chrome://global/content/customizeToolbar.xul chrome://proxmate/skin/overlay.css
