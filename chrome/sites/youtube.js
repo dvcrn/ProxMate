@@ -26,7 +26,14 @@ promise.done(function() {
 			}
 			else 
 			{
-				$("#unavailable-submessage").html("There might be a problem with this video :( Try again later!");
+				$("#unavailable-submessage").html("There might be a problem with this video or Proxmate itself. :( <br /> Click <a id='px-again' href='javascript:void(0)'>here</a> to try again.");
+				$('#px-again').click(function() {
+
+					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
+					$("#watch-player-unavailable-icon-container img").prop("src", chrome.extension.getURL("images/waitajax.gif"));
+
+					proxifyUri(window.location, true);
+				});
 			}
 		} 
 	});
