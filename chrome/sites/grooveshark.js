@@ -1,3 +1,4 @@
+resetProxy();
 var promise = sendAction("isEnabled");
 
 promise.done(function() {
