@@ -42,7 +42,7 @@ var init = function() {
 
 	var status = localStorage["status"];
 	if (status === undefined) {
-		status = true;
+		localStorage["status"] = true;
 	}
 
 	// Proxy auf System setzen falls einer gesetzt wurde.
