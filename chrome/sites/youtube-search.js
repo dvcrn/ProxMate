@@ -2,8 +2,10 @@ resetProxy();
 
 var promise = sendAction("isEnabled");
 promise.done(function() {
-	if (promise.response.enabled != "true")
+
+	if (promise.response.enabled != "true") {
 		return;
+	}
 
 	$(document).ready(function() {
 
