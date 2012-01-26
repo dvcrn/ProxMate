@@ -1,23 +1,66 @@
+///////////////////////////////////////////////
+//------------Initialisation-----------------//
+///////////////////////////////////////////////
+var localStoragePath;
+var enabled;
+self.port.emit('getstorage'); //This is called to set the local Storage Path
+self.port.emit('isEnabled');
+
+console.log('init');
+
+///////////////////////////////////////////////
+//------------Event Listeners----------------//
+///////////////////////////////////////////////
+self.port.on('localstorage', function(data) {
+	localStoragePath = data;
+});
+
+self.port.on('enableStatus', function(data) {
+	console.log('Enabled Data recieved: ' + data); 
+	enabled = data;
+});
+
+self.port.on('proxy-set', function(data) {
+	if (data.reload) {
+		window.location = data.uri;		
+		document.location.reload();	
+	} else {
+		document.window.location = data.uri;	
+	}
+});
+
+
+
+///////////////////////////////////////////////
+//------------Global Functions---------------//
+///////////////////////////////////////////////
 
 var sendAction = function(actionString, uri, reload) {
+	var defer = $.Deferred();	
+	
 	self.port.emit(actionString, {"uri": encodeURI(uri),"reload":reload});
+	
+	defer.response = {'enabled': enabled};
+	defer.resolve();
+	
+	return defer;
 }
 
 var getUrlFor = function(file) {
-	return "resource://jid1-qphd8urtzwjc2a-at-jetpack/proxmate/data/" + file;
+	
+	return localStoragePath + file;
 }
 
 var proxifyUri = function(uri, reload) 
 {
 	if (reload === undefined)
 	{
-			reload = false;
+		reload = false;
 	}
 	else
 	{
-			reload = true;
+		reload = true;
 	}
-
 	sendAction("setproxy", uri, reload);
 }
 
