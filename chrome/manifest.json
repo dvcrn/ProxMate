@@ -1,9 +1,9 @@
 {
   "name": "ProxMate",
   "version": "1.0",
-  "description": "Unblocks youtube and grooveshark :)",
+  "description": "Unblocks youtube, grooveshark and soon everything you want! :)",
   "background_page": "background.html",
-  "homepage_url": "http://personalitycores.com",
+  "homepage_url": "http://personalitycores.com/projects/proxmate/",
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/watch*"],

@@ -9,7 +9,6 @@ promise.done(function() {
 
 	$(document).ready(function() {
 
-		console.info($("#proxmate-button > span").html());
 		if (getUrlParam('unblocked') != "true")
 		{
 			var button = '<div><button id="proxmate-button" type="button" class="yt-uix-button yt-uix-button-text yt-uix-button-toggle"><span class="yt-uix-button-content">Unblock this search</span></button></div>';

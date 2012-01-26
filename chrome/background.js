@@ -2,7 +2,6 @@ var setPluginStatus = function()
 {
 	var toggle = localStorage["status"];
 
-	console.info("Toggle: " + toggle);
 
 	// Wenn Toggle = False ist, das icon farbig machen
 	if (toggle == "true") {
