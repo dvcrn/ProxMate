@@ -11,6 +11,7 @@ var setPluginStatus = function()
 		});
 
 		localStorage["status"] = false;
+		chrome.proxy.settings.clear({});
 	}
 	else
 	{

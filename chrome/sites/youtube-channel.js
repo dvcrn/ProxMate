@@ -3,8 +3,9 @@ resetProxy();
 var promise = sendAction("isEnabled");
 promise.done(function() {
 
-	if (promise.response.enabled != "true")
+	if (promise.response.enabled != "true") {
 		return;
+	}
 
 	$(document).ready(function() {
 		var hashChange = false;
@@ -45,11 +46,7 @@ promise.done(function() {
 				else 
 				{
 					// Dieses Snippet sollte innerhalb des channels nur einmal ausgefährt werden, da sich nurnoch der hash ändern wird
-					if (getUrlParam('feature') == "true") {
-						proxifyUri(window.location + "&unblocked=true");
-					} else {
-						proxifyUri(window.location + "?unblocked=true");
-					}		
+					proxifyUri(window.location);
 				}
 			}
 		}
