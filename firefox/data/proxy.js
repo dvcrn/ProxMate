@@ -3,10 +3,8 @@
 ///////////////////////////////////////////////
 var localStoragePath;
 var enabled;
-var defer;
+var sendActionDefer;
 self.port.emit('getstorage'); //This is called to set the local Storage Path
-
-console.log('init');
 
 ///////////////////////////////////////////////
 //------------Event Listeners----------------//
@@ -16,18 +14,26 @@ self.port.on('localstorage', function(data) {
 });
 
 self.port.on('enableStatus', function(data) {
-	console.log('Enabled Data recieved: ' + data); 
 	enabled = data;
-	defer.response = {'enabled': enabled};
-	defer.resolve();
+	sendActionDefer.response = {'enabled': enabled.toString()};
+	sendActionDefer.resolve();
 });
 
 self.port.on('proxy-set', function(data) {
+	console.log("data uri: " + data.uri); 
+	console.log("data reload: " + data.reload); 
+
+
+	
 	if (data.reload) {
+		console.log("data uri: " + data.uri); 
+		console.log("window.location: " + window.location); 
+		console.log("document.location: " + document.location); 
+		
 		window.location = data.uri;		
 		document.location.reload();	
 	} else {
-		document.window.location = data.uri;	
+		document.location = data.uri;	
 	}
 });
 
@@ -38,11 +44,11 @@ self.port.on('proxy-set', function(data) {
 ///////////////////////////////////////////////
 
 var sendAction = function(actionString, uri, reload) {
-	defer = $.Deferred();	
+	sendActionDefer = $.Deferred();	
 	
 	self.port.emit(actionString, {"uri": encodeURI(uri),"reload":reload});
 
-	return defer;
+	return sendActionDefer;
 }
 
 var getUrlFor = function(file) {
