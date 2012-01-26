@@ -2,6 +2,7 @@ var widgets = require('widget');
 var selfData = require('self').data;
 var pageMod = require("page-mod");
 var tabs = require('tabs');
+var ss = require("simple-storage");
 
 
 var proxyHTTPPref = "network.proxy.http";
@@ -34,6 +35,20 @@ exports.main = function() {
 		//console.log("globalResetProxy End");
 	}	
 
+	function getEnabledStatus() {
+		if(ss.storage.enabledStatus == undefined) {
+			return true;
+		}
+		return ss.storage.enabledStatus;
+	}
+	 
+	
+	function toggleActivation (){
+		ss.storage.enabledStatus = !getEnabledStatus();
+		//Switch icons
+		return getEnabledStatus();
+	}
+	
 	var widget = widgets.Widget({
 		id: 'toggle-switch',
 		label: 'ProxMate',
@@ -43,9 +58,14 @@ exports.main = function() {
 	});
 
 
-	 
 	widget.port.on('left-click', function() {
-		console.log('left click');
+		console.log("leftklick");
+		if(toggleActivation()) {
+			widget.contentURL = selfData.url('images/icon-on.png');
+		}else{
+			widget.contentURL = selfData.url('images/icon-off.png');
+		}
+		console.log(widget.contentURL);
 	});
 	 
 	widget.port.on('right-click', function() {
@@ -69,12 +89,9 @@ exports.main = function() {
 			function onAttach(worker) {
 				pageworker = worker;
 				
-				worker.port.emit('enableStatus', true);
-				
 				worker.port.on('isEnabled',
 					function(data) {
-						//TODO Implement Local Storage
-						worker.port.emit('enableStatus', true);
+						worker.port.emit('enableStatus', getEnabledStatus().toString());
 					}
 				);
 				

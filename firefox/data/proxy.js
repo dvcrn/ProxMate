@@ -3,8 +3,8 @@
 ///////////////////////////////////////////////
 var localStoragePath;
 var enabled;
+var defer;
 self.port.emit('getstorage'); //This is called to set the local Storage Path
-self.port.emit('isEnabled');
 
 console.log('init');
 
@@ -18,6 +18,8 @@ self.port.on('localstorage', function(data) {
 self.port.on('enableStatus', function(data) {
 	console.log('Enabled Data recieved: ' + data); 
 	enabled = data;
+	defer.response = {'enabled': enabled};
+	defer.resolve();
 });
 
 self.port.on('proxy-set', function(data) {
@@ -36,13 +38,10 @@ self.port.on('proxy-set', function(data) {
 ///////////////////////////////////////////////
 
 var sendAction = function(actionString, uri, reload) {
-	var defer = $.Deferred();	
+	defer = $.Deferred();	
 	
 	self.port.emit(actionString, {"uri": encodeURI(uri),"reload":reload});
-	
-	defer.response = {'enabled': enabled};
-	defer.resolve();
-	
+
 	return defer;
 }
 
