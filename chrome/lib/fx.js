@@ -53,3 +53,7 @@ var getUrlParam = function(name) {
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
     );
 }
+
+var getUrlFor = function(file) {
+	return chrome.extension.getURL(file);
+}
