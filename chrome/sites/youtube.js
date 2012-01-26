@@ -20,7 +20,7 @@ promise.done(function() {
 				$("#unavailable-message").html("Blah blah blah not available.");
 
 				// Change Icon
-				$("#watch-player-unavailable-icon-container img").prop("src", chrome.extension.getURL("images/waitajax.gif"));
+				$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
 
 				// Fire event to background page
 				// Will activate proxy page
@@ -32,7 +32,7 @@ promise.done(function() {
 				$('#px-again').click(function() {
 
 					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
-					$("#watch-player-unavailable-icon-container img").prop("src", chrome.extension.getURL("images/waitajax.gif"));
+					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
 
 					proxifyUri(window.location, true);
 				});

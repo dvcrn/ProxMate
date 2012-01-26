@@ -17,7 +17,7 @@ promise.done(function() {
 			$(button).insertAfter($("#search-option-expander"));
 			$("#proxmate-button").click(function() {
 				var oldhtml = $("#proxmate-button span").html();
-				$("#proxmate-button span").html(oldhtml + " <img src='"+chrome.extension.getURL("images/load.gif")+"' />");
+				$("#proxmate-button span").html(oldhtml + " <img src='"+getUrlFor("images/load.gif")+"' />");
 
 				proxifyUri(window.location.href + "&unblocked=true");
 			});	
