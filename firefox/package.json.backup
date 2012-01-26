@@ -1,8 +1,11 @@
 {
-  "name": "proxmate",
-  "fullName": "proxmate",
-  "description": "a basic add-on",
-  "author": "",
-  "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
-  "version": "0.1"
+    "name": "proxmate", 
+    "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
+	"icon": "data/images/icon128.png",	
+    "author": "personalitycores.com", 
+	"homepage": "http://www.personalitycores.com/projects/proxmate/",
+    "version": "1.0", 
+    "fullName": "ProxMate", 
+    "id": "jid1-QpHD8URtZWJC2A", 
+    "description": "Unblocks youtube, grooveshark and soon everything you want! :)"
 }
