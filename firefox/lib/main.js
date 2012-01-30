@@ -4,6 +4,7 @@ var pageMod = require("page-mod");
 var tabs = require('tabs');
 var ss = require("simple-storage");
 var { MatchPattern } = require("match-pattern");
+var analytics = require('gajs');
 var btn;
 var {Cc, Ci} = require("chrome");
 var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
@@ -92,7 +93,7 @@ exports.main = function() {
 	}
 	
 	addToolbarButton();
-	 
+	analytics.gaTrack('UA-28532981-1', 'yoursite.com', 'main.js');
 	  
 	function initListeners(worker) {				
 				console.log('initialising');
