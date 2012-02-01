@@ -14,7 +14,7 @@ promise.done(function() {
 			hashChange = true;
 		}
 
-		window.onhashchange = hashWrapper;
+		$(window).bind("hashchange", hashWrapper);
 
 		var tick = function() 
 		{
