@@ -20,16 +20,7 @@ self.port.on('enableStatus', function(data) {
 });
 
 self.port.on('proxy-set', function(data) {
-	console.log("data uri: " + data.uri); 
-	console.log("data reload: " + data.reload); 
-
-
-	
 	if (data.reload) {
-		console.log("data uri: " + data.uri); 
-		console.log("window.location: " + window.location); 
-		console.log("document.location: " + document.location); 
-		
 		window.location = data.uri;		
 		document.location.reload();	
 	} else {
@@ -44,15 +35,12 @@ self.port.on('proxy-set', function(data) {
 ///////////////////////////////////////////////
 
 var sendAction = function(actionString, uri, reload) {
-	sendActionDefer = $.Deferred();	
-	
+	sendActionDefer = $.Deferred();		
 	self.port.emit(actionString, {"uri": encodeURI(uri),"reload":reload});
-
 	return sendActionDefer;
 }
 
 var getUrlFor = function(file) {
-	
 	return localStoragePath + file;
 }
 
