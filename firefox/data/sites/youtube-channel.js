@@ -11,7 +11,6 @@ promise.done(function() {
 		var hashChange = false;
 
 		var hashWrapper = function() {
-			console.log("hat sich geändert");
 			hashChange = true;
 		}
 
@@ -36,7 +35,6 @@ promise.done(function() {
 
 			if (isRestricted) 
 			{
-				console.log("");
 				// Change text
 				$("#playnav-custom-error-message").html("Blah blah blah not available. <br /> ProxMate will unblock this now!");
 
