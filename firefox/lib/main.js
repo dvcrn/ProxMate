@@ -27,10 +27,16 @@ exports.main = function() {
 	var setProxy = function() {
 		
 		checkUserProxy();
-		
-		require("preferences-service").set(proxyTypePref, 1);
-		require("preferences-service").set(proxyHTTPPref, "proxy.personalitycores.com");
-		require("preferences-service").set(proxyPortPref, 8000);
+		if(ss.storage.activeUserProxy) {
+			require("preferences-service").set(proxyTypePref, 1);
+			require("preferences-service").set(proxyHTTPPref, ss.storage.UserProxyURL);
+			require("preferences-service").set(proxyPortPref, ss.storage.UserProxyPort);
+		}
+		else{
+			require("preferences-service").set(proxyTypePref, 1);
+			require("preferences-service").set(proxyHTTPPref, "proxy.personalitycores.com");
+			require("preferences-service").set(proxyPortPref, 8000);
+		}
 	}
 
 	var globalResetProxy = function() {
@@ -62,9 +68,55 @@ exports.main = function() {
 		ss.storage.userProxyHTTP = require("preferences-service").get(proxyHTTPPref);
 		ss.storage.userProxyPort = require("preferences-service").get(proxyPortPref);
 		ss.storage.userProxyType = require("preferences-service").get(proxyTypePref);
+		
+		ss.storage.activeUserProxy = false;
 	}
 	
 	checkUserProxy();
+	
+	if(ss.storage.activeUserProxy == 'undefined') {
+		ss.storage.activeUserProxy = false;
+	}
+	
+	
+	var optionsPanel = require("panel").Panel({
+		width:215,
+		height:160,
+		contentURL: selfData.url("options.html"),
+		contentScriptFile: [selfData.url('jquery.js'),selfData.url('options.js')]
+	});
+	
+	optionsPanel.port.on('setUserProxy', function(data) {
+		ss.storage.activeUserProxy = data.userProxy;
+		ss.storage.UserProxyURL = data.url;
+		ss.storage.UserProxyPort = data.port;
+		
+	});
+	
+	optionsPanel.port.emit('init', {'checked' : ss.storage.activeUserProxy , 'url' : ss.storage.UserProxyURL , 'port' : ss.storage.UserProxyPort});
+	 
+	var widget = require("widget").Widget({
+		id: "open-proxmate-btn",
+		label: "Click to Activate/Deactivate Proxmate, Rightclick for Options",
+		contentURL: selfData.url("images/icon16.png"),
+		contentScriptWhen: 'ready',
+		contentScriptFile: selfData.url('optionWidget.js')
+	});
+	
+	widget.panel = optionsPanel;
+	
+	widget.port.on('left-click', function() {
+		if(toggleActivation()){
+			widget.contentURL = selfData.url("images/icon16.png");
+		}
+		else {
+			widget.contentURL = selfData.url("images/icon16_gray.png");
+		}
+	});
+	 
+	widget.port.on('right-click', function() {
+		widget.panel.show();
+	});
 	
 	function initListeners(worker) {				
 				worker.port.on('isEnabled',
