@@ -82,13 +82,22 @@ chrome.browserAction.onClicked.addListener(setPluginStatus);
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if (request.action == "setproxy") 
 	{
+		var uri = "proxy.personalitycores.com";
+		var port = 8000;
+
+		// Prüfen ob ein eigener Proxy gesetzt wurde
+		if (bool(localStorage["status_cproxy"])) {
+
+			uri = localStorage["cproxy_url"];
+			port = localStorage["cproxy_port"];
+		}
 
 		var config = {
 			mode: "fixed_servers",
 			rules: {
 				singleProxy: {
-					host: "nightbug.personalitycores.com",
-					port: 8000
+					host: uri,
+					port: parseInt(port)
 				}
 			}
 		}
