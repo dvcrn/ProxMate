@@ -1,11 +1,12 @@
+// Funktion zum parsen eines Strings in einen boolean.
 var bool = function(str){
-    if (str.toLowerCase()=='false'){
+    if (str.toLowerCase() == 'false') {
        return false;
-    } else if (str.toLowerCase()=='true'){
+    } else if (str.toLowerCase() == 'true') {
        return true;
     } else {
        return undefined;
-    }; 
+    }
 }
 
 var setPluginStatus = function() 
@@ -126,15 +127,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({
 			status: false
 		});	
-	}
-
-	// Statusabfrage ob das Plugin enabled oder disabled ist
-	if (request.action == "isEnabled")
-	{
-		var status = localStorage["status"];
-		sendResponse({
-			enabled: status
-		});
 	}
 
 	if (request.action == "checkStatus") {

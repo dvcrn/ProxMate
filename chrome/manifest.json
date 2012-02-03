@@ -21,14 +21,6 @@
     {
       "matches": ["*://*.grooveshark.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
-    },
-    {
-      "matches": ["*://*.hulu.com/watch/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
-    },
-    {
-      "matches": ["*://*.pandora.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
     }
   ],
   "browser_action": {
