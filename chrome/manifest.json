@@ -3,6 +3,7 @@
   "version": "1.0",
   "description": "Unblocks youtube, grooveshark and soon everything you want! :)",
   "background_page": "background.html",
+  "options_page": "options/options.html",
   "homepage_url": "http://personalitycores.com/projects/proxmate/",
   "content_scripts": [
     {
@@ -20,6 +21,14 @@
     {
       "matches": ["*://*.grooveshark.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
+    },
+    {
+      "matches": ["*://*.hulu.com/watch/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
+    },
+    {
+      "matches": ["*://*.pandora.com/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
     }
   ],
   "browser_action": {

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" href="options.css">
+	<script src="../lib/jquery-1.7.1.min.js" type="text/javascript" ></script>
+	<script src="../lib/fx.js" type="text/javascript"></script>
+	<script src="options.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<img src="../images/icon128.png" alt="" id="logo">
+			<h1>ProxMate Options</h1>
+		</div><!--header -->
+		<hr>
+		<div id="content">
+			<h2>General Settings</h2>
+			<div class="settingspanel">
+				<input id="g-cproxy-toggle" type="checkbox" name="g-cproxy" value="">
+				<label id="g-cproxy-toggle-label" for="g-cproxy">Use own proxy</label>
+
+				<div id="g-cproxy-area">
+					<p>Proxy URL: <input type="url" name="g-cproxy-url" id="g-cproxy-url" value="" placeholder=""></p>
+					<p>Proxy Port: <input type="number" name="g-cproxy-port" id="g-cproxy-port" value="" placeholder=""></p>
+				</div><!-- /g-cproxy-custom -->
+			</div>
+
+			<h2>Sitespecific Settings</h2>
+			<div class="settingspanel">
+				<p>
+					<input id="s-youtubevideo-toggle" type="checkbox" name="s-youtube-toggle" value="">
+					<label for="s-youtubevideo-toggle">Enable for youtube videos</label>
+				</p>
+				
+				<p>
+					<input id="s-youtubesearch-toggle" type="checkbox" name="s-youtubesearch-toggle" value="">
+					<label for="s-youtubesearch-toggle">Enable for youtube search</label>
+				</p>
+				
+				<p>
+					<input id="s-youtubechannel-toggle" type="checkbox" name="s-youtubechannel-toggle" value="">
+					<label for="s-youtubechannel-toggle">Enable for youtube channel</label>
+				</p>
+
+				<p>
+					<input id="s-grooveshark-toggle" type="checkbox" name="s-grooveshark-toggle" value="">
+					<label for="s-grooveshark-toggle">Enable for grooveshark.com</label>
+				</p>
+			</div>
+
+			<div id="footer">
+				<a id="savebutton" href="javascript:void(0)" title="">Save</a>
+			</div><!-- /footer -->
+		</div><!-- content --> 
+	</div>
+</body>
+</html>

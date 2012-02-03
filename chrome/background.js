@@ -22,14 +22,39 @@ var setPluginStatus = function()
 	}
 }
 
-// chrome mag anonyme funktionen nicht, also funktion definieren und direkt aufrufen
+var initStorage = function(str, val) {
+	if (val === undefined) {
+		val = true;
+	}
 
-var init = function() {
+	if (localStorage[str] === undefined) {
+		localStorage[str] = val;
+	}
+}
+
+
+var init = (function() {
+
+	// Checkt ob das Tool zum ersten mal gestartet wurde
+	initStorage("firststart");
+
+	// Prüft ob die jeweiligen storageVariablen gesetzt sind. Fall nein werden sie mit true initialisiert
+	initStorage("status");
+	initStorage("status_youtube_video");
+	initStorage("status_youtube_channel");
+	initStorage("status_youtube_search");
+	initStorage("status_grooveshark");
+
+	// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
+	initStorage("status_cproxy", false);
+	initStorage("cproxy_url", "");
+	initStorage("cproxy_port", "");
+
 
 	// Schauen ob der User das Plugin zum ersten mal verwendet
 	var firstStart = localStorage["firststart"];
 
-	if (firstStart === undefined || firstStart == "true") {
+	if (firstStart == "true") {
 		chrome.tabs.create(
 		{
 			url: "http://www.personalitycores.com/projects/proxmate"
@@ -38,18 +63,9 @@ var init = function() {
 		localStorage["firststart"] = false;
 	}
 
-	// Status anlegen falls er nicht existiert
-
-	var status = localStorage["status"];
-	if (status === undefined) {
-		localStorage["status"] = true;
-	}
-
 	// Proxy auf System setzen falls einer gesetzt wurde.
 	chrome.proxy.settings.clear({});
-};
-
-init();
+})();
 
 chrome.browserAction.onClicked.addListener(setPluginStatus);
 
@@ -61,7 +77,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			mode: "fixed_servers",
 			rules: {
 				singleProxy: {
-					host: "proxy.personalitycores.com",
+					host: "nightbug.personalitycores.com",
 					port: 8000
 				}
 			}
