@@ -1,10 +1,15 @@
-var sendAction = function(actionString) {
+var sendAction = function(actionString, param) {
+
+	if (param === undefined) {
+		param = null;
+	}
 
 	var defer = $.Deferred();
 
 	chrome.extension.sendRequest(
 		{
-			action: actionString
+			action: actionString,
+			param: param
 		}, 
 		function(response) {
 			if (response) 
@@ -17,6 +22,10 @@ var sendAction = function(actionString) {
 	);
 
 	return defer;
+}
+
+var checkStatus = function(module) {
+	return sendAction("checkStatus", module);
 }
 
 var proxifyUri = function(uri, reload) 

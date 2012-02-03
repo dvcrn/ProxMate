@@ -1,3 +1,13 @@
+var bool = function(str){
+    if (str.toLowerCase()=='false'){
+       return false;
+    } else if (str.toLowerCase()=='true'){
+       return true;
+    } else {
+       return undefined;
+    }; 
+}
+
 var setPluginStatus = function() 
 {
 	var toggle = localStorage["status"];
@@ -113,6 +123,33 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if (request.action == "isEnabled")
 	{
 		var status = localStorage["status"];
+		sendResponse({
+			enabled: status
+		});
+	}
+
+	if (request.action == "checkStatus") {
+		var module = request.param;
+		var status = false;
+
+		switch(module) {
+			case "global":
+				var status = bool(localStorage["status"]);
+				break;
+			case "youtube_video":
+				var status = bool(localStorage["status_youtube_video"]);
+				break;
+			case "youtube_search":
+				var status = bool(localStorage["status_youtube_search"]);
+				break;
+			case "youtube_channel":
+				var status = bool(localStorage["status_youtube_channel"]);
+				break;
+			case "grooveshark": 
+				var status = bool(localStorage["status_grooveshark"]);
+				break;
+		}
+
 		sendResponse({
 			enabled: status
 		});
