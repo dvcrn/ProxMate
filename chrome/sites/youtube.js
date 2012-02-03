@@ -4,17 +4,9 @@ resetProxy();
 var global = checkStatus("global");
 var youtube = checkStatus("youtube_video");
 
-console.info("GLobal: " + global);
-console.info("YOutube: " + youtube);
-
 $.when(global, youtube).done(function() {
-	console.info(global.response);
-	console.info(youtube.response);
-});
 
-promise.done(function() {
-
-	if (promise.response.enabled != "true") {
+	if (!global.response.enabled || !youtube.response.enabled) {
 		return;
 	}
 

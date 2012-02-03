@@ -1,9 +1,11 @@
 resetProxy();
-var promise = sendAction("isEnabled");
 
-promise.done(function() {
-	
-	if (promise.response.enabled != "true") {
+var global = checkStatus("global");
+var grooveshark = checkStatus("grooveshark");
+
+$.when(global, grooveshark).done(function(g, y) {
+
+	if (!global.response.enabled || !grooveshark.response.enabled) {
 		return;
 	}
 
