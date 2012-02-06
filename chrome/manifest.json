@@ -24,7 +24,7 @@
     },
     {
       "matches": ["*://*.personalitycores.com/projects/proxmate/*"],
-      "js": ["lib/jquery-1.7.1.min.js","sites/personalitycores.js"]
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/personalitycores.js"]
     }
   ],
   "browser_action": {
