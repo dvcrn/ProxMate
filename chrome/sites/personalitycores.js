@@ -3,4 +3,5 @@ $(document).ready(function() {
 	$("#header").append("<p><a id='prox-opts' href='"+chrome.extension.getURL("options/options.html")+"' target='_blank'>Click here to configure ProxMates!</a></p>");
 
 	$(".subhl").css("margin-top", "-35px");
+	$(".subhl").css("font-size", "22px");
 });
