@@ -2,7 +2,10 @@ var selfData = require('self').data;
 var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
 var { MatchPattern } = require("match-pattern");
-	
+var preferences = require("simple-prefs");
+
+
+
 exports.main = function() {
 
 	var setPluginStatus = function() 
@@ -59,6 +62,11 @@ exports.main = function() {
 	// Listener
 	var initListeners = function(worker) {		
 		console.info("init Listeners");
+
+		worker.port.on('createTab', function(data) {
+			var url = data.param;
+			require("tab-browser").addTab(url);
+		});
 
 		worker.port.on('setproxy', 
 			function(data) {
@@ -127,10 +135,17 @@ exports.main = function() {
 
 	}
 
+	var updateStorage = function(prefname) {
+		var value = preferences.prefs[prefname];
+		console.info(prefname + ": " + value);
+		localStorage[prefname] = value;
+	}
+
 	// Init ist eine selbstaufrufende funktion
 	// Hier soll der Storage initialisiert werden und anschließend auf firstStart geprüft werden
 	var init = (function() {
 		console.info("init");
+
 
 		// Checkt ob das Tool zum ersten mal gestartet wurde
 		initStorage("firststart");
@@ -146,6 +161,17 @@ exports.main = function() {
 		initStorage("status_cproxy", false);
 		initStorage("cproxy_url", "");
 		initStorage("cproxy_port", "");
+
+
+		preferences.on("status_grooveshark", updateStorage);
+		preferences.on("status_youtube_video", updateStorage);
+		preferences.on("status_youtube_channel", updateStorage);
+		preferences.on("status_youtube_search", updateStorage);
+
+		// Eigener Proxy
+		preferences.on("status_cproxy", updateStorage);
+		preferences.on("cproxy_url", updateStorage);
+		preferences.on("cproxy_port", updateStorage);
 
 		// Schauen ob der User das Plugin zum ersten mal verwendet
 		var firstStart = localStorage["firststart"];
