@@ -1,5 +1,4 @@
-resetProxy();	
-
+$(window).unload(resetProxy);
 var global = checkStatus("global");
 var youtube = checkStatus("youtube_search");
 
@@ -10,6 +9,7 @@ $.when(global, youtube).done(function() {
 	}
 
 	$(document).ready(function() {
+
 
 		if (getUrlParam('unblocked') != "true")
 		{
