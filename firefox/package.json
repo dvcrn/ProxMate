@@ -7,5 +7,46 @@
     "version": "1.1", 
     "fullName": "ProxMate", 
     "id": "jid1-QpHD8URtZWJC2A", 
-    "description": "Unblocks youtube, grooveshark and soon everything you want! :)"
+    "description": "Unblocks youtube, grooveshark and soon everything you want! :)",
+	"preferences": [
+		{
+	        "name": "status_cproxy",
+	        "title": "Use own Proxy",
+	        "type": "bool"
+	    },
+	    {
+	        "name": "cproxy_url",
+	        "title": "Proxy Url",
+	        "type": "string"
+    	},
+    	{
+	        "name": "cproxy_port",
+	        "title": "Proxy Port",
+	        "type": "integer"
+    	},
+		{
+	        "name": "status_youtube_video",
+	        "title": "Enable for Youtube Videos",
+	        "type": "bool",
+	        "value": true
+	    },
+		{
+	        "name": "status_youtube_channel",
+	        "title": "Enable for Youtube Channel",
+	        "type": "bool",
+	        "value": true
+	    },
+		{
+	        "name": "status_youtube_search",
+	        "title": "Enable for Youtube Search",
+	        "type": "bool",
+	        "value": true
+	    },
+		{
+	        "name": "status_grooveshark",
+	        "title": "Enable for Grooveshark",
+	        "type": "bool",
+	        "value": true
+	    }
+	]
 }

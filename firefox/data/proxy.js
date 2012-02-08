@@ -45,6 +45,11 @@ var sendAction = function(actionString, param) {
 	return defer;
 }
 
+var createTab = function(url) 
+{
+	sendAction("createTab", url);
+}
+
 var proxifyUri = function(uri, reload) 
 {
 	if (reload === undefined)
@@ -82,3 +87,13 @@ var getUrlParam = function(name) {
 var checkStatus = function(module) {
 	return sendAction("checkStatus", module);
 }
+
+function bool(str){
+    if (str.toLowerCase()=='false'){
+       return false;
+    } else if (str.toLowerCase()=='true'){
+       return true;
+    } else {
+       return undefined;
+    }; 
+};
