@@ -1,6 +1,6 @@
 var getUrlFor = function(file) {
-	console.info("Url? " + selfData.url(file));
-	return selfData.url(file);
+	var dataUri = "resource://jid1-qphd8urtzwjc2a-at-jetpack/proxmate/data/";
+	return dataUri + file;
 }
 
 var randomString = function(length) {

@@ -26,7 +26,7 @@ $.when(global, youtube).done(function() {
 
 				// Fire event to background page
 				// Will activate proxy page
-				//proxifyUri(window.location + "&unblocked=true");
+				proxifyUri(window.location + "&unblocked=true");
 			}
 			else 
 			{
@@ -36,7 +36,7 @@ $.when(global, youtube).done(function() {
 					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
 					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
 
-					//proxifyUri(window.location, true);
+					proxifyUri(window.location, true);
 				});
 			}
 		} 
