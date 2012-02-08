@@ -1,190 +1,178 @@
 var selfData = require('self').data;
 var pageMod = require("page-mod");
-var ss = require("simple-storage");
+var localStorage = require("simple-storage").storage;
 var { MatchPattern } = require("match-pattern");
-
-
-var proxyHTTPPref = "network.proxy.http";
-var proxyPortPref = "network.proxy.http_port";
-var proxyTypePref = "network.proxy.type";
-
 	
 exports.main = function() {
 
-	function checkUserProxy() {
-		if(
-			ss.storage.userProxyHTTP != require("preferences-service").get(proxyHTTPPref) || 
-			ss.storage.userProxyPort != require("preferences-service").get(proxyPortPref) || 
-			ss.storage.userProxyType != require("preferences-service").get(proxyTypePref)
-			) 
+	var setPluginStatus = function() 
+	{
+		var toggle = localStorage["status"];
+
+		// Wenn Toggle = False ist, das icon farbig machen
+		if (toggle == true) {
+			this.contentURL = selfData.url("images/icon16_gray.png");
+
+			localStorage["status"] = false;
+
+			require("preferences-service").reset("network.proxy.type");
+			require("preferences-service").reset("network.proxy.http");
+			require("preferences-service").reset("network.proxy.http_port");
+		}
+		else
 		{
-				ss.storage.userProxyHTTP = require("preferences-service").get(proxyHTTPPref);
-				ss.storage.userProxyPort = require("preferences-service").get(proxyPortPref);
-				ss.storage.userProxyType = require("preferences-service").get(proxyTypePref);
+			this.contentURL = selfData.url("images/icon16.png");
+
+			localStorage["status"] = true;
 		}
 	}
 
-	var setProxy = function() {
-		
-		checkUserProxy();
-		if(ss.storage.activeUserProxy) {
-			require("preferences-service").set(proxyTypePref, 1);
-			require("preferences-service").set(proxyHTTPPref, ss.storage.UserProxyURL);
-			require("preferences-service").set(proxyPortPref, ss.storage.UserProxyPort);
-		}
-		else{
-			require("preferences-service").set(proxyTypePref, 1);
-			require("preferences-service").set(proxyHTTPPref, "proxy.personalitycores.com");
-			require("preferences-service").set(proxyPortPref, 8000);
-		}
+	var createPagemod = function(regex, script) 
+	{
+		console.info("Creating PageMod " + script);
+		return pageMod.PageMod({
+			include: [regex],
+			contentScriptFile: [
+				selfData.url('jquery.js'),
+				selfData.url('proxy.js'),
+				selfData.url(script)
+			],
+			onAttach: initListeners
+		});
 	}
 
-	var globalResetProxy = function() {
-		if(require("preferences-service").get(proxyHTTPPref) == "proxy.personalitycores.com"){
-			require("preferences-service").set(proxyHTTPPref, ss.storage.userProxyHTTP);
-			require("preferences-service").set(proxyPortPref, ss.storage.userProxyPort);
-			require("preferences-service").set(proxyTypePref, ss.storage.userProxyType);
+	// Funktion zum ersten initialisieren eines storage
+	// Wird verwendet um unnötige wiederholungen zu vermeiden
+	var initStorage = function(str, val) {
+		console.info("Init Storage for " + str);
+		if (val === undefined) {
+			val = true;
 		}
-	}	
 
-	function getEnabledStatus() {
-		if(ss.storage.enabledStatus == undefined) {
-			ss.storage.enabledStatus = true;
+		if (localStorage[str] === undefined) {
+			localStorage[str] = val;
 		}
-		return ss.storage.enabledStatus;
+
+		console.info("Storage Value: " + localStorage[str]);
 	}
-	 
-	
-	function toggleActivation (){
-		ss.storage.enabledStatus = !getEnabledStatus();
-		return getEnabledStatus();
+
+	// Listener
+	var initListeners = function(worker) {		
+		console.info("init Listeners");
+
+		worker.port.on('setproxy', 
+			function(data) {
+				console.info("in der Set Proxy ");
+				var responseHash = data.hash;
+
+				require("preferences-service").set("network.proxy.type", 1);
+				require("preferences-service").set("network.proxy.http", "proxy.personalitycores.com");
+				require("preferences-service").set("network.proxy.http_port", 8000);
+
+				worker.port.emit(responseHash, 
+				{
+					success: true
+				});
+			}
+		);
+
+		worker.port.on('resetproxy', 
+			function(data) {
+				console.info("In der resetProxy");
+				var responseHash = data.hash;
+
+				require("preferences-service").reset("network.proxy.type");
+				require("preferences-service").reset("network.proxy.http");
+				require("preferences-service").reset("network.proxy.http_port");
+			}
+		);
+
+		// checkStatus wird aufgerufen um den Status des Addons und der einzelnen Module zu überprüfen
+		worker.port.on('checkStatus', function(data) {
+			console.info("CheckStatus ausgeführt. Param: " + data.param);
+
+			var module = data.param;
+			var status = false;
+			var responseHash = data.hash;
+
+			switch(module) {
+				case "global":
+					var status = localStorage["status"];
+					console.info("Status: " + status);
+					break;
+				case "youtube_video":
+					var status = localStorage["status_youtube_video"];
+					console.info("Status: " + status);
+					break;
+				case "youtube_search":
+					var status = localStorage["status_youtube_search"];
+					console.info("Status: " + status);
+					break;
+				case "youtube_channel":
+					var status = localStorage["status_youtube_channel"];
+					console.info("Status: " + status);
+					break;
+				case "grooveshark": 
+					var status = localStorage["status_grooveshark"];
+					console.info("Status: " + status);
+					break;
+			}
+
+			worker.port.emit(responseHash, 
+				{
+					enabled: status
+				}
+			);
+		});
+
 	}
-	
-	if(ss.storage.firstrun == undefined || ss.storage.firstrun == true) {
-		var tabBrowser = require("tab-browser");
-		tabBrowser.addTab("http://www.personalitycores.com/projects/proxmate/");
-		ss.storage.firstrun = false;
-		ss.storage.enabled = true;
-		ss.storage.userProxyHTTP = require("preferences-service").get(proxyHTTPPref);
-		ss.storage.userProxyPort = require("preferences-service").get(proxyPortPref);
-		ss.storage.userProxyType = require("preferences-service").get(proxyTypePref);
-		
-		ss.storage.activeUserProxy = false;
-	}
-	
-	checkUserProxy();
-	
-	if(ss.storage.activeUserProxy == 'undefined') {
-		ss.storage.activeUserProxy = false;
-	}
-	
-	
-	var optionsPanel = require("panel").Panel({
-		width:215,
-		height:160,
-		contentURL: selfData.url("options.html"),
-		contentScriptFile: [selfData.url('jquery.js'),selfData.url('options.js')]
-	});
-	
-	optionsPanel.port.on('setUserProxy', function(data) {
-		ss.storage.activeUserProxy = data.userProxy;
-		ss.storage.UserProxyURL = data.url;
-		ss.storage.UserProxyPort = data.port;
-		
-	});
-	
-	optionsPanel.port.emit('init', {'checked' : ss.storage.activeUserProxy , 'url' : ss.storage.UserProxyURL , 'port' : ss.storage.UserProxyPort});
-	 
-	var widget = require("widget").Widget({
-		id: "open-proxmate-btn",
-		label: "Click to Activate/Deactivate Proxmate, Rightclick for Options",
-		contentURL: selfData.url("images/icon16.png"),
-		contentScriptWhen: 'ready',
-		contentScriptFile: selfData.url('optionWidget.js')
-	});
-	
-	widget.panel = optionsPanel;
-	
-	widget.port.on('left-click', function() {
-		if(toggleActivation()){
-			widget.contentURL = selfData.url("images/icon16.png");
+
+	// Init ist eine selbstaufrufende funktion
+	// Hier soll der Storage initialisiert werden und anschließend auf firstStart geprüft werden
+	var init = (function() {
+		console.info("init");
+
+		// Checkt ob das Tool zum ersten mal gestartet wurde
+		initStorage("firststart");
+
+		// Initialisieren des Storages
+		initStorage("status");
+		initStorage("status_youtube_video");
+		initStorage("status_youtube_channel");
+		initStorage("status_youtube_search");
+		initStorage("status_grooveshark");
+
+		// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
+		initStorage("status_cproxy", false);
+		initStorage("cproxy_url", "");
+		initStorage("cproxy_port", "");
+
+		// Schauen ob der User das Plugin zum ersten mal verwendet
+		var firstStart = localStorage["firststart"];
+
+		console.info("FIrst Start: " + firstStart);
+
+		if (firstStart == true) {
+			console.info("First Start detected");
+
+			require("tab-browser").addTab("http://www.personalitycores.com/projects/proxmate/");
+
+			localStorage["firststart"] = false;
 		}
-		else {
-			widget.contentURL = selfData.url("images/icon16_gray.png");
-		}
-	});
+
+		// Widget initialisieren
+		require("widget").Widget({
+			id: "open-proxmate-btn",
+			label: "Click to Activate/Deactivate Proxmate",
+			contentURL: selfData.url("images/icon16.png"),
+			onClick: setPluginStatus
+		});
+
+		createPagemod(/.*personalitycores\.com\/projects\/proxmate.*/, 'sites/personalitycores.js');
+		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
+		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
+		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
+		createPagemod(/.*youtube\.com\/user.*/, 'sites/youtube-channel.js');
+	})();
 	 
-	widget.port.on('right-click', function() {
-		widget.panel.show();
-	});
-	
-	function initListeners(worker) {				
-				worker.port.on('isEnabled',
-					function(data) {
-						worker.port.emit('enableStatus', getEnabledStatus());
-					}
-				);
-				worker.port.on('setproxy', 
-					function(data) {
-						setProxy();
-						worker.port.emit('proxy-set', data);
-					}
-				);
-				worker.port.on('getstorage',
-					function(data) {
-						worker.port.emit('localstorage',selfData.url());
-					}
-				);
-				worker.port.on('resetproxy', 
-					function(data) {
-						globalResetProxy();
-					}
-				);
-			}//End initListeners
-	
-	var youtube = pageMod.PageMod({
-		include: [/.*youtube\.com\/watch.*/],
-		contentScriptWhen: 'ready',
-		contentScriptFile: [selfData.url('jquery.js'),
-							selfData.url('proxy.js'),
-							selfData.url('sites/youtube.js')
-							],
-		onAttach: initListeners
-			
-	}); 
-	
-	var ytsearch = pageMod.PageMod({
-		include: [/.*youtube\.com\/results.*/],
-		contentScriptWhen: 'ready',
-		contentScriptFile: [selfData.url('jquery.js'),
-							selfData.url('proxy.js'),
-							selfData.url('sites/youtube-search.js')
-							],
-		onAttach: initListeners
-			
-	}); 
-	
-	var ytchannel = pageMod.PageMod({
-		include: [/.*youtube\.com\/user.*/],
-		contentScriptWhen: 'ready',
-		contentScriptFile: [selfData.url('jquery.js'),
-							selfData.url('proxy.js'),
-							selfData.url('sites/youtube-channel.js')
-							],
-		onAttach: initListeners
-			
-	}); 
-	
-	var grooveshark = pageMod.PageMod({
-		include: [/.*grooveshark\.com.*/],
-		contentScriptWhen: 'ready',
-		contentScriptFile: [selfData.url('jquery.js'),
-							selfData.url('proxy.js'),
-							selfData.url('sites/grooveshark.js')
-							],
-		onAttach: initListeners
-			
-	}); 
-	
-	 
-} // End main
+}

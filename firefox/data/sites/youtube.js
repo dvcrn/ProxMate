@@ -1,10 +1,12 @@
 // Before DOM loads
 resetProxy();
 
-var promise = sendAction("isEnabled");
-promise.done(function() {
+var global = checkStatus("global");
+var youtube = checkStatus("youtube_video");
 
-	if (promise.response.enabled != "true") {
+$.when(global, youtube).done(function() {
+
+	if (!global.response.enabled || !youtube.response.enabled) {
 		return;
 	}
 
@@ -24,7 +26,7 @@ promise.done(function() {
 
 				// Fire event to background page
 				// Will activate proxy page
-				proxifyUri(window.location + "&unblocked=true");
+				//proxifyUri(window.location + "&unblocked=true");
 			}
 			else 
 			{
@@ -34,7 +36,7 @@ promise.done(function() {
 					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
 					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
 
-					proxifyUri(window.location, true);
+					//proxifyUri(window.location, true);
 				});
 			}
 		} 
