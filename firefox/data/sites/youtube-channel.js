@@ -1,4 +1,4 @@
-resetProxy();
+$(window).unload(resetProxy);
 
 var global = checkStatus("global");
 var youtube = checkStatus("youtube_channel");
@@ -10,6 +10,8 @@ $.when(global, youtube).done(function(g, y) {
 	}
 
 	$(document).ready(function() {
+
+
 		var hashChange = false;
 
 		var hashWrapper = function() {

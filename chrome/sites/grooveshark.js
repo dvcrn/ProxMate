@@ -1,5 +1,4 @@
-resetProxy();
-
+$(window).unload(resetProxy);
 var global = checkStatus("global");
 var grooveshark = checkStatus("grooveshark");
 

@@ -1,5 +1,4 @@
-// Before DOM loads
-resetProxy();
+$(window).unload(resetProxy);
 
 var global = checkStatus("global");
 var youtube = checkStatus("youtube_video");
@@ -12,6 +11,7 @@ $.when(global, youtube).done(function() {
 
 	$(document).ready(function() {
 		
+
 		// Check if there's a "unavailable" div
 		var ud = $("#watch-player-unavailable");
 		if (ud.length > 0) {
