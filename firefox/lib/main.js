@@ -42,6 +42,12 @@ exports.main = function() {
 			],
 			onAttach: initListeners
 		});
+		/*return pageMod.PageMod({
+			include: [regex],
+			contentScript: 'window.alert("Page matches ruleset");'
+			onAttach: initListeners
+		});
+		*/
 	}
 
 	// Funktion zum ersten initialisieren eines storage
@@ -73,9 +79,23 @@ exports.main = function() {
 				console.info("in der Set Proxy ");
 				var responseHash = data.hash;
 
-				require("preferences-service").set("network.proxy.type", 1);
-				require("preferences-service").set("network.proxy.http", "proxy.personalitycores.com");
-				require("preferences-service").set("network.proxy.http_port", 8000);
+				var cproxy = localStorage["status_cproxy"];
+				if (cproxy) 
+				{
+					var url = localStorage["cproxy_url"];
+					var port = localStorage["cproxy_port"];
+
+					console.info("Eigener Proxy gesetzt " + url + ":" + port);
+					require("preferences-service").set("network.proxy.type", 1);
+					require("preferences-service").set("network.proxy.http", url);
+					require("preferences-service").set("network.proxy.http_port", port);
+				}
+				else 
+				{
+					require("preferences-service").set("network.proxy.type", 1);
+					require("preferences-service").set("network.proxy.http", "proxy.personalitycores.com");
+					require("preferences-service").set("network.proxy.http_port", 8000);
+				}
 
 				worker.port.emit(responseHash, 
 				{
@@ -162,7 +182,7 @@ exports.main = function() {
 		initStorage("cproxy_url", "");
 		initStorage("cproxy_port", "");
 
-
+		// Optionspanel im Firefox Addon Menü binden
 		preferences.on("status_grooveshark", updateStorage);
 		preferences.on("status_youtube_video", updateStorage);
 		preferences.on("status_youtube_channel", updateStorage);
