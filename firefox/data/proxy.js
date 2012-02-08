@@ -17,7 +17,7 @@ var randomString = function(length) {
     return str;
 }
 
-var addEventListener = function(event, defer) {
+var addListener = function(event, defer) {
 	self.port.on(event, function(data) {
 		console.info("Bekomme antwort " + event);
 		defer.response = data;
@@ -40,7 +40,7 @@ var sendAction = function(actionString, param) {
 		}
 	);
 
-	addEventListener(hash, defer);
+	addListener(hash, defer);
 
 	return defer;
 }
@@ -76,6 +76,7 @@ var proxifyUri = function(uri, reload)
 
 var resetProxy = function() 
 {
+	console.info("Reset RPxoy");
 	sendAction("resetproxy");
 }
 
