@@ -1,9 +1,11 @@
 resetProxy();	
 
-var promise = sendAction("isEnabled");
-promise.done(function() {
+var global = checkStatus("global");
+var youtube = checkStatus("youtube_search");
 
-	if (promise.response.enabled != "true") {
+$.when(global, youtube).done(function() {
+
+	if (!global.response.enabled || !youtube.response.enabled) {
 		return;
 	}
 

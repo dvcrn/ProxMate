@@ -1,47 +1,48 @@
-///////////////////////////////////////////////
-//------------Initialisation-----------------//
-///////////////////////////////////////////////
-var localStoragePath;
-var enabled;
-var sendActionDefer;
-self.port.emit('getstorage'); //This is called to set the local Storage Path
-
-///////////////////////////////////////////////
-//------------Event Listeners----------------//
-///////////////////////////////////////////////
-self.port.on('localstorage', function(data) {
-	localStoragePath = data;
-});
-
-self.port.on('enableStatus', function(data) {
-	enabled = data;
-	sendActionDefer.response = {'enabled': enabled.toString()};
-	sendActionDefer.resolve();
-});
-
-self.port.on('proxy-set', function(data) {
-	if (data.reload) {
-		window.location = data.uri;		
-		document.location.reload();	
-	} else {
-		document.location = data.uri;	
-	}
-});
-
-
-
-///////////////////////////////////////////////
-//------------Global Functions---------------//
-///////////////////////////////////////////////
-
-var sendAction = function(actionString, uri, reload) {
-	sendActionDefer = $.Deferred();		
-	self.port.emit(actionString, {"uri": encodeURI(uri),"reload":reload});
-	return sendActionDefer;
+var getUrlFor = function(file) {
+	console.info("Url? " + selfData.url(file));
+	return selfData.url(file);
 }
 
-var getUrlFor = function(file) {
-	return localStoragePath + file;
+var randomString = function(length) {
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+    
+    if (! length) {
+        length = Math.floor(Math.random() * chars.length);
+    }
+    
+    var str = '';
+    for (var i = 0; i < length; i++) {
+        str += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return str;
+}
+
+var addEventListener = function(event, defer) {
+	self.port.on(event, function(data) {
+		console.info("Bekomme antwort " + event);
+		defer.response = data;
+		defer.resolve();
+	});
+}
+
+var sendAction = function(actionString, param) {
+	if (param === undefined) {
+		param = null;
+	}
+
+	var defer = $.Deferred();
+	var hash = randomString();
+
+	self.port.emit(actionString, 
+		{
+			param: param,
+			hash: hash
+		}
+	);
+
+	addEventListener(hash, defer);
+
+	return defer;
 }
 
 var proxifyUri = function(uri, reload) 
@@ -54,7 +55,18 @@ var proxifyUri = function(uri, reload)
 	{
 		reload = true;
 	}
-	sendAction("setproxy", uri, reload);
+	
+	var promise = sendAction("setproxy", null);
+	promise.done(function() {
+
+		if (reload) {
+			document.location = uri;		
+			document.location.reload();	
+		} else {
+			document.location = uri;		
+		}
+
+	});
 }
 
 var resetProxy = function() 
@@ -66,4 +78,7 @@ var getUrlParam = function(name) {
     return decodeURI(
         (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
     );
+}
+var checkStatus = function(module) {
+	return sendAction("checkStatus", module);
 }
