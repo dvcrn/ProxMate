@@ -19,7 +19,6 @@ var randomString = function(length) {
 
 var addListener = function(event, defer) {
 	self.port.on(event, function(data) {
-		console.info("Bekomme antwort " + event);
 		defer.response = data;
 		defer.resolve();
 	});
@@ -76,7 +75,6 @@ var proxifyUri = function(uri, reload)
 
 var resetProxy = function() 
 {
-	console.info("Reset RPxoy");
 	sendAction("resetproxy");
 }
 

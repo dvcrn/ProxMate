@@ -32,7 +32,6 @@ exports.main = function() {
 
 	var createPagemod = function(regex, script) 
 	{
-		console.info("Creating PageMod " + script);
 		return pageMod.PageMod({
 			include: [regex],
 			contentScriptFile: [
@@ -47,7 +46,6 @@ exports.main = function() {
 	// Funktion zum ersten initialisieren eines storage
 	// Wird verwendet um unnötige wiederholungen zu vermeiden
 	var initStorage = function(str, val) {
-		console.info("Init Storage for " + str);
 		if (val === undefined) {
 			val = true;
 		}
@@ -56,12 +54,10 @@ exports.main = function() {
 			localStorage[str] = val;
 		}
 
-		console.info("Storage Value: " + localStorage[str]);
 	}
 
 	// Listener
 	var initListeners = function(worker) {		
-		console.info("init Listeners");
 
 		worker.port.on('createTab', function(data) {
 			var url = data.param;
@@ -70,17 +66,14 @@ exports.main = function() {
 
 		worker.port.on('setproxy', 
 			function(data) {
-				console.info("in der Set Proxy ");
 				var responseHash = data.hash;
 
 				var cproxy = preferences.prefs["status_cproxy"];
 				if (cproxy) 
 				{
-					console.info("CUstom Proxy Detected");
 					var url = preferences.prefs["cproxy_url"];
 					var port = preferences.prefs["cproxy_port"];
 
-					console.info("Eigener Proxy gesetzt " + url + ":" + port);
 					require("preferences-service").set("network.proxy.type", 1);
 					require("preferences-service").set("network.proxy.http", url);
 					require("preferences-service").set("network.proxy.http_port", port);
@@ -101,7 +94,6 @@ exports.main = function() {
 
 		worker.port.on('resetproxy', 
 			function(data) {
-				console.info("In der resetProxy");
 				var responseHash = data.hash;
 
 				require("preferences-service").reset("network.proxy.type");
@@ -112,7 +104,6 @@ exports.main = function() {
 
 		// checkStatus wird aufgerufen um den Status des Addons und der einzelnen Module zu überprüfen
 		worker.port.on('checkStatus', function(data) {
-			console.info("CheckStatus ausgeführt. Param: " + data.param);
 
 			var module = data.param;
 			var status = false;
@@ -121,23 +112,18 @@ exports.main = function() {
 			switch(module) {
 				case "global":
 					var status = localStorage["status"];
-					console.info("Status: " + status);
 					break;
 				case "youtube_video":
 					var status = preferences.prefs["status_youtube_video"];
-					console.info("Status: " + status);
 					break;
 				case "youtube_search":
 					var status = preferences.prefs["status_youtube_search"];
-					console.info("Status: " + status);
 					break;
 				case "youtube_channel":
 					var status = preferences.prefs["status_youtube_channel"];
-					console.info("Status: " + status);
 					break;
 				case "grooveshark": 
 					var status = preferences.prefs["status_grooveshark"];
-					console.info("Status: " + status);
 					break;
 			}
 
@@ -153,7 +139,6 @@ exports.main = function() {
 	// Init ist eine selbstaufrufende funktion
 	// Hier soll der Storage initialisiert werden und anschließend auf firstStart geprüft werden
 	var init = (function() {
-		console.info("init");
 
 		// Storage für den ersten Start initialisieren
 		initStorage("firststart");
@@ -164,10 +149,8 @@ exports.main = function() {
 		// Schauen ob der User das Plugin zum ersten mal verwendet
 		var firstStart = localStorage["firststart"];
 
-		console.info("FIrst Start: " + firstStart);
 
 		if (firstStart == true) {
-			console.info("First Start detected");
 
 			require("tab-browser").addTab("http://www.personalitycores.com/projects/proxmate/");
 
