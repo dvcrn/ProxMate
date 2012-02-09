@@ -7,6 +7,8 @@ gsfile="grooveshark.js"
 ytfile="youtube.js"
 ytcfile="youtube-channel.js"
 ytsfile="youtube-search.js"
+pcfile="personalitycores.js"
+
 bgfile="background.js"
 
 jqfile="lib/jquery-1.7.1.min.js"
@@ -27,6 +29,7 @@ rm -r build/*
 [ -d build/tmp ] || mkdir build/tmp
 [ -d build/l ] || mkdir build/l
 [ -d build/images ] || mkdir build/images
+[ -d build/options ] || mkdir build/options
 
 
 echo "Building/Merging Grooveshark"
@@ -41,6 +44,9 @@ build $ytcfile
 echo "Building/Merging Youtube Search"
 build $ytsfile
 
+echo "Building/Merging Personalitycores"
+build $pcfile
+
 echo "Building Background Page"
 uglifyjs $bgfile > build/$bgfile
 cp background.html build/
@@ -51,10 +57,18 @@ cp $jqfile build/l/
 echo "Adding images"
 cp images/* build/images/
 
+echo "Packing options"
+cp options/options.html build/options/options.html
+cp options/options.css build/options/options.css
+less $fxfile > build/tmp/options.js
+echo " " >> build/tmp/options.js
+less options/options.js >> build/tmp/options.js
+uglifyjs build/tmp/options.js > build/options/options.js
+
 echo "Adding live manifest"
 cp manifest.live.json build/manifest.json
 
 echo "Cleaning temp Folder"
 rm -r build/tmp/
 
-echo "Finito! Check out your extension in build/"
+echo "Finito! Check out your extension in build/. Please fix the pathes in o/options.html"

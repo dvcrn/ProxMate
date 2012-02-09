@@ -1,4 +1,3 @@
-// Funktion zum parsen eines Strings in einen boolean.
 var bool = function(str){
     if (str.toLowerCase() == 'false') {
        return false;
