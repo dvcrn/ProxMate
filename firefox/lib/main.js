@@ -42,12 +42,6 @@ exports.main = function() {
 			],
 			onAttach: initListeners
 		});
-		/*return pageMod.PageMod({
-			include: [regex],
-			contentScript: 'window.alert("Page matches ruleset");'
-			onAttach: initListeners
-		});
-		*/
 	}
 
 	// Funktion zum ersten initialisieren eines storage
@@ -79,11 +73,12 @@ exports.main = function() {
 				console.info("in der Set Proxy ");
 				var responseHash = data.hash;
 
-				var cproxy = localStorage["status_cproxy"];
+				var cproxy = preferences.prefs["status_cproxy"];
 				if (cproxy) 
 				{
-					var url = localStorage["cproxy_url"];
-					var port = localStorage["cproxy_port"];
+					console.info("CUstom Proxy Detected");
+					var url = preferences.prefs["cproxy_url"];
+					var port = preferences.prefs["cproxy_port"];
 
 					console.info("Eigener Proxy gesetzt " + url + ":" + port);
 					require("preferences-service").set("network.proxy.type", 1);
@@ -129,19 +124,19 @@ exports.main = function() {
 					console.info("Status: " + status);
 					break;
 				case "youtube_video":
-					var status = localStorage["status_youtube_video"];
+					var status = preferences.prefs["status_youtube_video"];
 					console.info("Status: " + status);
 					break;
 				case "youtube_search":
-					var status = localStorage["status_youtube_search"];
+					var status = preferences.prefs["status_youtube_search"];
 					console.info("Status: " + status);
 					break;
 				case "youtube_channel":
-					var status = localStorage["status_youtube_channel"];
+					var status = preferences.prefs["status_youtube_channel"];
 					console.info("Status: " + status);
 					break;
 				case "grooveshark": 
-					var status = localStorage["status_grooveshark"];
+					var status = preferences.prefs["status_grooveshark"];
 					console.info("Status: " + status);
 					break;
 			}
@@ -155,43 +150,16 @@ exports.main = function() {
 
 	}
 
-	var updateStorage = function(prefname) {
-		var value = preferences.prefs[prefname];
-		console.info(prefname + ": " + value);
-		localStorage[prefname] = value;
-	}
-
 	// Init ist eine selbstaufrufende funktion
 	// Hier soll der Storage initialisiert werden und anschließend auf firstStart geprüft werden
 	var init = (function() {
 		console.info("init");
 
-
-		// Checkt ob das Tool zum ersten mal gestartet wurde
+		// Storage für den ersten Start initialisieren
 		initStorage("firststart");
 
 		// Initialisieren des Storages
 		initStorage("status");
-		initStorage("status_youtube_video");
-		initStorage("status_youtube_channel");
-		initStorage("status_youtube_search");
-		initStorage("status_grooveshark");
-
-		// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
-		initStorage("status_cproxy", false);
-		initStorage("cproxy_url", "");
-		initStorage("cproxy_port", "");
-
-		// Optionspanel im Firefox Addon Menü binden
-		preferences.on("status_grooveshark", updateStorage);
-		preferences.on("status_youtube_video", updateStorage);
-		preferences.on("status_youtube_channel", updateStorage);
-		preferences.on("status_youtube_search", updateStorage);
-
-		// Eigener Proxy
-		preferences.on("status_cproxy", updateStorage);
-		preferences.on("cproxy_url", updateStorage);
-		preferences.on("cproxy_port", updateStorage);
 
 		// Schauen ob der User das Plugin zum ersten mal verwendet
 		var firstStart = localStorage["firststart"];
