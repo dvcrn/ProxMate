@@ -1,4 +1,5 @@
-$(window).unload(resetProxy);
+$(window).live("afterunload", resetProxy);
+resetProxy();
 
 var global = checkStatus("global");
 var youtube = checkStatus("youtube_channel");
@@ -10,6 +11,8 @@ $.when(global, youtube).done(function(g, y) {
 	}
 
 	$(document).ready(function() {
+
+		var interval;
 
 
 		var hashChange = false;
@@ -44,19 +47,21 @@ $.when(global, youtube).done(function(g, y) {
 
 				// Wenn sich nur der hash geändert hat wird die seite direkt neu geladen
 				if (hashChange) 
-				{
+				{	
+					clearInterval(interval);
 					proxifyUri(window.location, true);
 				}
 				else 
 				{
 					// Dieses Snippet sollte innerhalb des channels nur einmal ausgefährt werden, da sich nurnoch der hash ändern wird
-					proxifyUri(window.location);
+					clearInterval(interval);
+					proxifyUri(window.location, true);
 				}
 			}
 		}
 
 		// Unschön, hässlich, und sollte bald entfernt werden!!!!!
-		setInterval(tick, 1000);
+		var interval = setInterval(tick, 1000);
 
 	});
 
