@@ -54,6 +54,7 @@ var init = (function() {
 	initStorage("status_youtube_channel");
 	initStorage("status_youtube_search");
 	initStorage("status_grooveshark");
+	initStorage("status_experimental", false);
 
 	// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
 	initStorage("status_cproxy", false);
@@ -152,6 +153,22 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				break;
 			case "grooveshark": 
 				var status = bool(localStorage["status_grooveshark"]);
+				break;
+			case "experimental": 
+				var exp = bool(localStorage["status_experimental"]);
+				var cproxy = bool(localStorage["status_cproxy"]);
+
+				if (cproxy)
+				{
+					var status = exp;
+				}
+				else 
+				{
+					var status = false;
+				}
+				break;
+			case "cproxy": 
+				var status = bool(localStorage["status_cproxy"]);
 				break;
 		}
 
