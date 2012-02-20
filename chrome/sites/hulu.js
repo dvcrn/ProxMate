@@ -17,6 +17,9 @@ $.when(global, experimental).done(function() {
 				if (index_tmp > 0) {
 					proxifyUri(loc_tmp.substring(0, index_tmp) + "?unblocked=true");	
 				}
+				else {
+					proxifyUri(loc_tmp + "?unblocked=true");		
+				}
 			});
 		} else {
 			var afterLoad = (function() {
