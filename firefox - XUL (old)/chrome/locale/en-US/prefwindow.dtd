@@ -1,5 +1,0 @@
-<!ENTITY prefwindow.title "Proxmate preferences">
-<!ENTITY pane1.title "Proxmate preferences">
-
-<!ENTITY notfpref.title "Don't ask me again for setting the proxy.">
-<!ENTITY sslnotfpref.title "Don't show me SSL notifications.">

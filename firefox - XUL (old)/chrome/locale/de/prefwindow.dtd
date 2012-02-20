@@ -1,5 +1,0 @@
-<!ENTITY prefwindow.title "Proxmube Einstellungen">
-<!ENTITY pane1.title "Proxmube Einstellungen">
-
-<!ENTITY notfpref.title "Nicht mehr fragen, ob die Proxy Einstellungen ge&#228;ndert werden d&#252;rfen.">
-<!ENTITY sslnotfpref.title "Keine SSL Benachrichtigungen anzeigen.">
