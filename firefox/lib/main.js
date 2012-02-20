@@ -125,6 +125,20 @@ exports.main = function() {
 				case "grooveshark": 
 					var status = preferences.prefs["status_grooveshark"];
 					break;
+				case "experimental": 
+					var exp = preferences.prefs["status_experimental"];
+					var cproxy = preferences.prefs["status_cproxy"];
+
+					if (cproxy) {
+						var status = exp;
+					}
+					else {
+						var status = false;
+					}
+					break;
+				case "cproxy": 
+					var cproxy = preferences.prefs["status_cproxy"];
+					break;
 			}
 
 			worker.port.emit(responseHash, 
@@ -170,7 +184,7 @@ exports.main = function() {
 		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*youtube\.com\/user.*/, 'sites/youtube-channel.js');
+		createPagemod(/.*hulu\.com\/watch.*/, 'sites/hulu.js');
 	})();
 	 
 }
