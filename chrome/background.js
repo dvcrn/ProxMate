@@ -70,6 +70,11 @@ var init = (function() {
 			url: "http://www.personalitycores.com/projects/proxmate"
 		});
 
+		chrome.tabs.create(
+		{
+			url: "https://www.facebook.com/pages/ProxMate/319835808054609"			
+		});
+
 		localStorage["firststart"] = false;
 	}
 

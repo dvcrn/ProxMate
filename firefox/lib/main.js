@@ -153,6 +153,7 @@ exports.main = function() {
 		if (firstStart == true) {
 
 			require("tab-browser").addTab("http://www.personalitycores.com/projects/proxmate/");
+			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage["firststart"] = false;
 		}
