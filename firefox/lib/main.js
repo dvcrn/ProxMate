@@ -173,12 +173,22 @@ exports.main = function() {
 		}
 
 		// Widget initialisieren
-		require("widget").Widget({
+		var statusButton = require("widget").Widget({
 			id: "open-proxmate-btn",
 			label: "Click to Activate/Deactivate Proxmate",
 			contentURL: selfData.url("images/icon16.png"),
 			onClick: setPluginStatus
 		});
+		
+		//Initialise Icon With right color
+		if (localStorage["status"] == true) {
+			statusButton.contentURL = selfData.url("images/icon16.png");
+			}
+		else {
+			statusButton.contentURL = selfData.url("images/icon16_gray.png");
+			}
+		
+
 
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate.*/, 'sites/personalitycores.js');
 		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
