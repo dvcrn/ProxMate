@@ -194,6 +194,7 @@ exports.main = function() {
 		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
+		createPagemod(/.*youtube\.com\/user.*/, 'sites/youtube-channel.js');
 		createPagemod(/.*hulu\.com\/watch.*/, 'sites/hulu.js');
 	})();
 	 
