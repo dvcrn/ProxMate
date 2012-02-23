@@ -25,6 +25,10 @@
     {
       "matches": ["*://*.personalitycores.com/projects/proxmate/*"],
       "js": ["l/jquery-1.7.1.min.js","s/personalitycores.js"]
+    },
+    {
+      "matches": ["*://*.hulu.com/watch/*"],
+      "js": ["l/jquery-1.7.1.min.js","s/hulu.js"]
     }
   ],
   "browser_action": {

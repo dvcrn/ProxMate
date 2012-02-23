@@ -8,6 +8,7 @@ ytfile="youtube.js"
 ytcfile="youtube-channel.js"
 ytsfile="youtube-search.js"
 pcfile="personalitycores.js"
+hulufile="hulu.js"
 
 bgfile="background.js"
 
@@ -46,6 +47,9 @@ build $ytsfile
 
 echo "Building/Merging Personalitycores"
 build $pcfile
+
+echo "Building/Merging Hulu"
+build $hulufile
 
 echo "Building Background Page"
 uglifyjs $bgfile > build/$bgfile
