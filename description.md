@@ -1,6 +1,6 @@
 ### Basic Description for Firefox / Chrome appstore pages
 
-========= New in Version 1.3 =========
+========= New in Version 1.2 =========
 * Bug Fix: Youtube Channels
 * Added Experimental Support (for upcoming pages)
 * Added Hulu Support using experimental (you have to set a own proxy to use this)
