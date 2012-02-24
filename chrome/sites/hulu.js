@@ -24,7 +24,7 @@ $.when(global, experimental).done(function() {
 		} else {
 			var afterLoad = (function() {
 				$(window).unload(resetProxy);
-				setTimeout(resetProxy, 5000);
+				setTimeout(resetProxy, 10000);
 			})();
 		}
 
