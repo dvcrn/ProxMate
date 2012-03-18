@@ -1,3 +1,5 @@
+jQuery.support.cors = true;
+
 var sendAction = function(actionString, param) {
 
 	if (param === undefined) {
@@ -39,16 +41,26 @@ var proxifyUri = function(uri, reload)
 		reload = true;
 	}
 
-	var promise = sendAction("setproxy");
-	promise.done(function() {
+	// For statistics and bugfinding.
 
-		if (reload) {
-			window.location = uri;		
-			location.reload();	
-		} else {
-			window.location = uri;		
-		}
+	$.ajax({
+		type: "GET",
+		url: "http://www.personalitycores.com/projects/proxmate/callback/",
+		data: "u="+encodeURI(uri)+"&b=chrome",
+		dataType: "json",
+		timeout: 2000
+	}).always(function() {
+		var promise = sendAction("setproxy");
+		promise.done(function() {
 
+			if (reload) {
+				window.location = uri;		
+				location.reload();	
+			} else {
+				window.location = uri;		
+			}
+
+		});
 	});
 }
 
