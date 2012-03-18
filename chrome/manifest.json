@@ -1,6 +1,6 @@
 {
   "name": "ProxMate",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Unblocks youtube, grooveshark, hulu and soon everything you want! :)",
   "background_page": "background.html",
   "options_page": "options/options.html",
