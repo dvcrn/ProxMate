@@ -23,7 +23,7 @@
       "js": ["l/jquery-1.7.1.min.js","s/grooveshark.js"]
     },
     {
-      "matches": ["*://*.personalitycores.com/projects/proxmate/*"],
+      "matches": ["*://*.personalitycores.com/projects/proxmate/"],
       "js": ["l/jquery-1.7.1.min.js","s/personalitycores.js"]
     },
     {
