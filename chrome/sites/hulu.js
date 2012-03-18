@@ -9,8 +9,10 @@ $.when(global, hulu).done(function() {
 
 	$(document).ready(function() {
 		if (getUrlParam("unblocked") != "true") {
-			$("#show-title-container").append(" --> <a id='prox-unblock' href='javascript:void(0);'>Unblock This</a> <--");
+			console.info($(".video-details .watch-title-left"));
+			$(".video-details").prepend("<p> <a style='color:white;' id='prox-unblock' href='javascript:void(0);'>Unblock this Video</a> </p>");
 			$("#prox-unblock").click(function() {
+				$("#prox-unblock").html("<p style='color:white;'>Loading... Please wait...</p>");
 				// Remove the hash from the url
 				var loc_tmp = window.location.href;
 				var index_tmp = loc_tmp.indexOf('#');
