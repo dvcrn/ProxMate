@@ -4,6 +4,7 @@ $(document).ready(function() {
 	var toggle_youtube_channel = $("#s-youtubechannel-toggle");
 	var toggle_youtube_search = $("#s-youtubesearch-toggle");
 	var toggle_grooveshark = $("#s-grooveshark-toggle");
+	var toggle_hulu = $("#s-hulu-toggle");
 	var toggle_experimental = $("#s-experimental-toggle");
 	
 	var toggle_cproxy = $("#g-cproxy-toggle");
@@ -21,6 +22,7 @@ $(document).ready(function() {
 		checkBoxToggle("status_youtube_search", toggle_youtube_search);
 		checkBoxToggle("status_youtube_channel", toggle_youtube_channel);
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
+		checkBoxToggle("status_hulu", toggle_hulu);
 		checkBoxToggle("status_experimental", toggle_experimental);
 
 		checkBoxToggle("status_cproxy", toggle_cproxy);
@@ -55,6 +57,7 @@ $(document).ready(function() {
 		var toggle_youtube_channel = $("#s-youtubechannel-toggle").prop("checked");
 		var toggle_youtube_search = $("#s-youtubesearch-toggle").prop("checked");
 		var toggle_grooveshark = $("#s-grooveshark-toggle").prop("checked");
+		var toggle_hulu = $("#s-hulu-toggle").prop("checked");
 		var toggle_experimental = $("#s-experimental-toggle").prop("checked");
 		
 		var toggle_cproxy = $("#g-cproxy-toggle").prop("checked");
@@ -67,6 +70,7 @@ $(document).ready(function() {
 		localStorage["status_youtube_channel"] = toggle_youtube_channel;
 		localStorage["status_youtube_search"] = toggle_youtube_search;
 		localStorage["status_grooveshark"] = toggle_grooveshark;
+		localStorage["status_hulu"] = toggle_hulu;
 		localStorage["status_experimental"] = toggle_experimental;
 
 		localStorage["status_cproxy"] = toggle_cproxy;

@@ -54,6 +54,7 @@ var init = (function() {
 	initStorage("status_youtube_channel");
 	initStorage("status_youtube_search");
 	initStorage("status_grooveshark");
+	initStorage("status_hulu");
 	initStorage("status_experimental", false);
 
 	// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
@@ -147,6 +148,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				break;
 			case "youtube_search":
 				var status = bool(localStorage["status_youtube_search"]);
+				break;
+			case "hulu":
+				var status = bool(localStorage["status_hulu"]);
 				break;
 			case "youtube_channel":
 				var status = bool(localStorage["status_youtube_channel"]);

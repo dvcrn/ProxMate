@@ -1,9 +1,9 @@
 var global = checkStatus("global");
-var experimental = checkStatus("experimental");
+var hulu = checkStatus("hulu");
 
-$.when(global, experimental).done(function() {
+$.when(global, hulu).done(function() {
 
-	if (!global.response.enabled || !experimental.response.enabled) {
+	if (!global.response.enabled || !hulu.response.enabled) {
 		return;
 	}
 
