@@ -43,7 +43,7 @@ $.when(global, youtube).done(function(g, y) {
 			if (isRestricted) 
 			{
 				// Change text
-				$("#playnav-custom-error-message").html("Blah blah blah not available. <br /> ProxMate will unblock this now!");
+				$("#playnav-custom-error-message").html("ProxMate will unblock this video now! :)");
 
 				// Wenn sich nur der hash geändert hat wird die seite direkt neu geladen
 				if (hashChange) 
