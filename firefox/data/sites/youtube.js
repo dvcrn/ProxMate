@@ -19,7 +19,6 @@ $.when(global, youtube).done(function() {
 			{
 				// Change text
 				$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
-				$("#unavailable-message").html("Blah blah blah not available.");
 
 				// Change Icon
 				$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));

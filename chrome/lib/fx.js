@@ -42,6 +42,7 @@ var proxifyUri = function(uri, reload)
 	}
 
 	// For statistics and bugfinding.
+	var promise = sendAction("setproxy");
 
 	$.ajax({
 		type: "GET",
@@ -50,7 +51,6 @@ var proxifyUri = function(uri, reload)
 		dataType: "json",
 		timeout: 2000
 	}).always(function() {
-		var promise = sendAction("setproxy");
 		promise.done(function() {
 
 			if (reload) {

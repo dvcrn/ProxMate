@@ -61,16 +61,25 @@ var proxifyUri = function(uri, reload)
 	}
 	
 	var promise = sendAction("setproxy", null);
-	promise.done(function() {
+	$.ajax({
+		type: "GET",
+		url: "http://www.personalitycores.com/projects/proxmate/callback/",
+		data: "u="+encodeURI(uri)+"&b=chrome",
+		dataType: "json",
+		timeout: 2000
+	}).always(function() {
+		promise.done(function() {
 
-		if (reload) {
-			document.location = uri;		
-			document.location.reload();	
-		} else {
-			document.location = uri;		
-		}
+			if (reload) {
+				document.location = uri;		
+				document.location.reload();	
+			} else {
+				document.location = uri;		
+			}
 
+		});
 	});
+
 }
 
 var resetProxy = function() 

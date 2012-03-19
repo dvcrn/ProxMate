@@ -125,6 +125,9 @@ exports.main = function() {
 				case "grooveshark": 
 					var status = preferences.prefs["status_grooveshark"];
 					break;
+				case "hulu":
+					var status = preferences.prefs["status_grooveshark"];
+					break;
 				case "experimental": 
 					var exp = preferences.prefs["status_experimental"];
 					var cproxy = preferences.prefs["status_cproxy"];
@@ -190,7 +193,7 @@ exports.main = function() {
 		
 
 
-		createPagemod(/.*personalitycores\.com\/projects\/proxmate.*/, 'sites/personalitycores.js');
+		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
