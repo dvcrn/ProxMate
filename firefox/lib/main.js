@@ -191,10 +191,9 @@ exports.main = function() {
 			statusButton.contentURL = selfData.url("images/icon16_gray.png");
 			}
 		
-
-
+		//When using Groups in Regex, dont forget to start them with ?: (thats a non capturing group) since firefox doesnt support capturing groups
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
-		createPagemod(/.*grooveshark\.com.*/, 'sites/grooveshark.js');
+		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
 		createPagemod(/.*youtube\.com\/user.*/, 'sites/youtube-channel.js');

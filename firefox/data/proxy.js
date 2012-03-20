@@ -64,7 +64,7 @@ var proxifyUri = function(uri, reload)
 	$.ajax({
 		type: "GET",
 		url: "http://www.personalitycores.com/projects/proxmate/callback/",
-		data: "u="+encodeURI(uri)+"&b=chrome",
+		data: "u="+encodeURI(uri)+"&b=firefox",
 		dataType: "json",
 		timeout: 2000
 	}).always(function() {
