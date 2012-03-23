@@ -69,10 +69,15 @@ exports.main = function() {
 			function(data) {
 				var responseHash = data.hash;
 
-				var uri = data.param;
-				request.Request({
-					url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + uri + "&b=firefox"
-				}).get();
+				// Ping personalitycores for statistics if allowed
+				var allow_statistics = preferences.prefs["status_statistics"];
+				if (allow_statistics)
+				{
+					var uri = data.param;
+					request.Request({
+						url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + uri + "&b=firefox"
+					}).get();
+				}
 
 				var cproxy = preferences.prefs["status_cproxy"];
 				if (cproxy) 

@@ -53,6 +53,12 @@
 	        "title": "Enable experimental support",
 	        "type": "bool",
 	        "value": false
+	    },
+		{
+	        "name": "status_statistics",
+	        "title": "Provide anonymous data for statistics (<3)",
+	        "type": "bool",
+	        "value": true
 	    }
 	]
 }
