@@ -91,6 +91,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	{
 		var uri = "proxy.personalitycores.com";
 		var port = 8000;
+		var pageuri = request.param;
+
+		// Ping server for statistics
+		var xhr = new XMLHttpRequest();
+		xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + pageuri + "&b=chrome", true);
+		xhr.send();
+
 
 		// Prüfen ob ein eigener Proxy gesetzt wurde
 		if (bool(localStorage["status_cproxy"])) {
@@ -124,14 +131,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});	
 	}
 
-
 	// Zurücksetzen des Proxies
 	if (request.action == "resetproxy") 
 	{
 		chrome.proxy.settings.clear({});
-
 		sendResponse({
-			status: false
+			status: true
 		});	
 	}
 

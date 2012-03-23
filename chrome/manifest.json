@@ -41,6 +41,7 @@
     "128": "images/icon128.png"
    },
   "permissions": [
-    "proxy"
+    "proxy",
+    "http://www.personalitycores.com/"
   ]
 }
