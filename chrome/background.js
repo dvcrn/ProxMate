@@ -57,6 +57,9 @@ var init = (function() {
 	initStorage("status_hulu");
 	initStorage("status_experimental", false);
 
+	// Statistics
+	initStorage("status_statistics");
+
 	// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
@@ -93,10 +96,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var port = 8000;
 		var pageuri = request.param;
 
-		// Ping server for statistics
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + pageuri + "&b=chrome", true);
-		xhr.send();
+		// Ping server for statistics if allowed
+		var allow_statistics = bool(localStorage["status_statistics"]);
+		if (allow_statistics) {
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + pageuri + "&b=chrome", true);
+			xhr.send();
+		}
 
 
 		// Prüfen ob ein eigener Proxy gesetzt wurde
@@ -162,6 +168,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				break;
 			case "grooveshark": 
 				var status = bool(localStorage["status_grooveshark"]);
+				break;
+			case "statistics": 
+				var status = bool(localStorage["status_statistics"]);
 				break;
 			case "experimental": 
 				var exp = bool(localStorage["status_experimental"]);

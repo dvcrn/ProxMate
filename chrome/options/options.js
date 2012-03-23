@@ -7,6 +7,8 @@ $(document).ready(function() {
 	var toggle_hulu = $("#s-hulu-toggle");
 	var toggle_experimental = $("#s-experimental-toggle");
 	
+	var toggle_statistics = $("#s-statistics-toggle");
+
 	var toggle_cproxy = $("#g-cproxy-toggle");
 	var cproxy_port = $("#g-cproxy-port");
 	var cproxy_url = $("#g-cproxy-url");
@@ -23,6 +25,7 @@ $(document).ready(function() {
 		checkBoxToggle("status_youtube_channel", toggle_youtube_channel);
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
 		checkBoxToggle("status_hulu", toggle_hulu);
+		checkBoxToggle("status_statistics", toggle_statistics);
 		checkBoxToggle("status_experimental", toggle_experimental);
 
 		checkBoxToggle("status_cproxy", toggle_cproxy);
@@ -59,6 +62,8 @@ $(document).ready(function() {
 		var toggle_grooveshark = $("#s-grooveshark-toggle").prop("checked");
 		var toggle_hulu = $("#s-hulu-toggle").prop("checked");
 		var toggle_experimental = $("#s-experimental-toggle").prop("checked");
+
+		var toggle_statistics= $("#s-statistics-toggle").prop("checked");
 		
 		var toggle_cproxy = $("#g-cproxy-toggle").prop("checked");
 		var cproxy_port = $("#g-cproxy-port").val();
@@ -72,6 +77,8 @@ $(document).ready(function() {
 		localStorage["status_grooveshark"] = toggle_grooveshark;
 		localStorage["status_hulu"] = toggle_hulu;
 		localStorage["status_experimental"] = toggle_experimental;
+
+		localStorage["status_statistics"] = toggle_statistics;
 
 		localStorage["status_cproxy"] = toggle_cproxy;
 		localStorage["cproxy_url"] = cproxy_url;
