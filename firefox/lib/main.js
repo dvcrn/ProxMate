@@ -99,6 +99,8 @@ exports.main = function() {
 				require("preferences-service").reset("network.proxy.type");
 				require("preferences-service").reset("network.proxy.http");
 				require("preferences-service").reset("network.proxy.http_port");
+				
+				worker.port.emit(responseHash, {success: true});
 			}
 		);
 
@@ -149,8 +151,9 @@ exports.main = function() {
 					enabled: status
 				}
 			);
-		});
 
+		
+		});
 	}
 
 	// Init ist eine selbstaufrufende funktion

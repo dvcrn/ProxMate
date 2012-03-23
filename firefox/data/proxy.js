@@ -74,15 +74,17 @@ var proxifyUri = function(uri, reload)
 
 var resetProxy = function() 
 {
-	$.ajax({
-		type: "GET",
-		url: "http://www.personalitycores.com/projects/proxmate/callback/",
-		data: "u="+encodeURI(uri)+"&b=firefox",
-		dataType: "json",
-		timeout: 2000
-	}).always(function(){	
-		sendAction("resetproxy");
+	var promise = sendAction("resetproxy");
+
+	promise.done(function(){
+		$.ajax({
+			type: "GET",
+			url: "http://www.personalitycores.com/projects/proxmate/callback/",
+			data: "u="+encodeURI(document.location)+"&b=firefox",
+			dataType: "json"
+		});
 	});
+	
 
 }
 
