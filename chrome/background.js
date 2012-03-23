@@ -77,7 +77,7 @@ var init = (function() {
 
 		chrome.tabs.create(
 		{
-			url: "https://www.facebook.com/pages/ProxMate/319835808054609"			
+			url: "https://www.facebook.com/ProxMate/"			
 		});
 
 		localStorage["firststart"] = false;
@@ -168,9 +168,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				break;
 			case "grooveshark": 
 				var status = bool(localStorage["status_grooveshark"]);
-				break;
-			case "statistics": 
-				var status = bool(localStorage["status_statistics"]);
 				break;
 			case "experimental": 
 				var exp = bool(localStorage["status_experimental"]);
