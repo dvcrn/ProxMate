@@ -3,6 +3,7 @@ var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
 var { MatchPattern } = require("match-pattern");
 var preferences = require("simple-prefs");
+var request = require("request")
 
 
 
@@ -67,6 +68,11 @@ exports.main = function() {
 		worker.port.on('setproxy', 
 			function(data) {
 				var responseHash = data.hash;
+
+				var uri = data.param;
+				request.Request({
+					url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + uri + "&b=firefox"
+				}).get();
 
 				var cproxy = preferences.prefs["status_cproxy"];
 				if (cproxy) 

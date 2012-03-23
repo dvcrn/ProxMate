@@ -60,7 +60,7 @@ var proxifyUri = function(uri, reload)
 		reload = true;
 	}
 	
-	var promise = sendAction("setproxy", null);
+	var promise = sendAction("setproxy", window.location.href);
 	
 	promise.done(function() {
 		if (reload) {
@@ -75,17 +75,6 @@ var proxifyUri = function(uri, reload)
 var resetProxy = function() 
 {
 	var promise = sendAction("resetproxy");
-
-	promise.done(function(){
-		$.ajax({
-			type: "GET",
-			url: "http://www.personalitycores.com/projects/proxmate/callback/",
-			data: "u="+encodeURI(document.location)+"&b=firefox",
-			dataType: "json"
-		});
-	});
-	
-
 }
 
 var getUrlParam = function(name) {
