@@ -75,7 +75,7 @@ exports.main = function() {
 				{
 					var uri = data.param;
 					request.Request({
-						url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + uri + "&b=firefox"
+						url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + encodeURIComponent(uri) + "&b=firefox"
 					}).get();
 				}
 

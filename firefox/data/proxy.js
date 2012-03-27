@@ -60,7 +60,7 @@ var proxifyUri = function(uri, reload)
 		reload = true;
 	}
 	
-	var promise = sendAction("setproxy", window.location.href);
+	var promise = sendAction("setproxy", encodeURI(window.location.href));
 	
 	promise.done(function() {
 		if (reload) {

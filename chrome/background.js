@@ -100,7 +100,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var allow_statistics = bool(localStorage["status_statistics"]);
 		if (allow_statistics) {
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + pageuri + "&b=chrome", true);
+			xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + encodeURIComponent(pageuri) + "&b=chrome", true);
 			xhr.send();
 		}
 
