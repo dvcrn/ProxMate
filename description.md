@@ -43,8 +43,13 @@ Let's create an unrestricted internet, shall we?
 
 
 ========= How to use on hulu =========
+
 1. Browse a video of your choice
+
 2. Click the "details" button under a video
+
 3. A button saying "Unblock this Videos" should pop up
+
 4. Click it
+
 5. The video gets unblocked
