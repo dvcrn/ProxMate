@@ -24,7 +24,7 @@ To give a little summary, ProxMate...
 * ...unblocks Youtube Search
 * ...unblocks Youtube Channels
 * ...unblocks Grooveshark
-* ...unblocks Hulu (beta!)
+* ...unblocks Hulu (beta! instructions below)
 * ...allows you to set your own proxy - yup, really!
 
 And of course this is not the end! ProxMate will become bigger and bigger based on your requests!
@@ -40,3 +40,11 @@ Do you like ProxMate?
 Show your love by writing a review, following us on Facebook, sharing, donating or whatever you want ;)
 
 Let's create an unrestricted internet, shall we?
+
+
+========= How to use on hulu =========
+1. Browse a video of your choice
+2. Click the "details" button under a video
+3. A button saying "Unblock this Videos" should pop up
+4. Click it
+5. The video gets unblocked
