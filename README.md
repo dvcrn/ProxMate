@@ -36,5 +36,3 @@ ProxMate is a Browser extension for unblocking / proxying blocked/restricted pag
 4. Run ./path-to-addonsdk/bin/cfx xpi (This will create a .xpi file for you)
 5. Load the packed .xpi in Firefox
 6. Profit
-
-The Firefox AppStore Release is not minified due to review by mozilla
