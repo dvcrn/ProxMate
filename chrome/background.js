@@ -1,3 +1,34 @@
+function getRandomKey(obj) {
+    var ret;
+    var c = 0;
+    for (var key in obj)
+        if (Math.random() < 1/++c)
+           ret = key;
+    return ret;
+}
+
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var proxyList = {
+	/* Just dummy servers for testing ;) */
+	us: [
+		["us01.personalitycores.com", 8000],
+		["us02.personalitycores.com", 8000]
+	],
+	uk: [
+		["uk01.personalitycores.com", 8000]
+	],
+	de: [
+		["de01.personalitycores.com", 8000]
+	],
+	/* Real ones */
+	live: [
+		["proxy.personalitycores.com", 8000]
+	]
+}
+
 var bool = function(str){
     if (str.toLowerCase() == 'false') {
        return false;
@@ -6,6 +37,24 @@ var bool = function(str){
     } else {
        return undefined;
     }
+}
+
+var getRandomProxy = function(country) {
+	switch (country) {
+		case "all": 
+			var key = getRandomKey(proxyList);
+			break;
+		default: 
+			var key = country;
+			break;
+	}
+
+	var proxylist = proxyList[key];
+
+	var length = proxylist.length - 1;
+	var randomKey = getRandomInt(0, length);
+
+	return proxylist[randomKey];
 }
 
 var setPluginStatus = function() 
@@ -92,8 +141,11 @@ chrome.browserAction.onClicked.addListener(setPluginStatus);
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	if (request.action == "setproxy") 
 	{
-		var uri = "proxy.personalitycores.com";
-		var port = 8000;
+
+		var randomProxy = getRandomProxy("live");
+		var uri = randomProxy[0];
+		var port = randomProxy[1];
+		
 		var pageuri = request.param;
 
 		// Ping server for statistics if allowed
