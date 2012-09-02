@@ -10,9 +10,6 @@ ProxMate is a Browser extension for unblocking / proxying blocked/restricted pag
 
 ##### Currently included:
 
- * Youtube Videos
- * Youtube Channels
- * Youtube Search
  * Grooveshark
  * Hulu (Beta!)
 
