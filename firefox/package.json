@@ -4,10 +4,10 @@
 	"icon": "data/images/icon128.png",	
     "author": "personalitycores.com", 
 	"homepage": "http://www.personalitycores.com/projects/proxmate/",
-    "version": "1.3.1", 
+    "version": "1.3.2", 
     "fullName": "ProxMate", 
     "id": "jid1-QpHD8URtZWJC2A", 
-    "description": "Unblocks youtube, grooveshark, hulu and soon everything you want! :)",
+    "description": "Unblocks grooveshark, hulu and soon everything you want! :)",
 	"preferences": [
 		{
 	        "name": "status_cproxy",
@@ -24,18 +24,6 @@
 	        "title": "Proxy Port",
 	        "type": "integer"
     	},
-		{
-	        "name": "status_youtube_video",
-	        "title": "Enable for Youtube Videos",
-	        "type": "bool",
-	        "value": true
-	    },
-		{
-	        "name": "status_youtube_channel",
-	        "title": "Enable for Youtube Channel",
-	        "type": "bool",
-	        "value": true
-	    },
 		{
 	        "name": "status_youtube_search",
 	        "title": "Enable for Youtube Search",

@@ -99,8 +99,6 @@ var init = (function() {
 
 	// Prüft ob die jeweiligen storageVariablen gesetzt sind. Fall nein werden sie mit true initialisiert
 	initStorage("status");
-	initStorage("status_youtube_video");
-	initStorage("status_youtube_channel");
 	initStorage("status_youtube_search");
 	initStorage("status_grooveshark");
 	initStorage("status_hulu");
@@ -206,17 +204,11 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			case "global":
 				var status = bool(localStorage["status"]);
 				break;
-			case "youtube_video":
-				var status = bool(localStorage["status_youtube_video"]);
-				break;
 			case "youtube_search":
 				var status = bool(localStorage["status_youtube_search"]);
 				break;
 			case "hulu":
 				var status = bool(localStorage["status_hulu"]);
-				break;
-			case "youtube_channel":
-				var status = bool(localStorage["status_youtube_channel"]);
 				break;
 			case "grooveshark": 
 				var status = bool(localStorage["status_grooveshark"]);

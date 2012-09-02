@@ -1,7 +1,5 @@
 $(document).ready(function() {
 
-	var toggle_youtube_video = $("#s-youtubevideo-toggle");
-	var toggle_youtube_channel = $("#s-youtubechannel-toggle");
 	var toggle_youtube_search = $("#s-youtubesearch-toggle");
 	var toggle_grooveshark = $("#s-grooveshark-toggle");
 	var toggle_hulu = $("#s-hulu-toggle");
@@ -20,9 +18,7 @@ $(document).ready(function() {
 	}
 
 	var init = (function() {
-		checkBoxToggle("status_youtube_video", toggle_youtube_video);
 		checkBoxToggle("status_youtube_search", toggle_youtube_search);
-		checkBoxToggle("status_youtube_channel", toggle_youtube_channel);
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
 		checkBoxToggle("status_hulu", toggle_hulu);
 		checkBoxToggle("status_statistics", toggle_statistics);
@@ -56,8 +52,6 @@ $(document).ready(function() {
 
 	// Savebutton. Obvious :D
 	$("#savebutton").click(function() {
-		var toggle_youtube_video = $("#s-youtubevideo-toggle").prop("checked");
-		var toggle_youtube_channel = $("#s-youtubechannel-toggle").prop("checked");
 		var toggle_youtube_search = $("#s-youtubesearch-toggle").prop("checked");
 		var toggle_grooveshark = $("#s-grooveshark-toggle").prop("checked");
 		var toggle_hulu = $("#s-hulu-toggle").prop("checked");
@@ -71,8 +65,6 @@ $(document).ready(function() {
 
 		// Alle variablen in den localStorage schreiben
 
-		localStorage["status_youtube_video"] = toggle_youtube_video;
-		localStorage["status_youtube_channel"] = toggle_youtube_channel;
 		localStorage["status_youtube_search"] = toggle_youtube_search;
 		localStorage["status_grooveshark"] = toggle_grooveshark;
 		localStorage["status_hulu"] = toggle_hulu;

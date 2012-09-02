@@ -126,14 +126,8 @@ exports.main = function() {
 				case "global":
 					var status = localStorage["status"];
 					break;
-				case "youtube_video":
-					var status = preferences.prefs["status_youtube_video"];
-					break;
 				case "youtube_search":
 					var status = preferences.prefs["status_youtube_search"];
-					break;
-				case "youtube_channel":
-					var status = preferences.prefs["status_youtube_channel"];
 					break;
 				case "grooveshark": 
 					var status = preferences.prefs["status_grooveshark"];
@@ -208,9 +202,7 @@ exports.main = function() {
 		//When using Groups in Regex, dont forget to start them with ?: (thats a non capturing group) since firefox doesnt support capturing groups
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
-		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*youtube\.com\/user.*/, 'sites/youtube-channel.js');
 		createPagemod(/.*hulu\.com\/watch.*/, 'sites/hulu.js');
 	})();
 	 
