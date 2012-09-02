@@ -1,7 +1,5 @@
 ### Basic Description for Firefox / Chrome appstore pages
 
-1.000 Facebook follower release! :D
-
 ========= New in Version 1.3 =========
 
 * Moved Hulu from experimental to core. Beta now!
