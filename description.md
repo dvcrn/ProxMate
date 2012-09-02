@@ -1,14 +1,10 @@
 ### Basic Description for Firefox / Chrome appstore pages
 
-========= New in Version 1.3 =========
+========= New in Version 1.3.2 =========
 
-* Moved Hulu from experimental to core. Beta now!
-* Time change for Hulu unblocking: 5s -> 10s
-* Before the page unblocks, a ping to our servers will be sent. For counting purposes. (You can disable this in options tho!)
-* Changed unblock text
-* Fix: Changed unblock link on hulu videos
-* Fix: Regex rule for personalitycores website
-* Fix (FF): Regex change for grooveshark
+This update deactivates all youtube modules except the search!
+Due to an update on youtubes site, addons like ProxMate stopped working. 
+There is currently no way to get around this. If we find a solution, we'll bring it back!
 
 ========= How to use on hulu =========
 
