@@ -10,16 +10,8 @@
   "homepage_url": "http://personalitycores.com/projects/proxmate/",
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/watch*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube.js"]
-    },
-    {
       "matches": ["*://*.youtube.com/results*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-search.js"]
-    },
-    {
-      "matches": ["*://*.youtube.com/user/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-channel.js"]
     },
     {
       "matches": ["*://*.grooveshark.com/*"],
