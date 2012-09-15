@@ -1,10 +1,10 @@
 #pmOverlay {
-	padding: 10px;
 	z-index: 1000000;
 	top: 0;
 	width: 100%;
 	position: fixed;
 	background: lightblue;
+	padding: 0 10px;
 
 	display: none;
 
@@ -21,6 +21,9 @@
 
 #pmOverlay p {
 	font-weight: bold;
+	line-height: 30px;
+	padding: 0;
+	margin: 0;
 }
 
 #page {
