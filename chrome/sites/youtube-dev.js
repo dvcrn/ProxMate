@@ -15,21 +15,23 @@ $(document).ready(function() {
 	} 
 	else
 	{
-		// Load the overlay
+		var ud = $("#watch-player-unavailable");
+		if (ud.length > 0) {
+			// Load the overlay
+			$('<link>').attr('rel','stylesheet')
+			  .attr('type','text/css')
+			  .attr('href',getUrlFor("elements/overlay.css"))
+			  .appendTo('head');
 
-		$('<link>').attr('rel','stylesheet')
-		  .attr('type','text/css')
-		  .attr('href',getUrlFor("elements/overlay.css"))
-		  .appendTo('head');
-
-		$.get(getUrlFor("elements/overlay.html"), function(data) {
-			console.info(data);
-			$("body").append(data);
-			$("#pmOverlay").fadeIn("slow");
-			$("#pmOverlay").click(function() {
-				window.location = window.location + "&proxmate=active";
+			$.get(getUrlFor("elements/overlay.html"), function(data) {
+				console.info(data);
+				$("body").append(data);
+				$("#pmOverlay").fadeIn("slow");
+				$("#pmOverlay").click(function() {
+					window.location = window.location + "&proxmate=active";
+				});
 			});
-		});
+		}
 	}
 
 });

@@ -1,62 +1,4 @@
-var invideo = false;
-/*
-chrome.webRequest.onBeforeRequest.addListener(
-	function(details) {
-		var url = details.url;
-
-		if (invideo) {
-			if (url.indexOf(".ytimg.com") != -1 && url.indexOf("proxmate=active" == -1)) {
-				var newurl = url + "&proxmate=active";
-				console.info("Changing url to: " + newurl);
-				return {redirectUrl: newurl};
-			}
-		}
-
-		var test = url.indexOf("proxmate=active");
-		if (test != -1) {
-			console.info("activating invideo mode");
-			invideo = true;
-		}
-
-	}
-	,{urls: ["<all_urls>"]}, 
-	["blocking"]
-);
-
-
-*/
-
-
-function getRandomKey(obj) {
-    var ret;
-    var c = 0;
-    for (var key in obj)
-        if (Math.random() < 1/++c)
-           ret = key;
-    return ret;
-}
-
-function getRandomInt (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-var proxyList = {
-	/* Just dummy servers for testing ;) */
-	us: [
-		["us01.personalitycores.com", 8000],
-		["us02.personalitycores.com", 8000]
-	],
-	uk: [
-		["uk01.personalitycores.com", 8000]
-	],
-	de: [
-		["de01.personalitycores.com", 8000]
-	],
-	/* Real ones */
-	live: [
-		["proxy.personalitycores.com", 8000]
-	]
-}
+var pac_config = {};
 
 var bool = function(str){
     if (str.toLowerCase() == 'false') {
@@ -66,24 +8,6 @@ var bool = function(str){
     } else {
        return undefined;
     }
-}
-
-var getRandomProxy = function(country) {
-	switch (country) {
-		case "all": 
-			var key = getRandomKey(proxyList);
-			break;
-		default: 
-			var key = country;
-			break;
-	}
-
-	var proxylist = proxyList[key];
-
-	var length = proxylist.length - 1;
-	var randomKey = getRandomInt(0, length);
-
-	return proxylist[randomKey];
 }
 
 var setPluginStatus = function() 
@@ -98,7 +22,7 @@ var setPluginStatus = function()
 		});
 
 		localStorage["status"] = false;
-		//chrome.proxy.settings.clear({});
+		chrome.proxy.settings.clear({});
 	}
 	else
 	{
@@ -121,45 +45,40 @@ var initStorage = function(str, val) {
 }
 
 
-var config = {
-  mode: "pac_script",
-  pacScript: {
-    data: "function FindProxyForURL(url, host) {\n" +
-    	  " var test = url.indexOf('proxmate=active');\n"+
-          "  if (test != -1)\n" +
-          "    return 'PROXY proxy.personalitycores.com:8000';\n" +
-          "  return 'DIRECT';\n" +
-          "}"
-  }
-};
-chrome.proxy.settings.set(
-    {value: config, scope: 'regular'},
-    function() {});
-
-
-
 var init = (function() {
 
-	// Checkt ob das Tool zum ersten mal gestartet wurde
+	// Init some storage space we need later
 	initStorage("firststart");
 
-	// Prüft ob die jeweiligen storageVariablen gesetzt sind. Fall nein werden sie mit true initialisiert
 	initStorage("status");
-	initStorage("status_youtube_search");
-	initStorage("status_grooveshark");
-	initStorage("status_hulu");
-	initStorage("status_experimental", false);
-
-	// Statistics
 	initStorage("status_statistics");
+	initStorage("country", "xx");
 
-	// Eigenen proxy im localStorage anlegen um mögliche fehler zu beseitigen
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
 	initStorage("cproxy_port", "");
 
+	initStorage("proxy_url", "");
+	initStorage("proxy_port", "");
 
-	// Schauen ob der User das Plugin zum ersten mal verwendet
+	// Default proxy settings, in case of error
+	pac_config = {
+	  mode: "pac_script",
+	  pacScript: {
+	    data: "function FindProxyForURL(url, host) {\n" +
+	    	  " var test = url.indexOf('proxmate=active');\n"+
+	          "  if (test != -1)\n" +
+	          "    return 'PROXY proxy.personalitycores.com:8000';\n" +
+	          "  return 'DIRECT';\n" +
+	          "}"
+	  }
+	};
+
+	chrome.proxy.settings.set(
+	    {value: pac_config, scope: 'regular'},
+	    function() {});
+
+	// Is it the first start? Spam some tabs! 
 	var firstStart = localStorage["firststart"];
 
 	if (firstStart == "true") {
@@ -176,8 +95,42 @@ var init = (function() {
 		localStorage["firststart"] = false;
 	}
 
-	// Proxy auf System setzen falls einer gesetzt wurde.
-	//chrome.proxy.settings.clear({});
+	// Request a proxy from master server
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET","http://127.0.0.1:8080?country=us",true);
+	xhr.send();
+
+	xhr.onreadystatechange = function()
+	{
+		if (xhr.readyState == 4 && xhr.status == 200)
+		{
+			var json = xhr.responseText;
+			json = JSON.parse(json);
+
+			var url = json.url;
+			var port = json.port;
+
+			pac_config = {
+			  mode: "pac_script",
+			  pacScript: {
+			    data: "function FindProxyForURL(url, host) {\n" +
+			    	  " var test = url.indexOf('proxmate=active');\n"+
+			          "  if (test != -1)\n" +
+			          "    return 'PROXY "+url+":"+port+"';\n" +
+			          "  return 'DIRECT';\n" +
+			          "}"
+			  }
+			};
+
+			chrome.proxy.settings.set(
+			    {value: pac_config, scope: 'regular'},
+			    function() {});
+
+			localStorage["proxy_url"] = url;
+			localStorage["proxy_port"] = port; 
+		}
+	}
+
 })();
 
 chrome.browserAction.onClicked.addListener(setPluginStatus);
@@ -236,7 +189,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// Zurücksetzen des Proxies
 	if (request.action == "resetproxy") 
 	{
-		//chrome.proxy.settings.clear({});
+		chrome.proxy.settings.clear({});
 		sendResponse({
 			status: true
 		});	
@@ -250,28 +203,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			case "global":
 				var status = bool(localStorage["status"]);
 				break;
-			case "youtube_search":
-				var status = bool(localStorage["status_youtube_search"]);
-				break;
-			case "hulu":
-				var status = bool(localStorage["status_hulu"]);
-				break;
-			case "grooveshark": 
-				var status = bool(localStorage["status_grooveshark"]);
-				break;
-			case "experimental": 
-				var exp = bool(localStorage["status_experimental"]);
-				var cproxy = bool(localStorage["status_cproxy"]);
-
-				if (cproxy)
-				{
-					var status = exp;
-				}
-				else 
-				{
-					var status = false;
-				}
-				break;
 			case "cproxy": 
 				var status = bool(localStorage["status_cproxy"]);
 				break;
@@ -280,5 +211,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		sendResponse({
 			enabled: status
 		});
+	}
+
+	if (request.action == "muh") {
+
 	}
 });
