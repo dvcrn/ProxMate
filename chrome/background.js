@@ -1,3 +1,32 @@
+var invideo = false;
+/*
+chrome.webRequest.onBeforeRequest.addListener(
+	function(details) {
+		var url = details.url;
+
+		if (invideo) {
+			if (url.indexOf(".ytimg.com") != -1 && url.indexOf("proxmate=active" == -1)) {
+				var newurl = url + "&proxmate=active";
+				console.info("Changing url to: " + newurl);
+				return {redirectUrl: newurl};
+			}
+		}
+
+		var test = url.indexOf("proxmate=active");
+		if (test != -1) {
+			console.info("activating invideo mode");
+			invideo = true;
+		}
+
+	}
+	,{urls: ["<all_urls>"]}, 
+	["blocking"]
+);
+
+
+*/
+
+
 function getRandomKey(obj) {
     var ret;
     var c = 0;
@@ -69,7 +98,7 @@ var setPluginStatus = function()
 		});
 
 		localStorage["status"] = false;
-		chrome.proxy.settings.clear({});
+		//chrome.proxy.settings.clear({});
 	}
 	else
 	{
@@ -90,6 +119,23 @@ var initStorage = function(str, val) {
 		localStorage[str] = val;
 	}
 }
+
+
+var config = {
+  mode: "pac_script",
+  pacScript: {
+    data: "function FindProxyForURL(url, host) {\n" +
+    	  " var test = url.indexOf('proxmate=active');\n"+
+          "  if (test != -1)\n" +
+          "    return 'PROXY proxy.personalitycores.com:8000';\n" +
+          "  return 'DIRECT';\n" +
+          "}"
+  }
+};
+chrome.proxy.settings.set(
+    {value: config, scope: 'regular'},
+    function() {});
+
 
 
 var init = (function() {
@@ -131,7 +177,7 @@ var init = (function() {
 	}
 
 	// Proxy auf System setzen falls einer gesetzt wurde.
-	chrome.proxy.settings.clear({});
+	//chrome.proxy.settings.clear({});
 })();
 
 chrome.browserAction.onClicked.addListener(setPluginStatus);
@@ -190,7 +236,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// Zurücksetzen des Proxies
 	if (request.action == "resetproxy") 
 	{
-		chrome.proxy.settings.clear({});
+		//chrome.proxy.settings.clear({});
 		sendResponse({
 			status: true
 		});	

@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
   "name": "ProxMate",
-  "version": "1.3.2",
+  "version": "2",
   "description": "Unblocks grooveshark, hulu and soon everything you want! :)",
   "background": {
-    "page": "background.html"
+    "scripts": ["background.js"]
   },
   "options_page": "options/options.html",
   "homepage_url": "http://personalitycores.com/projects/proxmate/",
@@ -12,8 +12,10 @@
     {
       "matches": ["*://*.youtube.com/results*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-search.js"]
-    },
-    {
+    },{
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-dev.js"]
+    },{
       "matches": ["*://*.grooveshark.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
     },
@@ -34,9 +36,17 @@
     "48": "images/icon48.png",
     "16": "images/icon16.png",
     "128": "images/icon128.png"
-   },
+   }, 
+   "web_accessible_resources": [
+    "elements/overlay.html",
+    "elements/overlay.css"
+  ],
   "permissions": [
     "proxy",
-    "http://www.personalitycores.com/"
+    "http://www.personalitycores.com/",
+    "http://youtube.com/",
+    "http://*/",
+    "webRequest",
+    "webRequestBlocking"
   ]
 }
