@@ -35,6 +35,11 @@ $.when(global, hulu).done(function() {
 
 				});
 			});
+		} else {
+			var afterLoad = (function() {
+				$(window).unload(resetProxy);
+				setTimeout(resetProxy, 10000);
+			})();
 		}
 
 	});
