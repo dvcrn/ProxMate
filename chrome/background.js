@@ -61,23 +61,6 @@ var init = (function() {
 	initStorage("proxy_url", "");
 	initStorage("proxy_port", "");
 
-	// Default proxy settings, in case of error
-	pac_config = {
-	  mode: "pac_script",
-	  pacScript: {
-	    data: "function FindProxyForURL(url, host) {\n" +
-	    	  " var test = url.indexOf('proxmate=active');\n"+
-	          "  if (test != -1)\n" +
-	          "    return 'PROXY proxy.personalitycores.com:8000';\n" +
-	          "  return 'DIRECT';\n" +
-	          "}"
-	  }
-	};
-
-	chrome.proxy.settings.set(
-	    {value: pac_config, scope: 'regular'},
-	    function() {});
-
 	// Is it the first start? Spam some tabs! 
 	var firstStart = localStorage["firststart"];
 
