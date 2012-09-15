@@ -95,41 +95,55 @@ var init = (function() {
 		localStorage["firststart"] = false;
 	}
 
+	var url = "";
+	var port = "";
+
 	// Request a proxy from master server
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET","http://127.0.0.1:8080?country=us",true);
-	xhr.send();
 
-	xhr.onreadystatechange = function()
-	{
-		if (xhr.readyState == 4 && xhr.status == 200)
-		{
-			var json = xhr.responseText;
-			json = JSON.parse(json);
 
-			var url = json.url;
-			var port = json.port;
+	xhr.addEventListener("error", function() {
+		url = "proxy.personalitycores.com";
+		port = 8000;
+	}, false);
 
-			pac_config = {
-			  mode: "pac_script",
-			  pacScript: {
-			    data: "function FindProxyForURL(url, host) {\n" +
-			    	  " var test = url.indexOf('proxmate=active');\n"+
-			          "  if (test != -1)\n" +
-			          "    return 'PROXY "+url+":"+port+"';\n" +
-			          "  return 'DIRECT';\n" +
-			          "}"
-			  }
-			};
+	xhr.addEventListener("load", function() {
 
-			chrome.proxy.settings.set(
-			    {value: pac_config, scope: 'regular'},
-			    function() {});
+		var json = xhr.responseText;
+		json = JSON.parse(json);
 
-			localStorage["proxy_url"] = url;
-			localStorage["proxy_port"] = port; 
-		}
+		url = json.url;
+		port = json.port;
+
+	}, false);
+
+	try {
+		xhr.open("GET","http://127.0.0.1:8080?country=us",false);
+		xhr.send();
 	}
+	catch(e) {
+		url = "proxy.personalitycores.com";
+		port = 8000;
+	}
+
+	pac_config = {
+	  mode: "pac_script",
+	  pacScript: {
+	    data: "function FindProxyForURL(url, host) {\n" +
+	    	  " var test = url.indexOf('proxmate=active');\n"+
+	          "  if (test != -1)\n" +
+	          "    return 'PROXY "+url+":"+port+"';\n" +
+	          "  return 'DIRECT';\n" +
+	          "}"
+	  }
+	};
+
+	chrome.proxy.settings.set(
+	    {value: pac_config, scope: 'regular'},
+	    function() {});
+
+	localStorage["proxy_url"] = url;
+	localStorage["proxy_port"] = port; 
 
 })();
 
