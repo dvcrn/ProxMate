@@ -79,3 +79,28 @@ function bool(str){
        return undefined;
     }; 
 };
+
+var loadOverlay = function(callback) {
+	var global = checkStatus("global");
+
+	global.done(function() {
+		if (global.response.enabled == false) {
+			return;
+		}
+
+		// Load the overlay
+		$('<link>').attr('rel','stylesheet')
+		  .attr('type','text/css')
+		  .attr('href',getUrlFor("elements/overlay.css"))
+		  .appendTo('head');
+
+		$.get(getUrlFor("elements/overlay.html"), function(data) {
+			console.info(data);
+			$("body").append(data);
+			$("#pmOverlay").fadeIn("slow");
+			$("#pmOverlay").click(function() {
+				callback();
+			});
+		});
+	});
+}
