@@ -117,7 +117,7 @@ var init = (function() {
 	}, false);
 
 	try {
-		xhr.open("GET","http://127.0.0.1:8080?country=us",false);
+		xhr.open("GET","http://direct.personalitycores.com:8000?country=us",false);
 		xhr.send();
 	}
 	catch(e) {

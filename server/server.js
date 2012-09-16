@@ -76,5 +76,5 @@ var app = server.createServer(function(request, response) {
 	response.end();
 });
 
-console.info("Server listening on port 8080");
-app.listen(8080);
+console.info("Server listening on port 8000");
+app.listen(8000);
