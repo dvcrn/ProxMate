@@ -48,8 +48,9 @@ var setProxy = function(url, port) {
 	  mode: "pac_script",
 	  pacScript: {
 	    data: "function FindProxyForURL(url, host) {\n" +
-	    	  " var test = url.indexOf('proxmate=active');\n"+
-	          "  if (test != -1 || host == 'www.pandora.com')\n" +
+	    	  " var pma = url.indexOf('proxmate=active');\n"+
+	    	  " var hulu = url.indexOf('hulu.com');\n"+
+	          "  if (pma != -1 || host == 'www.pandora.com' || hulu != -1)\n" +
 	          "    return 'PROXY "+url+":"+port+"';\n" +
 	          "  return 'DIRECT';\n" +
 	          "}"
@@ -148,7 +149,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			rules: {
 				singleProxy: {
 					host: localStorage["proxy_url"],
-					port: localStorage["proxy_port"]
+					port: parseInt(localStorage["proxy_port"])
 				}
 			}
 		}

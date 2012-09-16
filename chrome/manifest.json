@@ -14,10 +14,14 @@
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-search.js"]
     },{
       "matches": ["*://*.youtube.com/watch*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-dev.js"]
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube.js"]
     },{
       "matches": ["*://*.grooveshark.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
+    },
+    {
+      "matches": ["*://*.pandora.com/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
     },
     {
       "matches": ["*://*.personalitycores.com/projects/proxmate/"],
@@ -39,7 +43,14 @@
    }, 
    "web_accessible_resources": [
     "elements/overlay.html",
-    "elements/overlay.css"
+    "elements/banner.html",
+    "elements/overlay.css",
+    "images/load.gif",
+    "images/waitajax.gif",
+    "images/background-wrapper.png",
+    "images/background-body.png",
+    "images/icon48.png",
+    "images/cross.png"
   ],
   "permissions": [
     "proxy",

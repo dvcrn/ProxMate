@@ -1,43 +1,33 @@
-$(window).unload(resetProxy);
+$(document).ready(function() {
+	var pmParam = getUrlParam('proxmate');
 
-var global = checkStatus("global");
-var youtube = checkStatus("youtube_video");
-
-$.when(global, youtube).done(function() {
-
-	if (!global.response.enabled || !youtube.response.enabled) {
-		return;
-	}
-
-	$(document).ready(function() {
+	if (pmParam == "active") 
+	{
+		var scripts = $("#watch-video script");
+		var script = scripts[1]; // Get the second script tag inside the #watch-video element
+		var test = $(script).contents()[0].data; // Get the script content (a.k.a the function)
+		loadBanner(function() {
+			$("#page").css("margin-top", "0px");
+		});
 		
+		// videoplayback%253F
+		var n = test.replace(/videoplayback%253F/g,"videoplayback%253Fproxmate%253Dactive%2526"); // Append our proxmate param so the pac script wil care of it
+		eval(n);
 
-		// Check if there's a "unavailable" div
+	} 
+	else
+	{
 		var ud = $("#watch-player-unavailable");
 		if (ud.length > 0) {
-			if (getUrlParam('unblocked') != "true" )
-			{
+			loadOverlay(function() {
 				// Change text
 				$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
 
 				// Change Icon
 				$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
+				window.location = window.location + "&proxmate=active";
+			});
+		}
+	}
 
-				// Fire event to background page
-				// Will activate proxy page
-				proxifyUri(window.location + "&unblocked=true");
-			}
-			else 
-			{
-				$("#unavailable-submessage").html("There might be a problem with this video or Proxmate itself. :( <br /> Click <a id='px-again' href='javascript:void(0)'>here</a> to try again.");
-				$('#px-again').click(function() {
-
-					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
-					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
-
-					proxifyUri(window.location, true);
-				});
-			}
-		} 
-	});
 });

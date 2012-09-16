@@ -41,7 +41,6 @@ var proxifyUri = function(uri, reload)
 		reload = true;
 	}
 
-	// For statistics and bugfinding.
 	var promise = sendAction("setproxy", encodeURI(window.location.href));
 	promise.done(function() {
 
@@ -95,11 +94,37 @@ var loadOverlay = function(callback) {
 		  .appendTo('head');
 
 		$.get(getUrlFor("elements/overlay.html"), function(data) {
-			console.info(data);
-			$("body").append(data);
+			$("body").prepend(data);
 			$("#pmOverlay").fadeIn("slow");
 			$("#pmOverlay").click(function() {
 				callback();
+			});
+		});
+	});
+}
+
+var loadBanner = function(callback) {
+	(function() {
+	    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+	    s.type = 'text/javascript';
+	    s.async = true;
+	    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+	    t.parentNode.insertBefore(s, t);
+	})();
+
+	// Load the overlay
+	$('<link>').attr('rel','stylesheet')
+	  .attr('type','text/css')
+	  .attr('href',getUrlFor("elements/overlay.css"))
+	  .appendTo('head');
+
+	$.get(getUrlFor("elements/banner.html"), function(data) {
+		$("body").append(data);
+		$("#pmBanner").fadeIn("slow");
+		
+		$("#pmBannerClose").click(function() {
+			$("#pmBanner").fadeOut("slow", function() {
+				$("#pmPusher").slideUp("slow");
 			});
 		});
 	});
