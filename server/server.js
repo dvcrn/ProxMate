@@ -1,57 +1,19 @@
-var unblocks = 0;
+/* Simple roundrobin server for balancing proxy use */
 
 var server = require('http');
 var url = require('url');
 
 var proxyList = {
-	/* Just dummy servers for testing ;) */
 	us: [
 		["us01.personalitycores.com", 8000],
 		["us02.personalitycores.com", 8000]
 	],
-	uk: [
-		["uk01.personalitycores.com", 8000]
-	],
-	de: [
-		["de01.personalitycores.com", 8000]
-	],
-	/* Real ones */
-	live: [
-		["proxy.personalitycores.com", 8000]
+	// These servers are not real. Just for testing
+	uk: [	
+		["uk01.personalitycores.com", 8000],
+		["uk02.personalitycores.com", 8000]
 	]
 }
-
-function getRandomKey(obj) {
-    var ret;
-    var c = 0;
-    for (var key in obj)
-        if (Math.random() < 1/++c)
-           ret = key;
-    return ret;
-}
-
-function getRandomInt (min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-var getRandomProxy = function(country) {
-	switch (country) {
-		case "all": 
-			var key = getRandomKey(proxyList);
-			break;
-		default: 
-			var key = country;
-			break;
-	}
-
-	var proxylist = proxyList[key];
-
-	var length = proxylist.length - 1;
-	var randomKey = getRandomInt(0, length);
-
-	return proxylist[randomKey];
-}
-
 
 var isUndefined = function(v) {
 	if (v === undefined) {
@@ -61,23 +23,51 @@ var isUndefined = function(v) {
 	}
 }
 
+// Creating data including all the proxys and the next one to give
+var countryData = {};
+for (country in proxyList) {
+	countryData[country] = {
+		"total": proxyList[country].length,
+		"next": 0
+	}
+}
 
-console.info("Server listening on 8080");
+var getNextProxyForCountry = function(country) {
+	var countryElement = countryData[country];
+	var next = countryElement.next;
+	var proxy = proxyList[country][next];
+
+	// Increment next element by one if it's not over the max
+	if (next + 1 > countryElement.total - 1) {
+		countryData[country].next = 0;
+	} else {
+		countryData[country].next = next + 1;
+	}
+
+	return proxy;
+}
+
 var app = server.createServer(function(request, response) {
 	request.on('error', function(err){
 		console.warn('error:\n' + err.stack);
 	});
 
+	// Parse requested url and get the country element
 	var url_parts = url.parse(request.url, true);
 	var country = url_parts.query["country"];
 
-	if (isUndefined(country) || country == "xx") { 
-		country = "all";
+	// Error handling in case if no country element is given
+	if (isUndefined(country) ) { 
+		country = "us";
 	}
 
-	console.info("Request for country: " + country);
+	// Error handling if invalid // nonexistent country element is given. Us is defualt
+	try {
+		var proxy = getNextProxyForCountry(country);
+	} catch (e) {
+		var proxy = getNextProxyForCountry("us");
+	}
 
-	var proxy = getRandomProxy(country);
 	var proxy = {
 		"url": proxy[0],
 		"port": proxy[1]
@@ -86,4 +76,5 @@ var app = server.createServer(function(request, response) {
 	response.end();
 });
 
+console.info("Server listening on port 8080");
 app.listen(8080);
