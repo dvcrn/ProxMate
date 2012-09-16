@@ -93,11 +93,6 @@ var init = (function() {
 		localStorage["firststart"] = false;
 	}
 
-	// Set the icon color on start
-	if (bool(localStorage["status"]) == false) {
-		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
-	}
-
 
 	var url = "";
 	var port = "";
@@ -130,7 +125,13 @@ var init = (function() {
 		port = 8000;
 	}
 
-	setProxy(url, port);
+	// Set the icon color on start
+	if (bool(localStorage["status"]) == false) {
+		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
+		chrome.proxy.settings.clear({});
+	} else {
+		setProxy(url, port);
+	}
 
 	// Save the currently assigned proxy for later use
 	localStorage["proxy_url"] = url;

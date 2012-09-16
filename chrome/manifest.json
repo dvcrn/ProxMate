@@ -6,7 +6,6 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "options_page": "options/options.html",
   "homepage_url": "http://personalitycores.com/projects/proxmate/",
   "content_scripts": [
     {

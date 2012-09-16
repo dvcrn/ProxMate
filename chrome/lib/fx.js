@@ -80,25 +80,18 @@ function bool(str){
 };
 
 var loadOverlay = function(callback) {
-	var global = checkStatus("global");
+	
+	// Load the overlay
+	$('<link>').attr('rel','stylesheet')
+	  .attr('type','text/css')
+	  .attr('href',getUrlFor("elements/overlay.css"))
+	  .appendTo('head');
 
-	global.done(function() {
-		if (global.response.enabled == false) {
-			return;
-		}
-
-		// Load the overlay
-		$('<link>').attr('rel','stylesheet')
-		  .attr('type','text/css')
-		  .attr('href',getUrlFor("elements/overlay.css"))
-		  .appendTo('head');
-
-		$.get(getUrlFor("elements/overlay.html"), function(data) {
-			$("body").prepend(data);
-			$("#pmOverlay").fadeIn("slow");
-			$("#pmOverlay").click(function() {
-				callback();
-			});
+	$.get(getUrlFor("elements/overlay.html"), function(data) {
+		$("body").prepend(data);
+		$("#pmOverlay").fadeIn("slow");
+		$("#pmOverlay").click(function() {
+			callback();
 		});
 	});
 }

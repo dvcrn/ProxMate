@@ -1,15 +1,22 @@
 $(window).unload(resetProxy);
 
-$(document).ready(function() {
-	// Check for the broken heart
-	var broken = $("#heartbroken");
-	if (broken.length > 0) {
+var global = checkStatus("global");
 
-		// Change text
-		$("#content h2").html("ProxMate will unblock Grooveshark now!");
+global.done(function() {
+	if (global.response.enabled == false)
+		return;
+	
+	$(document).ready(function() {
+		// Check for the broken heart
+		var broken = $("#heartbroken");
+		if (broken.length > 0) {
 
-		proxifyUri(window.location, true);
-	} else {
-		loadBanner();
-	}
-});	
+			// Change text
+			$("#content h2").html("ProxMate will unblock Grooveshark now!");
+
+			proxifyUri(window.location, true);
+		} else {
+			loadBanner();
+		}
+	});	
+});
