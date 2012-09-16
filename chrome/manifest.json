@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "ProxMate",
+  "name": "ProxMate - unblock the Internet!",
   "version": "2.0",
-  "description": "Unblocks grooveshark, hulu and soon everything you want! :)",
+  "description": "Unblocky youtube, grooveshark, hulu and pandora for free!",
   "background": {
     "scripts": ["background.js"]
   },

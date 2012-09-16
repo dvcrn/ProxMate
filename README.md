@@ -1,6 +1,6 @@
 ## ProxMate Browser Extension
 
-ProxMate is a Browser extension for unblocking / proxying blocked/restricted pages.
+ProxMate is a Browser extension for accessing pages blocked by country restrictions.
 
 ##### AppStore releases:
 
@@ -10,8 +10,10 @@ ProxMate is a Browser extension for unblocking / proxying blocked/restricted pag
 
 ##### Currently included:
 
+ * Youtube
  * Grooveshark
- * Hulu (Beta!)
+ * Pandora
+ * Hulu
 
 
 ### Installation / Building
