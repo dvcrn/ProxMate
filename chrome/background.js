@@ -10,27 +10,26 @@ var bool = function(str){
     }
 }
 
-var setPluginStatus = function() 
+var togglePluginstatus = function() 
 {
 	var toggle = localStorage["status"];
 
-
-	// Wenn Toggle = False ist, das icon farbig machen
 	if (toggle == "true") {
-		chrome.browserAction.setIcon({
-			path: "images/icon48_gray.png"
-		});
+		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
 
 		localStorage["status"] = false;
+
+		// Remove proxy
 		chrome.proxy.settings.clear({});
 	}
 	else
 	{
-		chrome.browserAction.setIcon({
-			path: "images/icon48.png"
-		});
+		chrome.browserAction.setIcon({path: "images/icon48.png"});
 
 		localStorage["status"] = true;
+
+		// Start setting the old proxy
+		setProxy(localStorage["proxy_url"], localStorage["proxy_port"]);
 	}
 }
 
@@ -44,6 +43,23 @@ var initStorage = function(str, val) {
 	}
 }
 
+var setProxy = function(url, port) {
+	pac_config = {
+	  mode: "pac_script",
+	  pacScript: {
+	    data: "function FindProxyForURL(url, host) {\n" +
+	    	  " var test = url.indexOf('proxmate=active');\n"+
+	          "  if (test != -1 || host == 'www.pandora.com')\n" +
+	          "    return 'PROXY "+url+":"+port+"';\n" +
+	          "  return 'DIRECT';\n" +
+	          "}"
+	  }
+	};
+
+	chrome.proxy.settings.set(
+	    {value: pac_config, scope: 'regular'},
+	    function() {});
+}
 
 var init = (function() {
 
@@ -51,8 +67,6 @@ var init = (function() {
 	initStorage("firststart");
 
 	initStorage("status");
-	initStorage("status_statistics");
-	initStorage("country", "xx");
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
@@ -78,12 +92,18 @@ var init = (function() {
 		localStorage["firststart"] = false;
 	}
 
+	// Set the icon color on start
+	if (bool(localStorage["status"]) == false) {
+		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
+	}
+
+
 	var url = "";
 	var port = "";
 
-	// Request a proxy from master server
-	var xhr = new XMLHttpRequest();
+	// Request a proxy from master server & Error handling
 
+	var xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("error", function() {
 		url = "proxy.personalitycores.com";
@@ -109,87 +129,41 @@ var init = (function() {
 		port = 8000;
 	}
 
-	pac_config = {
-	  mode: "pac_script",
-	  pacScript: {
-	    data: "function FindProxyForURL(url, host) {\n" +
-	    	  " var test = url.indexOf('proxmate=active');\n"+
-	          "  if (test != -1)\n" +
-	          "    return 'PROXY "+url+":"+port+"';\n" +
-	          "  return 'DIRECT';\n" +
-	          "}"
-	  }
-	};
+	setProxy(url, port);
 
-	chrome.proxy.settings.set(
-	    {value: pac_config, scope: 'regular'},
-	    function() {});
-
+	// Save the currently assigned proxy for later use
 	localStorage["proxy_url"] = url;
 	localStorage["proxy_port"] = port; 
 
 })();
 
-chrome.browserAction.onClicked.addListener(setPluginStatus);
+chrome.browserAction.onClicked.addListener(togglePluginstatus);
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+	
 	if (request.action == "setproxy") 
 	{
-
-		var randomProxy = getRandomProxy("live");
-		var uri = randomProxy[0];
-		var port = randomProxy[1];
-		
-		var pageuri = request.param;
-
-		// Ping server for statistics if allowed
-		var allow_statistics = bool(localStorage["status_statistics"]);
-		if (allow_statistics) {
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", 'http://www.personalitycores.com/projects/proxmate/callback/?u=' + encodeURIComponent(pageuri) + "&b=chrome", true);
-			xhr.send();
-		}
-
-
-		// Prüfen ob ein eigener Proxy gesetzt wurde
-		if (bool(localStorage["status_cproxy"])) {
-
-			uri = localStorage["cproxy_url"];
-			port = localStorage["cproxy_port"];
-		}
-
 		var config = {
 			mode: "fixed_servers",
 			rules: {
 				singleProxy: {
-					host: uri,
-					port: parseInt(port)
+					host: localStorage["proxy_url"],
+					port: localStorage["proxy_port"]
 				}
 			}
 		}
 
-		chrome.proxy.settings.set(
-			{
-				value: config, 
-				scope: 'regular'
-			},
-			function() {
-				
-			}
-		);
+		chrome.proxy.settings.set({value: config, scope: 'regular'}, function() {});
 
 		sendResponse({
 			status: true
 		});	
 	}
 
-	// Zurücksetzen des Proxies
+	// ResetProxy to default
 	if (request.action == "resetproxy") 
 	{
-		chrome.proxy.settings.clear({});
-		sendResponse({
-			status: true
-		});	
+		setProxy(localStorage["proxy_url"], localStorage["proxy_port"]);
 	}
 
 	if (request.action == "checkStatus") {
@@ -210,7 +184,4 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
 	}
 
-	if (request.action == "muh") {
-
-	}
 });
