@@ -70,6 +70,9 @@ var getUrlFor = function(file) {
 }
 
 function bool(str){
+	if (str === undefined) 
+		return false;
+
     if (str.toLowerCase()=='false'){
        return false;
     } else if (str.toLowerCase()=='true'){

@@ -2,10 +2,11 @@
   "manifest_version": 2,
   "name": "ProxMate - unblock the Internet!",
   "version": "2.0",
-  "description": "Unblocky youtube, grooveshark, hulu and pandora for free!",
+  "description": "Unblock youtube, grooveshark, hulu and pandora for free!",
   "background": {
     "scripts": ["background.js"]
   },
+  "options_page": "options/options.html",
   "homepage_url": "http://personalitycores.com/projects/proxmate/",
   "content_scripts": [
     {
@@ -33,7 +34,7 @@
   ],
   "browser_action": {
     "default_title": "Click to enable / disable ProxMate",
-    "default_icon": "images/icon48.png"
+    "default_icon": "images/icon128.png"
   },
   "icons": {
     "48": "images/icon48.png",
