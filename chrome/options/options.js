@@ -4,6 +4,7 @@ $(document).ready(function() {
 	var toggle_grooveshark = $("#s-grooveshark-toggle");
 	var toggle_hulu = $("#s-hulu-toggle");
 	var toggle_pandora = $("#s-pandora-toggle");
+	var toggle_gplay = $("#s-gplay-toggle");
 
 	var toggle_cproxy = $("#g-cproxy-toggle");
 	var cproxy_port = $("#g-cproxy-port");
@@ -20,6 +21,7 @@ $(document).ready(function() {
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
 		checkBoxToggle("status_hulu", toggle_hulu);
 		checkBoxToggle("status_pandora", toggle_pandora);
+		checkBoxToggle("status_gplay", toggle_gplay);
 
 		checkBoxToggle("status_cproxy", toggle_cproxy);
 		if (bool(localStorage["status_cproxy"])) {
@@ -53,6 +55,7 @@ $(document).ready(function() {
 		var status_grooveshark = toggle_grooveshark.prop("checked");
 		var status_hulu = toggle_hulu.prop("checked");
 		var status_pandora = toggle_pandora.prop("checked");
+		var status_gplay = toggle_gplay.prop("checked");
 		
 		var status_cproxy = $("#g-cproxy-toggle").prop("checked");
 		var cproxy_port = $("#g-cproxy-port").val();
@@ -64,6 +67,7 @@ $(document).ready(function() {
 		localStorage["status_grooveshark"] = status_grooveshark;
 		localStorage["status_hulu"] = status_hulu;
 		localStorage["status_pandora"] = status_pandora;
+		localStorage["status_gplay"] = status_gplay;
 
 		localStorage["status_cproxy"] = status_cproxy;
 		localStorage["cproxy_url"] = cproxy_url;
@@ -73,7 +77,6 @@ $(document).ready(function() {
 		sendAction("resetproxy");
 
 		// Change button text
-
 		resetText($(this), 5000);
 		$(this).html("Success");
 	});

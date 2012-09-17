@@ -8,6 +8,7 @@ To give a little summary, ProxMate...
 * ...unblocks Hulu
 * ...unblocks Youtube
 * ...unblocks Pandora
+* ...unblocks the google play store
 
 And of course this is not the end! ProxMate will become bigger and bigger based on your requests!
 

@@ -14,6 +14,7 @@ ProxMate is a Browser extension for accessing pages blocked by country restricti
  * Grooveshark
  * Pandora
  * Hulu
+ * Google Play
 
 
 ### Installation / Building

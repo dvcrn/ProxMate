@@ -75,6 +75,10 @@ var setProxy = function(url, port) {
 	          	pcs += " || hulu != -1 ";
 	      	  }
 
+			if (bool(localStorage["status_gplay"])) {
+	          	pcs += "|| url.indexOf('play.google.com') != -1";
+	      	  }
+
 	          pcs += " )\n" +
 	          "    return 'PROXY "+url+":"+port+"';\n" +
 	          "  return 'DIRECT';\n" +
@@ -102,6 +106,7 @@ var init = (function() {
 	initStorage("status_pandora");
 	initStorage("status_grooveshark");
 	initStorage("status_hulu");
+	initStorage("status_gplay");
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
