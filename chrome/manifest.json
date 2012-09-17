@@ -30,6 +30,10 @@
     {
       "matches": ["*://*.hulu.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
+    },
+    {
+      "matches": ["*://play.google.com/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/gplay.js"]
     }
   ],
   "browser_action": {
