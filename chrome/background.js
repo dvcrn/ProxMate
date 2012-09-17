@@ -163,8 +163,6 @@ var init = (function() {
 	localStorage["proxy_url"] = url;
 	localStorage["proxy_port"] = port; 
 
-	console.info("url: " + url + " port: " + port);
-
 	// Set the icon color on start
 	if (bool(localStorage["status"]) == false) {
 		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
