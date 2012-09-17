@@ -123,5 +123,11 @@ var loadBanner = function(callback) {
 				$("#pmPusher").slideUp("slow");
 			});
 		});
+
+		setTimeout(function() {
+			$("#pmBanner").addClass("smallBanner");
+		}, 5000);
+
+
 	});
 }
