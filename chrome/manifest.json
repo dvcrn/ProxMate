@@ -56,8 +56,6 @@
     "proxy",
     "http://www.personalitycores.com/",
     "http://youtube.com/",
-    "http://*/",
-    "webRequest",
-    "webRequestBlocking"
+    "http://*/"
   ]
 }

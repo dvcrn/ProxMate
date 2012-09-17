@@ -68,6 +68,7 @@ h2 {
 	text-align: right;	
 	padding-bottom: 25px;
 	padding-right: 25px;
+	margin-top: -25px;
 }
 
 #savebutton {
@@ -102,4 +103,7 @@ h2 {
 
 a {
 	text-decoration: none;
+}
+.info {
+	font-size: 13px;
 }
