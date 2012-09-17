@@ -1,14 +1,16 @@
 ### Basic Description for Firefox / Chrome appstore pages
 
 
-ProxMate is a free open source browser plugin for accessing pages blocked by country restrictios.
+ProxMate is the swiss knife for accessing pages! A free open source application that disables country restrictions automatically.
+
 To give a little summary, ProxMate...
 
 * ...unblocks Grooveshark
 * ...unblocks Hulu
 * ...unblocks Youtube
 * ...unblocks Pandora
-* ...unblocks the google play store
+* ...brings you the full google play store
+* ...allows you to set your own proxy
 
 And of course this is not the end! ProxMate will become bigger and bigger based on your requests!
 
