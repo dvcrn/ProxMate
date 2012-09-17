@@ -1,7 +1,8 @@
 var global = checkStatus("global");
+var youtube = checkStatus("status_youtube");
 
-global.done(function() {
-	if (global.response.enabled == false)
+$.when(global, youtube).done(function() {
+	if (!global.response.enabled || !youtube.response.enabled)
 		return;
 
 	$(document).ready(function() {

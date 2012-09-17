@@ -10,12 +10,13 @@ var bool = function(str){
     }
 }
 
+// Handler for extension icon click
 var togglePluginstatus = function() 
 {
 	var toggle = localStorage["status"];
 
 	if (toggle == "true") {
-		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
 
 		localStorage["status"] = false;
 
@@ -24,7 +25,7 @@ var togglePluginstatus = function()
 	}
 	else
 	{
-		chrome.browserAction.setIcon({path: "images/icon48.png"});
+		chrome.browserAction.setIcon({path: "images/icon128.png"});
 
 		localStorage["status"] = true;
 
@@ -44,16 +45,29 @@ var initStorage = function(str, val) {
 }
 
 var setProxy = function(url, port) {
+	// Build the pac script
+	var pcs = "function FindProxyForURL(url, host) {\n" +
+	    	  " var pma = url.indexOf('proxmate=active');\n"+
+	    	  " var hulu = url.indexOf('hulu.com');\n"+
+	          "  if ( "+
+	          "	pma != -1 ";
+
+	          if (bool(localStorage["status_pandora"])) {
+	          	pcs += " || host == 'www.pandora.com'";
+	      	  }
+	      	  if (bool(localStorage["status_hulu"])) {
+	          	pcs += " || hulu != -1 ";
+	      	  }
+
+	          pcs += " )\n" +
+	          "    return 'PROXY "+url+":"+port+"';\n" +
+	          "  return 'DIRECT';\n" +
+	          "}";
+
 	pac_config = {
 	  mode: "pac_script",
 	  pacScript: {
-	    data: "function FindProxyForURL(url, host) {\n" +
-	    	  " var pma = url.indexOf('proxmate=active');\n"+
-	    	  " var hulu = url.indexOf('hulu.com');\n"+
-	          "  if (pma != -1 || host == 'www.pandora.com' || hulu != -1)\n" +
-	          "    return 'PROXY "+url+":"+port+"';\n" +
-	          "  return 'DIRECT';\n" +
-	          "}"
+	    data: pcs
 	  }
 	};
 
@@ -68,6 +82,10 @@ var init = (function() {
 	initStorage("firststart");
 
 	initStorage("status");
+	initStorage("status_youtube");
+	initStorage("status_pandora");
+	initStorage("status_grooveshark");
+	initStorage("status_hulu");
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
@@ -125,9 +143,11 @@ var init = (function() {
 		port = 8000;
 	}
 
+	console.info("url: " + url + " port: " + port);
+
 	// Set the icon color on start
 	if (bool(localStorage["status"]) == false) {
-		chrome.browserAction.setIcon({path: "images/icon48_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
 		chrome.proxy.settings.clear({});
 	} else {
 		setProxy(url, port);
@@ -178,6 +198,9 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 				break;
 			case "cproxy": 
 				var status = bool(localStorage["status_cproxy"]);
+				break;
+			default: 
+				var status = bool(localStorage[module]);
 				break;
 		}
 

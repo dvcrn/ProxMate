@@ -1,9 +1,10 @@
 $(window).unload(resetProxy);
 
 var global = checkStatus("global");
+var grooveshark = checkStatus("status_grooveshark");
 
-global.done(function() {
-	if (global.response.enabled == false)
+$.when(global, grooveshark).done(function() {
+	if (!global.response.enabled || !grooveshark.response.enabled)
 		return;
 	
 	$(document).ready(function() {

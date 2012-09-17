@@ -1,7 +1,8 @@
 var global = checkStatus("global");
+var hulu = checkStatus("status_hulu");
 
-global.done(function() {
-	if (global.response.enabled == false)
+$.when(global, hulu).done(function() {
+	if (!global.response.enabled || !hulu.response.enabled)
 		return;
 
 	$(document).ready(function() {

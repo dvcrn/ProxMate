@@ -1,7 +1,8 @@
 var global = checkStatus("global");
+var pandora = checkStatus("status_pandora");
 
-global.done(function() {
-	if (global.response.enabled == false)
+$.when(global, pandora).done(function() {
+	if (!global.response.enabled || !pandora.response.enabled)
 		return;
 
 	$(document).ready(function() {
