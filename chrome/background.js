@@ -30,7 +30,7 @@ var togglePluginstatus = function()
 		localStorage["status"] = true;
 
 		// Start setting the old proxy
-		setProxy(localStorage["proxy_url"], localStorage["proxy_port"]);
+		resetProxy();
 	}
 }
 
@@ -42,6 +42,22 @@ var initStorage = function(str, val) {
 	if (localStorage[str] === undefined) {
 		localStorage[str] = val;
 	}
+}
+
+var resetProxy = function() {
+	var url = "";
+	var port = 0;
+
+	if (bool(localStorage["status_cproxy"]))
+	{
+		url = localStorage["cproxy_url"];
+		port = parseInt(localStorage["cproxy_port"]);
+	} else {
+		url = localStorage["proxy_url"];
+		port = parseInt(localStorage["proxy_port"]);
+	}
+
+	setProxy(url, port);
 }
 
 var setProxy = function(url, port) {
@@ -143,6 +159,10 @@ var init = (function() {
 		port = 8000;
 	}
 
+	// Save the currently assigned proxy for later use
+	localStorage["proxy_url"] = url;
+	localStorage["proxy_port"] = port; 
+
 	console.info("url: " + url + " port: " + port);
 
 	// Set the icon color on start
@@ -150,12 +170,8 @@ var init = (function() {
 		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
 		chrome.proxy.settings.clear({});
 	} else {
-		setProxy(url, port);
+		resetProxy();
 	}
-
-	// Save the currently assigned proxy for later use
-	localStorage["proxy_url"] = url;
-	localStorage["proxy_port"] = port; 
 
 })();
 
@@ -185,7 +201,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 	// ResetProxy to default
 	if (request.action == "resetproxy") 
 	{
-		setProxy(localStorage["proxy_url"], localStorage["proxy_port"]);
+		resetProxy();
 	}
 
 	if (request.action == "checkStatus") {
