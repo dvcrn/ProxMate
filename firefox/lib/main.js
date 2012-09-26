@@ -194,8 +194,7 @@ exports.main = function() {
 			  url: url,
 			  onComplete: function(response)
 			  {
-			  	console.info("Loading successful. Giving response to pagemod");
-			  	worker.port.emit(responseHash, { response: response })
+			  	worker.port.emit(responseHash, { response: response.text })
 			  }
 			}).get();
 		});

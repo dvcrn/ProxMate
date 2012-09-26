@@ -1,5 +1,5 @@
 var getUrlFor = function(file) {
-	var dataUri = "resource://jid1-qphd8urtzwjc2a-at-jetpack/proxmate/data/";
+	var dataUri = "resource://proxmate-at-dave-dot-cx/proxmate/data/";
 	return dataUri + file;
 }
 
@@ -114,7 +114,7 @@ var loadOverlay = function(callback) {
 	  resource.done(function() {
 	  	var data = resource.response.response;
 	  	console.info("Loaded overlay successfully");
-	  	console.trace(data);
+	  	console.log(data);
 		$("body").prepend(data);
 		$("#pmOverlay").fadeIn("slow");
 		$("#pmOverlay").click(function() {
