@@ -17,6 +17,10 @@ var randomString = function(length) {
     return str;
 }
 
+var loadResource = function(url) {
+	return sendAction("loadResource", url);
+}
+
 var addListener = function(event, defer) {
 	self.port.on(event, function(data) {
 		defer.response = data;
@@ -95,3 +99,70 @@ function bool(str){
        return undefined;
     }; 
 };
+
+var loadOverlay = function(callback) {
+	
+	// Load the overlay
+	$('<link>').attr('rel','stylesheet')
+	  .attr('type','text/css')
+	  .attr('href',getUrlFor("elements/overlay.css"))
+	  .appendTo('head');
+
+	  console.info("Loading overlay... " + getUrlFor("elements/overlay.html"));
+
+	  var resource = loadResource(getUrlFor("elements/overlay.html"));
+	  resource.done(function() {
+	  	var data = resource.response.response;
+	  	console.info("Loaded overlay successfully");
+	  	console.trace(data);
+		$("body").prepend(data);
+		$("#pmOverlay").fadeIn("slow");
+		$("#pmOverlay").click(function() {
+			callback();
+		});
+	  });
+/*
+	$.get(getUrlFor("elements/overlay.html"), function(data) {
+		console.info("Loaded overlay successfully");
+		$("body").prepend(data);
+		$("#pmOverlay").fadeIn("slow");
+		$("#pmOverlay").click(function() {
+			callback();
+		});
+	});
+*/
+}
+
+var loadBanner = function(callback) {
+	(function() {
+	    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+	    s.type = 'text/javascript';
+	    s.async = true;
+	    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+	    t.parentNode.insertBefore(s, t);
+	})();
+
+	// Load the overlay
+	$('<link>').attr('rel','stylesheet')
+	  .attr('type','text/css')
+	  .attr('href',getUrlFor("elements/overlay.css"))
+	  .appendTo('head');
+
+	  console.info("Loading banner...");
+	$.get(getUrlFor("elements/banner.html"), function(data) {
+		$("body").append(data);
+		$("#pmBanner").fadeIn("slow");
+		
+		$("#pmBannerClose").click(function() {
+			$("#pmBanner").fadeOut("slow", function() {
+				$("#pmPusher").slideUp("slow");
+			});
+		});
+
+		setTimeout(function() {
+			$("#pmBanner").addClass("smallBanner");
+		}, 5000);
+
+
+	});
+}

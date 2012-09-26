@@ -1,13 +1,12 @@
 $(window).unload(resetProxy);
+
 var global = checkStatus("global");
-var grooveshark = checkStatus("grooveshark");
+var grooveshark = checkStatus("status_grooveshark");
 
-$.when(global, grooveshark).done(function(g, y) {
-
-	if (!global.response.enabled || !grooveshark.response.enabled) {
+$.when(global, grooveshark).done(function() {
+	if (!global.response.enabled || !grooveshark.response.enabled)
 		return;
-	}
-
+	
 	$(document).ready(function() {
 		// Check for the broken heart
 		var broken = $("#heartbroken");
@@ -17,7 +16,8 @@ $.when(global, grooveshark).done(function(g, y) {
 			$("#content h2").html("ProxMate will unblock Grooveshark now!");
 
 			proxifyUri(window.location, true);
+		} else {
+			loadBanner();
 		}
 	});	
-
 });

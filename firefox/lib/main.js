@@ -31,6 +31,58 @@ exports.main = function() {
 		}
 	}
 
+	var resetProxy = function() {
+		var url = "";
+		var port = 0;
+
+		if (localStorage["status_cproxy"]) 
+		{
+			// TODO: Here
+		} else {
+			url = localStorage["proxy_url"];
+			port = localStorage["proxy_port"];
+		}
+
+		setProxy(url, port);
+	}
+
+	var setProxy = function(url, port) {
+		// Bulid PAC script url
+		var hulu = localStorage["status_hulu"];
+		var pandora = localStorage["status_pandora"];
+		var gplay = localStorage["status_gplay"];
+
+		console.info("Setting proxy: " + url + " Port: " + port);
+
+		var pcs = "function FindProxyForURL(url, host) {\n" +
+	    	  " var pma = url.indexOf('proxmate=active');\n"+
+	    	  " var hulu = url.indexOf('hulu.com');\n"+
+	          "  if ( "+
+	          "	pma != -1 ";
+
+	          if (preferences.prefs["status_pandora"]) {
+	          	pcs += " || host == 'www.pandora.com'";
+	      	  }
+	      	  if (preferences.prefs["status_hulu"]) {
+	          	pcs += " || hulu != -1 ";
+	      	  }
+
+			if (preferences.prefs["status_gplay"]) {
+	          	pcs += "|| url.indexOf('play.google.com') != -1";
+	      	  }
+
+	          pcs += " )\n" +
+	          "    return 'PROXY "+url+":"+port+"';\n" +
+	          "  return 'DIRECT';\n" +
+	          "}";
+
+	    var pacurl = "data:text/javascript," + encodeURIComponent(pcs);
+
+		require("preferences-service").set("network.proxy.type", 2);
+		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
+
+	}
+
 	var createPagemod = function(regex, script) 
 	{
 		return pageMod.PageMod({
@@ -69,16 +121,6 @@ exports.main = function() {
 			function(data) {
 				var responseHash = data.hash;
 
-				// Ping personalitycores for statistics if allowed
-				var allow_statistics = preferences.prefs["status_statistics"];
-				if (allow_statistics)
-				{
-					var uri = data.param;
-					request.Request({
-						url: "http://www.personalitycores.com/projects/proxmate/callback/?u=" + encodeURIComponent(uri) + "&b=firefox"
-					}).get();
-				}
-
 				var cproxy = preferences.prefs["status_cproxy"];
 				if (cproxy) 
 				{
@@ -92,8 +134,8 @@ exports.main = function() {
 				else 
 				{
 					require("preferences-service").set("network.proxy.type", 1);
-					require("preferences-service").set("network.proxy.http", "proxy.personalitycores.com");
-					require("preferences-service").set("network.proxy.http_port", 8000);
+					require("preferences-service").set("network.proxy.http", localStorage["proxy_url"]);
+					require("preferences-service").set("network.proxy.http_port", localStorage["proxy_port"]);
 				}
 
 				worker.port.emit(responseHash, 
@@ -107,9 +149,7 @@ exports.main = function() {
 			function(data) {
 				var responseHash = data.hash;
 
-				require("preferences-service").reset("network.proxy.type");
-				require("preferences-service").reset("network.proxy.http");
-				require("preferences-service").reset("network.proxy.http_port");
+				resetProxy();
 				
 				worker.port.emit(responseHash, {success: true});
 			}
@@ -126,30 +166,14 @@ exports.main = function() {
 				case "global":
 					var status = localStorage["status"];
 					break;
-				case "youtube_search":
-					var status = preferences.prefs["status_youtube_search"];
-					break;
-				case "grooveshark": 
-					var status = preferences.prefs["status_grooveshark"];
-					break;
-				case "hulu":
-					var status = preferences.prefs["status_grooveshark"];
-					break;
-				case "experimental": 
-					var exp = preferences.prefs["status_experimental"];
-					var cproxy = preferences.prefs["status_cproxy"];
-
-					if (cproxy) {
-						var status = exp;
-					}
-					else {
-						var status = false;
-					}
-					break;
 				case "cproxy": 
-					var cproxy = preferences.prefs["status_cproxy"];
+					var status = preferences.prefs["status_cproxy"];
 					break;
+				default:
+					var status = preferences.prefs[module];
 			}
+
+			console.info("Requesting status for " + module + ". Status: " + status);
 
 			worker.port.emit(responseHash, 
 				{
@@ -158,6 +182,22 @@ exports.main = function() {
 			);
 
 		
+		});
+
+		worker.port.on("loadResource", function(data) {
+			var url = data.param;
+			var responseHash = data.hash;
+
+			console.info("Loading resource: " + url);
+
+			require("request").Request({
+			  url: url,
+			  onComplete: function(response)
+			  {
+			  	console.info("Loading successful. Giving response to pagemod");
+			  	worker.port.emit(responseHash, { response: response })
+			  }
+			}).get();
 		});
 	}
 
@@ -173,6 +213,10 @@ exports.main = function() {
 
 		// Schauen ob der User das Plugin zum ersten mal verwendet
 		var firstStart = localStorage["firststart"];
+
+		// Debug. Später durch auto retrieve setzen
+		localStorage["proxy_url"] = "proxy.personalitycores.com";
+		localStorage["proxy_port"] = 8000;
 
 
 		if (firstStart == true) {
@@ -192,18 +236,18 @@ exports.main = function() {
 		});
 		
 		//Initialise Icon With right color
-		if (localStorage["status"] == true) {
-			statusButton.contentURL = selfData.url("images/icon16.png");
-			}
-		else {
-			statusButton.contentURL = selfData.url("images/icon16_gray.png");
-			}
+		if (localStorage["status"] == true) { statusButton.contentURL = selfData.url("images/icon16.png"); }
+		else { statusButton.contentURL = selfData.url("images/icon16_gray.png"); }
+
+		resetProxy();
 		
-		//When using Groups in Regex, dont forget to start them with ?: (thats a non capturing group) since firefox doesnt support capturing groups
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*hulu\.com\/watch.*/, 'sites/hulu.js');
+		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
+		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
+		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
+		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
 	})();
 	 
 }

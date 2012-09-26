@@ -6,7 +6,7 @@
 	"homepage": "http://www.personalitycores.com/projects/proxmate/",
     "version": "1.3.2", 
     "fullName": "ProxMate", 
-    "id": "jid1-QpHD8URtZWJC2A", 
+    "id": "proxmate@dave.cx", 
     "description": "Unblocks grooveshark, hulu and soon everything you want! :)",
 	"preferences": [
 		{
@@ -25,26 +25,26 @@
 	        "type": "integer"
     	},
 		{
-	        "name": "status_youtube_search",
-	        "title": "Enable for Youtube Search",
+	        "name": "status_youtube",
+	        "title": "Enable for Youtube",
+	        "type": "bool",
+	        "value": true
+	    },
+		{
+	        "name": "status_pandora",
+	        "title": "Enable for Pandora.com",
 	        "type": "bool",
 	        "value": true
 	    },
 		{
 	        "name": "status_grooveshark",
-	        "title": "Enable for Grooveshark",
+	        "title": "Enable for grooveshark",
 	        "type": "bool",
 	        "value": true
 	    },
 		{
-	        "name": "status_experimental",
-	        "title": "Enable experimental support",
-	        "type": "bool",
-	        "value": false
-	    },
-		{
-	        "name": "status_statistics",
-	        "title": "Provide anonymous data for statistics (<3)",
+	        "name": "status_gplay",
+	        "title": "Enable for US play.google.com",
 	        "type": "bool",
 	        "value": true
 	    }
