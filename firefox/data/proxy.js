@@ -121,16 +121,6 @@ var loadOverlay = function(callback) {
 			callback();
 		});
 	  });
-/*
-	$.get(getUrlFor("elements/overlay.html"), function(data) {
-		console.info("Loaded overlay successfully");
-		$("body").prepend(data);
-		$("#pmOverlay").fadeIn("slow");
-		$("#pmOverlay").click(function() {
-			callback();
-		});
-	});
-*/
 }
 
 var loadBanner = function(callback) {
@@ -149,7 +139,9 @@ var loadBanner = function(callback) {
 	  .appendTo('head');
 
 	  console.info("Loading banner...");
-	$.get(getUrlFor("elements/banner.html"), function(data) {
+	  var resource = loadResource(getUrlFor("elements/banner.html"));
+	  resource.done(function() {
+	  	var data = resource.response.response;
 		$("body").append(data);
 		$("#pmBanner").fadeIn("slow");
 		
