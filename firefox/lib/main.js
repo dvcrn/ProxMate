@@ -238,7 +238,19 @@ exports.main = function() {
 		onClick: setPluginStatus
 	});
 	
-	//Initialise Icon With right color
 	if (localStorage["status"] == true) { statusButton.contentURL = selfData.url("images/icon16.png"); }
 	else { statusButton.contentURL = selfData.url("images/icon16_gray.png"); }
 }
+
+function onPrefChange(prefName) {
+	resetProxy();
+}
+
+preferences.on("status_cproxy", onPrefChange);
+preferences.on("cproxy_url", onPrefChange);
+preferences.on("cproxy_port", onPrefChange);
+
+preferences.on("status_gplay", onPrefChange);
+preferences.on("status_youtube", onPrefChange);
+preferences.on("status_hulu", onPrefChange);
+preferences.on("status_pandora", onPrefChange);
