@@ -37,7 +37,7 @@ console.info("Youtube status:" + youtube.response.enabled);
 
 					// Change Icon
 					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
-					window.location = window.location + "&proxmate=active";
+					window.location.href = window.location.href + "&proxmate=active";
 				});
 			}
 		}

@@ -1,7 +1,6 @@
 var selfData = require('self').data;
 var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
-var { MatchPattern } = require("match-pattern");
 var preferences = require("simple-prefs");
 var request = require("request")
 
@@ -13,7 +12,6 @@ exports.main = function() {
 	{
 		var toggle = localStorage["status"];
 
-		// Wenn Toggle = False ist, das icon farbig machen
 		if (toggle == true) {
 			this.contentURL = selfData.url("images/icon16_gray.png");
 
@@ -49,11 +47,11 @@ exports.main = function() {
 	}
 
 	var setProxy = function(url, port) {
-		// Bulid PAC script url
 		var hulu = localStorage["status_hulu"];
 		var pandora = localStorage["status_pandora"];
 		var gplay = localStorage["status_gplay"];
 
+		// Building a custom pac script dependent on the users options settings
 		var pcs = 	"function FindProxyForURL(url, host) {\n" +
 	          			" if ( "+
 	          			"	url.indexOf('proxmate=active') != -1 ";
@@ -74,11 +72,12 @@ exports.main = function() {
 	          			"  return 'DIRECT';\n" +
 	          			"}";
 
+	          	// In firefox, the only way of setting a pac script is by retrieving it from a url.
+	          	// We are using data urls here to get around that
 		var pacurl = "data:text/javascript," + encodeURIComponent(pcs);
 
 		require("preferences-service").set("network.proxy.type", 2);
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
-
 	}
 
 	var createPagemod = function(regex, script) 
@@ -94,8 +93,7 @@ exports.main = function() {
 		});
 	}
 
-	// Funktion zum ersten initialisieren eines storage
-	// Wird verwendet um unnötige wiederholungen zu vermeiden
+	// Function for initial creating / filling of storages
 	var initStorage = function(str, val) {
 		if (val === undefined) {
 			val = true;
@@ -104,22 +102,15 @@ exports.main = function() {
 		if (localStorage[str] === undefined) {
 			localStorage[str] = val;
 		}
-
 	}
 
-	// Listener
 	var initListeners = function(worker) {		
-
-		worker.port.on('createTab', function(data) {
-			var url = data.param;
-			require("tab-browser").addTab(url);
-		});
 
 		worker.port.on('setproxy', 
 			function(data) {
 				var responseHash = data.hash;
-
 				var cproxy = preferences.prefs["status_cproxy"];
+
 				if (cproxy) 
 				{
 					var url = preferences.prefs["cproxy_url"];
@@ -153,7 +144,7 @@ exports.main = function() {
 			}
 		);
 
-		// checkStatus wird aufgerufen um den Status des Addons und der einzelnen Module zu überprüfen
+		// function for checking modul statuses in pagemods
 		worker.port.on('checkStatus', function(data) {
 
 			var module = data.param;
@@ -171,8 +162,6 @@ exports.main = function() {
 					var status = preferences.prefs[module];
 			}
 
-			console.info("Requesting status for " + module + ". Status: " + status);
-
 			worker.port.emit(responseHash, 
 				{
 					enabled: status
@@ -182,6 +171,7 @@ exports.main = function() {
 		
 		});
 
+		// Function used for making ajax calls in pagemods
 		worker.port.on("loadResource", function(data) {
 			var url = data.param;
 			var responseHash = data.hash;
@@ -198,24 +188,18 @@ exports.main = function() {
 		});
 	}
 
-	// Init ist eine selbstaufrufende funktion
-	// Hier soll der Storage initialisiert werden und anschließend auf firstStart geprüft werden
 	var init = (function() {
 
-		// Storage für den ersten Start initialisieren
 		initStorage("firststart");
-
-		// Initialisieren des Storages
 		initStorage("status");
 
-		// Schauen ob der User das Plugin zum ersten mal verwendet
 		var firstStart = localStorage["firststart"];
 
-		// Debug. Später durch auto retrieve setzen
+		// Get proxy from proxybalancer. Will be set async
 		localStorage["proxy_url"] = "proxy.personalitycores.com";
 		localStorage["proxy_port"] = 8000;
 
-		require("request").Request({
+		request.Request({
 			url: "http://direct.personalitycores.com:8000?country=us",
 			onComplete: function(response)
 			{
@@ -234,19 +218,6 @@ exports.main = function() {
 			localStorage["firststart"] = false;
 		}
 
-		// Widget initialisieren
-		var statusButton = require("widget").Widget({
-			id: "open-proxmate-btn",
-			label: "Click to Activate/Deactivate Proxmate",
-			contentURL: selfData.url("images/icon16.png"),
-			onClick: setPluginStatus
-		});
-		
-		//Initialise Icon With right color
-		if (localStorage["status"] == true) { statusButton.contentURL = selfData.url("images/icon16.png"); }
-		else { statusButton.contentURL = selfData.url("images/icon16_gray.png"); }
-
-		resetProxy();
 		
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
@@ -255,6 +226,19 @@ exports.main = function() {
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
 		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
+
+		resetProxy();
 	})();
-	 
+ 
+	// Widget initialisieren
+	var statusButton = require("widget").Widget({
+		id: "open-proxmate-btn",
+		label: "Click to Activate/Deactivate Proxmate",
+		contentURL: selfData.url("images/icon16.png"),
+		onClick: setPluginStatus
+	});
+	
+	//Initialise Icon With right color
+	if (localStorage["status"] == true) { statusButton.contentURL = selfData.url("images/icon16.png"); }
+	else { statusButton.contentURL = selfData.url("images/icon16_gray.png"); }
 }

@@ -4,17 +4,17 @@ var getUrlFor = function(file) {
 }
 
 var randomString = function(length) {
-    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
-    
-    if (! length) {
-        length = Math.floor(Math.random() * chars.length);
-    }
-    
-    var str = '';
-    for (var i = 0; i < length; i++) {
-        str += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return str;
+	var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+
+	if (! length) {
+		length = Math.floor(Math.random() * chars.length);
+	}
+
+	var str = '';
+	for (var i = 0; i < length; i++) {
+		str += chars[Math.floor(Math.random() * chars.length)];
+	}
+	return str;
 }
 
 var loadResource = function(url) {
@@ -48,11 +48,6 @@ var sendAction = function(actionString, param) {
 	return defer;
 }
 
-var createTab = function(url) 
-{
-	sendAction("createTab", url);
-}
-
 var proxifyUri = function(uri, reload) 
 {
 	if (reload === undefined)
@@ -82,22 +77,22 @@ var resetProxy = function()
 }
 
 var getUrlParam = function(name) {
-    return decodeURI(
-        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
-    );
+	return decodeURI(
+		(RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+	);
 }
 var checkStatus = function(module) {
 	return sendAction("checkStatus", module);
 }
 
 function bool(str){
-    if (str.toLowerCase()=='false'){
-       return false;
-    } else if (str.toLowerCase()=='true'){
-       return true;
-    } else {
-       return undefined;
-    }; 
+	if (str.toLowerCase()=='false'){
+		return false;
+	} else if (str.toLowerCase()=='true'){
+		return true;
+	} else {
+		return undefined;
+	}; 
 };
 
 var loadOverlay = function(callback) {
@@ -107,8 +102,6 @@ var loadOverlay = function(callback) {
 	  .attr('type','text/css')
 	  .attr('href',getUrlFor("elements/overlay.css"))
 	  .appendTo('head');
-
-	  console.info("Loading overlay... " + getUrlFor("elements/overlay.html"));
 
 	  var resource = loadResource(getUrlFor("elements/overlay.html"));
 	  resource.done(function() {
@@ -138,7 +131,6 @@ var loadBanner = function(callback) {
 	  .attr('href',getUrlFor("elements/overlay.css"))
 	  .appendTo('head');
 
-	  console.info("Loading banner...");
 	  var resource = loadResource(getUrlFor("elements/banner.html"));
 	  resource.done(function() {
 	  	var data = resource.response.response;
