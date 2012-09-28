@@ -26,8 +26,9 @@ exports.main = function() {
 		else
 		{
 			this.contentURL = selfData.url("images/icon16.png");
-
 			localStorage["status"] = true;
+
+			resetProxy();
 		}
 	}
 
@@ -37,7 +38,8 @@ exports.main = function() {
 
 		if (localStorage["status_cproxy"]) 
 		{
-			// TODO: Here
+			url = preferences.prefs["cproxy_url"];
+			port = preferences.prefs["cproxy_port"];
 		} else {
 			url = localStorage["proxy_url"];
 			port = localStorage["proxy_port"];
@@ -52,31 +54,27 @@ exports.main = function() {
 		var pandora = localStorage["status_pandora"];
 		var gplay = localStorage["status_gplay"];
 
-		console.info("Setting proxy: " + url + " Port: " + port);
+		var pcs = 	"function FindProxyForURL(url, host) {\n" +
+	          			" if ( "+
+	          			"	url.indexOf('proxmate=active') != -1 ";
 
-		var pcs = "function FindProxyForURL(url, host) {\n" +
-	    	  " var pma = url.indexOf('proxmate=active');\n"+
-	    	  " var hulu = url.indexOf('hulu.com');\n"+
-	          "  if ( "+
-	          "	pma != -1 ";
+	          			if (preferences.prefs["status_pandora"]) {
+	          				pcs += " || host == 'www.pandora.com'";
+	      	  		}
+	      	  		if (preferences.prefs["status_hulu"]) {
+	          				pcs += " || url.indexOf('hulu.com') != -1 ";
+	      	  		}
 
-	          if (preferences.prefs["status_pandora"]) {
-	          	pcs += " || host == 'www.pandora.com'";
-	      	  }
-	      	  if (preferences.prefs["status_hulu"]) {
-	          	pcs += " || hulu != -1 ";
-	      	  }
+				if (preferences.prefs["status_gplay"]) {
+	          				pcs += "|| url.indexOf('play.google.com') != -1";
+	      	  		}
 
-			if (preferences.prefs["status_gplay"]) {
-	          	pcs += "|| url.indexOf('play.google.com') != -1";
-	      	  }
+	          			pcs += " )\n" +
+	          			"	return 'PROXY "+url+":"+port+"';\n" +
+	          			"  return 'DIRECT';\n" +
+	          			"}";
 
-	          pcs += " )\n" +
-	          "    return 'PROXY "+url+":"+port+"';\n" +
-	          "  return 'DIRECT';\n" +
-	          "}";
-
-	    var pacurl = "data:text/javascript," + encodeURIComponent(pcs);
+		var pacurl = "data:text/javascript," + encodeURIComponent(pcs);
 
 		require("preferences-service").set("network.proxy.type", 2);
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
@@ -216,6 +214,16 @@ exports.main = function() {
 		// Debug. Später durch auto retrieve setzen
 		localStorage["proxy_url"] = "proxy.personalitycores.com";
 		localStorage["proxy_port"] = 8000;
+
+		require("request").Request({
+			url: "http://direct.personalitycores.com:8000?country=us",
+			onComplete: function(response)
+			{
+				localStorage["proxy_url"] = response.json.url;
+				localStorage["proxy_port"] = response.json.port;
+				resetProxy();
+			}
+		}).get();
 
 
 		if (firstStart == true) {
