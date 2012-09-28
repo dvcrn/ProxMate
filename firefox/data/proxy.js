@@ -1,152 +1,155 @@
-var getUrlFor = function(file) {
+/*jslint browser: true*/
+/*global $, self*/
+
+var getUrlFor = function (file) {
+	"use strict";
 	var dataUri = "resource://proxmate-at-dave-dot-cx/proxmate/data/";
 	return dataUri + file;
-}
+};
 
-var randomString = function(length) {
-	var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+var randomString = function (length) {
+	"use strict";
+	var alphabet = "", chars = [], str = "", i = 0;
+	alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+	chars = alphabet.split("");
 
-	if (! length) {
+	if (!length) {
 		length = Math.floor(Math.random() * chars.length);
 	}
 
-	var str = '';
-	for (var i = 0; i < length; i++) {
+	str = '';
+	for (i = 0; i < length; i += 1) {
 		str += chars[Math.floor(Math.random() * chars.length)];
 	}
 	return str;
-}
+};
 
-var loadResource = function(url) {
-	return sendAction("loadResource", url);
-}
-
-var addListener = function(event, defer) {
-	self.port.on(event, function(data) {
+var addListener = function (event, defer) {
+	"use strict";
+	self.port.on(event, function (data) {
 		defer.response = data;
 		defer.resolve();
 	});
-}
+};
 
-var sendAction = function(actionString, param) {
+var sendAction = function (actionString, param) {
+	"use strict";
 	if (param === undefined) {
 		param = null;
 	}
 
-	var defer = $.Deferred();
-	var hash = randomString();
+	var defer = $.Deferred(), hash = randomString();
 
-	self.port.emit(actionString, 
+	self.port.emit(actionString,
 		{
 			param: param,
 			hash: hash
-		}
-	);
+		});
 
 	addListener(hash, defer);
 
 	return defer;
-}
+};
 
-var proxifyUri = function(uri, reload) 
-{
-	if (reload === undefined)
-	{
+var loadResource = function (url) {
+	"use strict";
+	return sendAction("loadResource", url);
+};
+
+var proxifyUri = function (uri, reload) {
+	"use strict";
+	if (reload === undefined) {
 		reload = false;
-	}
-	else
-	{
+	} else {
 		reload = true;
 	}
-	
 	var promise = sendAction("setproxy", encodeURI(window.location.href));
-	
-	promise.done(function() {
+	promise.done(function () {
 		if (reload) {
-			document.location = uri;		
-			document.location.reload();	
+			document.location = uri;
+			document.location.reload();
 		} else {
-			document.location = uri;		
+			document.location = uri;
 		}
 	});
-}
+};
 
-var resetProxy = function() 
-{
+var resetProxy = function () {
+	"use strict";
 	var promise = sendAction("resetproxy");
-}
+};
 
-var getUrlParam = function(name) {
+var getUrlParam = function (name) {
+	"use strict";
 	return decodeURI(
-		(RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+		(new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [,null])[1]
 	);
-}
-var checkStatus = function(module) {
-	return sendAction("checkStatus", module);
-}
+};
 
-function bool(str){
-	if (str.toLowerCase()=='false'){
+var checkStatus = function (module) {
+	"use strict";
+	return sendAction("checkStatus", module);
+};
+
+var bool = function (str) {
+	"use strict";
+	if (str.toLowerCase() === 'false') {
 		return false;
-	} else if (str.toLowerCase()=='true'){
+	} else if (str.toLowerCase() === 'true') {
 		return true;
 	} else {
 		return undefined;
-	}; 
+	}
 };
 
-var loadOverlay = function(callback) {
-	
+var loadOverlay = function (callback) {
+	"use strict";
 	// Load the overlay
-	$('<link>').attr('rel','stylesheet')
-	  .attr('type','text/css')
-	  .attr('href',getUrlFor("elements/overlay.css"))
-	  .appendTo('head');
+	$('<link>').attr('rel', 'stylesheet')
+	    .attr('type', 'text/css')
+	    .attr('href', getUrlFor("elements/overlay.css"))
+	    .appendTo('head');
 
-	  var resource = loadResource(getUrlFor("elements/overlay.html"));
-	  resource.done(function() {
-	  	var data = resource.response.response;
-	  	console.info("Loaded overlay successfully");
-	  	console.log(data);
+	var resource = loadResource(getUrlFor("elements/overlay.html"));
+	resource.done(function () {
+		var data = resource.response.response;
 		$("body").prepend(data);
 		$("#pmOverlay").fadeIn("slow");
-		$("#pmOverlay").click(function() {
+		$("#pmOverlay").click(function () {
 			callback();
 		});
-	  });
-}
+	});
+};
 
-var loadBanner = function(callback) {
-	(function() {
+var loadBanner = function (callback) {
+	"use strict";
+	(function () {
 	    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
 	    s.type = 'text/javascript';
 	    s.async = true;
 	    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
 	    t.parentNode.insertBefore(s, t);
-	})();
+	}());
 
 	// Load the overlay
-	$('<link>').attr('rel','stylesheet')
-	  .attr('type','text/css')
-	  .attr('href',getUrlFor("elements/overlay.css"))
-	  .appendTo('head');
+	$('<link>').attr('rel', 'stylesheet')
+	    .attr('type', 'text/css')
+	    .attr('href', getUrlFor("elements/overlay.css"))
+	    .appendTo('head');
 
-	  var resource = loadResource(getUrlFor("elements/banner.html"));
-	  resource.done(function() {
-	  	var data = resource.response.response;
+	var resource = loadResource(getUrlFor("elements/banner.html"));
+	resource.done(function () {
+		var data = resource.response.response;
 		$("body").append(data);
 		$("#pmBanner").fadeIn("slow");
-		
-		$("#pmBannerClose").click(function() {
-			$("#pmBanner").fadeOut("slow", function() {
+		$("#pmBannerClose").click(function () {
+			$("#pmBanner").fadeOut("slow", function () {
 				$("#pmPusher").slideUp("slow");
 			});
 		});
 
-		setTimeout(function() {
+		setTimeout(function () {
 			$("#pmBanner").addClass("smallBanner");
 		}, 5000);
-
-
 	});
-}
+};
