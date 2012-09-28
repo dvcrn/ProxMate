@@ -4,8 +4,6 @@ var localStorage = require("simple-storage").storage;
 var preferences = require("simple-prefs");
 var request = require("request")
 
-
-
 exports.main = function() {
 
 	var setPluginStatus = function() 
@@ -176,8 +174,6 @@ exports.main = function() {
 			var url = data.param;
 			var responseHash = data.hash;
 
-			console.info("Loading resource: " + url);
-
 			require("request").Request({
 			  url: url,
 			  onComplete: function(response)
@@ -188,7 +184,15 @@ exports.main = function() {
 		});
 	}
 
+
 	var init = (function() {
+		
+		var statusButton = require("widget").Widget({
+			id: "open-proxmate-btn",
+			label: "Click to Activate/Deactivate Proxmate",
+			contentURL: selfData.url("images/icon16.png"),
+			onClick: setPluginStatus
+		});
 
 		initStorage("firststart");
 		initStorage("status");
@@ -227,30 +231,30 @@ exports.main = function() {
 		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
 		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
 
-		resetProxy();
+		if (localStorage["status" == false) ]) 
+		{
+			statusButton.contentURL = selfData.url("images/icon16_gray.png");
+
+			require("preferences-service").reset("network.proxy.type");
+			require("preferences-service").reset("network.proxy.http");
+			require("preferences-service").reset("network.proxy.http_port");
+		} else {
+			statusButton.contentURL = selfData.url("images/icon16.png");
+			resetProxy();
+		}
 	})();
  
-	// Widget initialisieren
-	var statusButton = require("widget").Widget({
-		id: "open-proxmate-btn",
-		label: "Click to Activate/Deactivate Proxmate",
-		contentURL: selfData.url("images/icon16.png"),
-		onClick: setPluginStatus
-	});
-	
-	if (localStorage["status"] == true) { statusButton.contentURL = selfData.url("images/icon16.png"); }
-	else { statusButton.contentURL = selfData.url("images/icon16_gray.png"); }
+
+	function onPrefChange(prefName) {
+		resetProxy();
+	}
+
+	preferences.on("status_cproxy", onPrefChange);
+	preferences.on("cproxy_url", onPrefChange);
+	preferences.on("cproxy_port", onPrefChange);
+
+	preferences.on("status_gplay", onPrefChange);
+	preferences.on("status_youtube", onPrefChange);
+	preferences.on("status_hulu", onPrefChange);
+	preferences.on("status_pandora", onPrefChange);
 }
-
-function onPrefChange(prefName) {
-	resetProxy();
-}
-
-preferences.on("status_cproxy", onPrefChange);
-preferences.on("cproxy_url", onPrefChange);
-preferences.on("cproxy_port", onPrefChange);
-
-preferences.on("status_gplay", onPrefChange);
-preferences.on("status_youtube", onPrefChange);
-preferences.on("status_hulu", onPrefChange);
-preferences.on("status_pandora", onPrefChange);

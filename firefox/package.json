@@ -4,10 +4,10 @@
 	"icon": "data/images/icon128.png",	
     "author": "personalitycores.com", 
 	"homepage": "http://www.personalitycores.com/projects/proxmate/",
-    "version": "1.3.2", 
-    "fullName": "ProxMate", 
+    "version": "2.0", 
+    "fullName": "ProxMate - unblock the Internet!", 
     "id": "proxmate@dave.cx", 
-    "description": "Unblocks grooveshark, hulu and soon everything you want! :)",
+    "description": "Unblocks youtube, grooveshark, hulu, google play and pandora for free!",
 	"preferences": [
 		{
 	        "name": "status_cproxy",
