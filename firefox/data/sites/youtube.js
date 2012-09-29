@@ -1,37 +1,33 @@
+/*jslint browser: true*/
+/*global checkStatus, $, loadBanner, resetProxy, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
+
 var global = checkStatus("global");
 var youtube = checkStatus("status_youtube");
 
-$.when(global, youtube).done(function() {
-	if (!global.response.enabled || !youtube.response.enabled)
+$.when(global, youtube).done(function () {
+	"use strict";
+	if (!global.response.enabled || !youtube.response.enabled) {
 		return;
+	}
 
+	$(document).ready(function () {
+		var pmParam, script, scriptcontent, n;
+		pmParam = getUrlParam('proxmate');
 
-console.info("Startin youtube module");
-console.info("Global status: " + global.response.enabled);
-console.info("Youtube status:" + youtube.response.enabled);
+		if (pmParam === "active") {
+			script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
+			scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
 
-	$(document).ready(function() {
-		var pmParam = getUrlParam('proxmate');
-
-		if (pmParam == "active") 
-		{
-			var scripts = $("#watch-video script");
-			var script = scripts[1]; // Get the second script tag inside the #watch-video element
-			var test = $(script).contents()[0].data; // Get the script content (a.k.a the function)
-			loadBanner(function() {
+			loadBanner(function () {
 				$("#page").css("margin-top", "0px");
 			});
-			
 			// videoplayback%253F
-			var n = test.replace(/videoplayback%253F/g,"videoplayback%253Fproxmate%253Dactive%2526"); // Append our proxmate param so the pac script wil care of it
+			n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253Dactive%2526"); // Append our proxmate param so the pac script wil care of it
 			eval(n);
 
-		} 
-		else
-		{
-			var ud = $("#watch-player-unavailable");
-			if (ud.length > 0) {
-				loadOverlay(function() {
+		} else {
+			if ($("#watch-player-unavailable").length > 0) {
+				loadOverlay(function () {
 					// Change text
 					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
 
@@ -41,7 +37,5 @@ console.info("Youtube status:" + youtube.response.enabled);
 				});
 			}
 		}
-
 	});
-
 });
