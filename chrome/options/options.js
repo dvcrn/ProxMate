@@ -6,6 +6,8 @@ $(document).ready(function() {
 	var toggle_pandora = $("#s-pandora-toggle");
 	var toggle_gplay = $("#s-gplay-toggle");
 
+	var toggle_youtube_autounblock = $("#s-youtube-autounblock-toggle");
+
 	var toggle_cproxy = $("#g-cproxy-toggle");
 	var cproxy_port = $("#g-cproxy-port");
 	var cproxy_url = $("#g-cproxy-url");
@@ -19,9 +21,11 @@ $(document).ready(function() {
 	var init = (function() {
 		checkBoxToggle("status_youtube", toggle_youtube);
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
-		checkBoxToggle("status_hulu", toggle_hulu);
+		//checkBoxToggle("status_hulu", toggle_hulu);
 		checkBoxToggle("status_pandora", toggle_pandora);
 		checkBoxToggle("status_gplay", toggle_gplay);
+
+		checkBoxToggle("status_youtube_autounblock", toggle_youtube_autounblock);
 
 		checkBoxToggle("status_cproxy", toggle_cproxy);
 		if (bool(localStorage["status_cproxy"])) {
@@ -53,10 +57,12 @@ $(document).ready(function() {
 	$("#savebutton").click(function() {
 		var status_youtube = toggle_youtube.prop("checked");
 		var status_grooveshark = toggle_grooveshark.prop("checked");
-		var status_hulu = toggle_hulu.prop("checked");
+		//var status_hulu = toggle_hulu.prop("checked");
 		var status_pandora = toggle_pandora.prop("checked");
 		var status_gplay = toggle_gplay.prop("checked");
 		
+		var status_youtube_autounblock = toggle_youtube_autounblock.prop("checked");
+
 		var status_cproxy = $("#g-cproxy-toggle").prop("checked");
 		var cproxy_port = $("#g-cproxy-port").val();
 		var cproxy_url = $("#g-cproxy-url").val();
@@ -65,9 +71,11 @@ $(document).ready(function() {
 
 		localStorage["status_youtube"] = status_youtube;
 		localStorage["status_grooveshark"] = status_grooveshark;
-		localStorage["status_hulu"] = status_hulu;
+		//localStorage["status_hulu"] = status_hulu;
 		localStorage["status_pandora"] = status_pandora;
 		localStorage["status_gplay"] = status_gplay;
+
+		localStorage["status_youtube_autounblock"] = status_youtube_autounblock;
 
 		localStorage["status_cproxy"] = status_cproxy;
 		localStorage["cproxy_url"] = cproxy_url;

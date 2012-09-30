@@ -3,7 +3,7 @@
 
 var getUrlFor = function (file) {
 	"use strict";
-	var dataUri = "resource://proxmate-at-dave-dot-cx/proxmate/data/";
+	var dataUri = "resource://jid1-QpHD8URtZWJC2A-at-jetpack/proxmate/data/";
 	return dataUri + file;
 };
 

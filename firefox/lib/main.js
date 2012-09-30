@@ -1,3 +1,5 @@
+/*global require, exports*/
+
 var selfData = require('self').data;
 var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
@@ -9,10 +11,7 @@ exports.main = function () {
 	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init;
 
 	setProxy = function (url, port) {
-		var hulu, pandora, gplay, pcs, pacurl;
-		hulu = localStorage.status_hulu;
-		pandora = localStorage.status_pandora;
-		gplay = localStorage.status_gplay;
+		var pcs, pacurl;
 
 		// Building a custom pac script dependent on the users options settings
 		pcs =	"function FindProxyForURL(url, host) {\n" +
@@ -21,9 +20,6 @@ exports.main = function () {
 
 		if (preferences.prefs.status_pandora) {
 			pcs += " || host == 'www.pandora.com'";
-		}
-		if (preferences.prefs.status_hulu) {
-			pcs += " || url.indexOf('hulu.com') != -1 ";
 		}
 
 		if (preferences.prefs.status_gplay) {
@@ -211,7 +207,7 @@ exports.main = function () {
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
+		// createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js'); <- currently not working. Remove pagemod
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
 		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
@@ -238,6 +234,6 @@ exports.main = function () {
 
 	preferences.on("status_gplay", onPrefChange);
 	preferences.on("status_youtube", onPrefChange);
-	preferences.on("status_hulu", onPrefChange);
+	// preferences.on("status_hulu", onPrefChange);
 	preferences.on("status_pandora", onPrefChange);
 };

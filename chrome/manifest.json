@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - unblock the Internet!",
-  "version": "2.0",
-  "description": "Unblocks youtube, grooveshark, hulu, google play and pandora for free!",
+  "version": "2.0.1",
+  "description": "Unblocks youtube, grooveshark, google play and pandora for free!",
   "background": {
     "scripts": ["background.js"]
   },
@@ -26,10 +26,6 @@
     {
       "matches": ["*://*.personalitycores.com/projects/proxmate/"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/personalitycores.js"]
-    },
-    {
-      "matches": ["*://*.hulu.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
     },
     {
       "matches": ["*://play.google.com/*"],

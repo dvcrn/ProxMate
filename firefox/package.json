@@ -1,52 +1,58 @@
 {
-    "name": "proxmate", 
-    "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
+	"name": "proxmate", 
+	"license": "MPL 1.1/GPL 2.0/LGPL 2.1",
 	"icon": "data/images/icon128.png",	
-    "author": "personalitycores.com", 
+	"author": "personalitycores.com", 
 	"homepage": "http://www.personalitycores.com/projects/proxmate/",
-    "version": "2.0", 
-    "fullName": "ProxMate - unblock the Internet!", 
-    "id": "proxmate@dave.cx", 
-    "description": "Unblocks youtube, grooveshark, hulu, google play and pandora for free!",
+	"version": "2.0.1", 
+	"fullName": "ProxMate - unblock the Internet!", 
+	"id": "jid1-QpHD8URtZWJC2A@jetpack", 
+	"description": "Unblocks youtube, grooveshark, google play and pandora for free!",
 	"preferences": [
 		{
-	        "name": "status_cproxy",
-	        "title": "Use own Proxy",
-	        "type": "bool"
-	    },
-	    {
-	        "name": "cproxy_url",
-	        "title": "Proxy Url",
-	        "type": "string"
-    	},
-    	{
-	        "name": "cproxy_port",
-	        "title": "Proxy Port",
-	        "type": "integer"
-    	},
+			"name": "status_cproxy",
+			"title": "Use own Proxy",
+			"type": "bool"
+		},
 		{
-	        "name": "status_youtube",
-	        "title": "Enable for Youtube",
-	        "type": "bool",
-	        "value": true
-	    },
+			"name": "cproxy_url",
+			"title": "Proxy Url",
+			"type": "string"
+		},
 		{
-	        "name": "status_pandora",
-	        "title": "Enable for Pandora.com",
-	        "type": "bool",
-	        "value": true
-	    },
+			"name": "cproxy_port",
+			"title": "Proxy Port",
+			"type": "integer"
+		},
 		{
-	        "name": "status_grooveshark",
-	        "title": "Enable for grooveshark",
-	        "type": "bool",
-	        "value": true
-	    },
+			"name": "status_youtube",
+			"title": "Enable for youtube.com",
+			"type": "bool",
+			"value": true
+		},
 		{
-	        "name": "status_gplay",
-	        "title": "Enable for US play.google.com",
-	        "type": "bool",
-	        "value": true
-	    }
+			"name": "status_youtube_autounblock",
+			"title": "Autounblock youtube videos",
+			"type": "bool",
+			"value": false
+		},
+		{
+			"name": "status_pandora",
+			"title": "Enable for pandora.com",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_grooveshark",
+			"title": "Enable for grooveshark",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_gplay",
+			"title": "Enable for US play.google.com",
+			"type": "bool",
+			"value": true
+		}
 	]
 }

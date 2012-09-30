@@ -3,8 +3,9 @@
 
 var global = checkStatus("global");
 var youtube = checkStatus("status_youtube");
+var autounblock = checkStatus("status_youtube_autounblock");
 
-$.when(global, youtube).done(function () {
+$.when(global, youtube, autounblock).done(function () {
 	"use strict";
 	if (!global.response.enabled || !youtube.response.enabled) {
 		return;
@@ -27,14 +28,23 @@ $.when(global, youtube).done(function () {
 
 		} else {
 			if ($("#watch-player-unavailable").length > 0) {
-				loadOverlay(function () {
+				if (autounblock.response.enabled) {
 					// Change text
 					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
 
 					// Change Icon
 					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
 					window.location.href = window.location.href + "&proxmate=active";
-				});
+				} else {
+					loadOverlay(function () {
+						// Change text
+						$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
+
+						// Change Icon
+						$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
+						window.location.href = window.location.href + "&proxmate=active";
+					});
+				}
 			}
 		}
 	});

@@ -61,28 +61,25 @@ var resetProxy = function() {
 }
 
 var setProxy = function(url, port) {
-	// Build the pac script
-	var pcs = "function FindProxyForURL(url, host) {\n" +
-	    	  " var pma = url.indexOf('proxmate=active');\n"+
-	    	  " var hulu = url.indexOf('hulu.com');\n"+
-	          "  if ( "+
-	          "	pma != -1 ";
+	var pcs;
 
-	          if (bool(localStorage["status_pandora"])) {
-	          	pcs += " || host == 'www.pandora.com'";
-	      	  }
-	      	  if (bool(localStorage["status_hulu"])) {
-	          	pcs += " || hulu != -1 ";
-	      	  }
+	// Building a custom pac script dependent on the users options settings
+	pcs =	"function FindProxyForURL(url, host) {\n" +
+		" if ( " +
+		"	url.indexOf('proxmate=active') != -1 ";
 
-			if (bool(localStorage["status_gplay"])) {
-	          	pcs += "|| url.indexOf('play.google.com') != -1";
-	      	  }
+	if (bool(localStorage["status_pandora"])) {
+		pcs += " || host == 'www.pandora.com'";
+	}
 
-	          pcs += " )\n" +
-	          "    return 'PROXY "+url+":"+port+"';\n" +
-	          "  return 'DIRECT';\n" +
-	          "}";
+	if (bool(localStorage["status_gplay"])) {
+		pcs += "|| url.indexOf('play.google.com') != -1";
+	}
+
+	pcs += " )\n" +
+		"	return 'PROXY " + url + ":" + port + "';\n" +
+		"return 'DIRECT';\n" +
+		"}";
 
 	pac_config = {
 	  mode: "pac_script",
@@ -105,8 +102,10 @@ var init = (function() {
 	initStorage("status_youtube");
 	initStorage("status_pandora");
 	initStorage("status_grooveshark");
-	initStorage("status_hulu");
+	//initStorage("status_hulu");
 	initStorage("status_gplay");
+
+	initStorage("status_youtube_autounblock", false);
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
