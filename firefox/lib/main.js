@@ -26,6 +26,10 @@ exports.main = function () {
 			pcs += "|| url.indexOf('play.google.com') != -1";
 		}
 
+		if (preferences.prefs.status_hulu && preferences.prefs.status_cproxy) {
+			pcs += "|| url.indexOf('hulu.com') != -1";
+		}
+
 		pcs += " )\n" +
 			"	return 'PROXY " + url + ":" + port + "';\n" +
 			"return 'DIRECT';\n" +
@@ -207,7 +211,7 @@ exports.main = function () {
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		// createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js'); <- currently not working. Remove pagemod
+		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js'); 
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
 		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
@@ -234,6 +238,6 @@ exports.main = function () {
 
 	preferences.on("status_gplay", onPrefChange);
 	preferences.on("status_youtube", onPrefChange);
-	// preferences.on("status_hulu", onPrefChange);
+	preferences.on("status_hulu", onPrefChange);
 	preferences.on("status_pandora", onPrefChange);
 };

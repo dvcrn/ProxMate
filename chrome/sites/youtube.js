@@ -12,6 +12,20 @@ $.when(global, youtube, autounblock).done(function () {
 	}
 
 	$(document).ready(function () {
+		/*
+			This code is for reviewers. To understand what we are doing here and why.
+
+			ProxMate unblocks all links having &proxmate=active in their url.
+			Youtube loads the video async after the initial pagecall is done. The videostream checks if the sitecall comes from the same IP as the videocall. If it doesn't, the video will be blocked.
+			Means we have to proxy both. 
+
+			The way we came up with:
+			- Get youtubes script for creating the video
+			- Replace the videourl inside that script and append &proxmate=active
+			- Execute the script again. This will replace the current video container with a new one, including our altered url.
+
+			Using a pac_script entry for this url doesn't work! Otherways we would unblock ALL youtube videos what we clearly don't want!
+		*/
 		var pmParam, script, scriptcontent, n;
 		pmParam = getUrlParam('proxmate');
 
@@ -24,7 +38,9 @@ $.when(global, youtube, autounblock).done(function () {
 			});
 			// videoplayback%253F
 			n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253Dactive%2526"); // Append our proxmate param so the pac script wil care of it
-			eval(n);
+			$("body").append($("<script />", {
+				html: n
+			}));
 
 		} else {
 			if ($("#watch-player-unavailable").length > 0) {

@@ -1,13 +1,17 @@
+/*jslint browser: true*/
+/*global checkStatus, $, loadBanner, resetProxy, proxifyUri*/
+
 $(window).unload(resetProxy);
 
 var global = checkStatus("global");
 var grooveshark = checkStatus("status_grooveshark");
 
-$.when(global, grooveshark).done(function() {
-	if (!global.response.enabled || !grooveshark.response.enabled)
+$.when(global, grooveshark).done(function () {
+	"use strict";
+	if (!global.response.enabled || !grooveshark.response.enabled) {
 		return;
-	
-	$(document).ready(function() {
+	}
+	$(document).ready(function () {
 		// Check for the broken heart
 		var broken = $("#heartbroken");
 		if (broken.length > 0) {
@@ -19,5 +23,5 @@ $.when(global, grooveshark).done(function() {
 		} else {
 			loadBanner();
 		}
-	});	
+	});
 });

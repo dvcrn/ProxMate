@@ -21,7 +21,7 @@ $(document).ready(function() {
 	var init = (function() {
 		checkBoxToggle("status_youtube", toggle_youtube);
 		checkBoxToggle("status_grooveshark", toggle_grooveshark);
-		//checkBoxToggle("status_hulu", toggle_hulu);
+		checkBoxToggle("status_hulu", toggle_hulu);
 		checkBoxToggle("status_pandora", toggle_pandora);
 		checkBoxToggle("status_gplay", toggle_gplay);
 
@@ -57,7 +57,7 @@ $(document).ready(function() {
 	$("#savebutton").click(function() {
 		var status_youtube = toggle_youtube.prop("checked");
 		var status_grooveshark = toggle_grooveshark.prop("checked");
-		//var status_hulu = toggle_hulu.prop("checked");
+		var status_hulu = toggle_hulu.prop("checked");
 		var status_pandora = toggle_pandora.prop("checked");
 		var status_gplay = toggle_gplay.prop("checked");
 		
@@ -71,7 +71,7 @@ $(document).ready(function() {
 
 		localStorage["status_youtube"] = status_youtube;
 		localStorage["status_grooveshark"] = status_grooveshark;
-		//localStorage["status_hulu"] = status_hulu;
+		localStorage["status_hulu"] = status_hulu;
 		localStorage["status_pandora"] = status_pandora;
 		localStorage["status_gplay"] = status_gplay;
 

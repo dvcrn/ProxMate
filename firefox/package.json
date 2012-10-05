@@ -4,7 +4,7 @@
 	"icon": "data/images/icon128.png",	
 	"author": "personalitycores.com", 
 	"homepage": "http://www.personalitycores.com/projects/proxmate/",
-	"version": "2.0.1", 
+	"version": "2.0.2", 
 	"fullName": "ProxMate - unblock the Internet!", 
 	"id": "jid1-QpHD8URtZWJC2A@jetpack", 
 	"description": "Unblocks youtube, grooveshark, google play and pandora for free!",
@@ -51,6 +51,12 @@
 		{
 			"name": "status_gplay",
 			"title": "Enable for US play.google.com",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_hulu",
+			"title": "Enable for hulu.com (works only if own proxy is set)",
 			"type": "bool",
 			"value": true
 		}

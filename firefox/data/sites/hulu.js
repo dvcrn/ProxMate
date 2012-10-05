@@ -3,10 +3,11 @@
 
 var global = checkStatus("global");
 var hulu = checkStatus("status_hulu");
+var cproxy = checkStatus("status_cproxy");
 
-$.when(global, hulu).done(function () {
+$.when(global, hulu, cproxy).done(function () {
 	"use strict";
-	if (!global.response.enabled || !hulu.response.enabled) {
+	if (!global.response.enabled || !hulu.response.enabled || !cproxy.response.enabled) {
 		return;
 	}
 	$(document).ready(function () {

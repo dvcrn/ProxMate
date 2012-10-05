@@ -73,7 +73,10 @@ var setProxy = function(url, port) {
 	}
 
 	if (bool(localStorage["status_gplay"])) {
-		pcs += "|| url.indexOf('play.google.com') != -1";
+		pcs += " || url.indexOf('play.google.com') != -1";
+	}
+	if (bool(localStorage["status_hulu"]) && bool(localStorage["status_cproxy"])) {
+		pcs += " || url.indexOf('hulu.com') != -1";
 	}
 
 	pcs += " )\n" +
@@ -102,7 +105,7 @@ var init = (function() {
 	initStorage("status_youtube");
 	initStorage("status_pandora");
 	initStorage("status_grooveshark");
-	//initStorage("status_hulu");
+	initStorage("status_hulu");
 	initStorage("status_gplay");
 
 	initStorage("status_youtube_autounblock", false);
