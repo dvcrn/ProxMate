@@ -115,7 +115,7 @@ var init = (function() {
 	initStorage("status_hulu");
 	initStorage("status_gplay");
 
-	initStorage("status_youtube_autounblock", false);
+	initStorage("status_youtube_autounblock", true);
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
