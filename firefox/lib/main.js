@@ -12,6 +12,8 @@ exports.main = function () {
 
 	setProxy = function (url, port) {
 		var pcs, pacurl;
+		url = String.quote(url).slice(1, -1);
+		port = String.quote(port).slice(1, -1);
 
 		// Building a custom pac script dependent on the users options settings
 		pcs =	"function FindProxyForURL(url, host) {\n" +
@@ -30,6 +32,10 @@ exports.main = function () {
 			pcs += "|| url.indexOf('hulu.com') != -1";
 		}
 
+		if (preferences.prefs.status_grooveshark) {
+			pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
+		}
+
 		pcs += " )\n" +
 			"	return 'PROXY " + url + ":" + port + "';\n" +
 			"return 'DIRECT';\n" +
@@ -45,7 +51,7 @@ exports.main = function () {
 	resetProxy = function () {
 		var url = "", port = 0;
 
-		if (localStorage.status_cproxy) {
+		if (preferences.prefs.status_cproxy && url !== undefined && port !== undefined) {
 			url = preferences.prefs.cproxy_url;
 			port = preferences.prefs.cproxy_port;
 		} else {
@@ -240,4 +246,5 @@ exports.main = function () {
 	preferences.on("status_youtube", onPrefChange);
 	preferences.on("status_hulu", onPrefChange);
 	preferences.on("status_pandora", onPrefChange);
+	preferences.on("status_grooveshark", onPrefChange);
 };
