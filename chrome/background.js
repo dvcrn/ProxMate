@@ -26,9 +26,6 @@ var setProxy = function (url, port) {
 		pcs += " || host == 'www.pandora.com'";
 	}
 
-
-	pcs += " || url.indexOf('bbc.co.uk') != -1";
-
 	if (bool(localStorage.status_gplay)) {
 		pcs += " || url.indexOf('play.google.com') != -1";
 	}
