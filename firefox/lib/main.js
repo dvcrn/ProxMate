@@ -217,7 +217,7 @@ exports.main = function () {
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js'); 
+		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
 		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
 		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
 		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');

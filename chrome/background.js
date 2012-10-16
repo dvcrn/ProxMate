@@ -1,13 +1,13 @@
 var pac_config = {};
 
-var bool = function(str){
-    if (str.toLowerCase() == 'false') {
-       return false;
-    } else if (str.toLowerCase() == 'true') {
-       return true;
-    } else {
-       return undefined;
-    }
+var bool = function (str) {
+	if (str.toLowerCase() == 'false') {
+   		return false;
+	} else if (str.toLowerCase() == 'true') {
+		return true;
+	} else {
+		return undefined;
+	}
 }
 
 // Handler for extension icon click
@@ -72,11 +72,18 @@ var setProxy = function(url, port) {
 		pcs += " || host == 'www.pandora.com'";
 	}
 
+
+	pcs += " || url.indexOf('bbc.co.uk') != -1";
+
 	if (bool(localStorage["status_gplay"])) {
 		pcs += " || url.indexOf('play.google.com') != -1";
 	}
 	if (bool(localStorage["status_hulu"]) && bool(localStorage["status_cproxy"])) {
 		pcs += " || url.indexOf('hulu.com') != -1";
+	}
+
+	if (bool(localStorage["status_grooveshark"])) {
+		pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
 	}
 
 	pcs += " )\n" +
