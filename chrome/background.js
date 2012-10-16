@@ -1,66 +1,20 @@
+/*jslint browser: true*/
+/*global localStorage, chrome*/
 var pac_config = {};
 
 var bool = function (str) {
-	if (str.toLowerCase() == 'false') {
-   		return false;
-	} else if (str.toLowerCase() == 'true') {
+	"use strict";
+	if (str.toLowerCase() === 'false') {
+		return false;
+	} else if (str.toLowerCase() === 'true') {
 		return true;
 	} else {
 		return undefined;
 	}
-}
+};
 
-// Handler for extension icon click
-var togglePluginstatus = function() 
-{
-	var toggle = localStorage["status"];
-
-	if (toggle == "true") {
-		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
-
-		localStorage["status"] = false;
-
-		// Remove proxy
-		chrome.proxy.settings.clear({});
-	}
-	else
-	{
-		chrome.browserAction.setIcon({path: "images/icon128.png"});
-
-		localStorage["status"] = true;
-
-		// Start setting the old proxy
-		resetProxy();
-	}
-}
-
-var initStorage = function(str, val) {
-	if (val === undefined) {
-		val = true;
-	}
-
-	if (localStorage[str] === undefined) {
-		localStorage[str] = val;
-	}
-}
-
-var resetProxy = function() {
-	var url = "";
-	var port = 0;
-
-	if (bool(localStorage["status_cproxy"]))
-	{
-		url = localStorage["cproxy_url"];
-		port = parseInt(localStorage["cproxy_port"]);
-	} else {
-		url = localStorage["proxy_url"];
-		port = parseInt(localStorage["proxy_port"]);
-	}
-
-	setProxy(url, port);
-}
-
-var setProxy = function(url, port) {
+var setProxy = function (url, port) {
+	"use strict";
 	var pcs;
 
 	// Building a custom pac script dependent on the users options settings
@@ -68,21 +22,21 @@ var setProxy = function(url, port) {
 		" if ( " +
 		"	url.indexOf('proxmate=active') != -1 ";
 
-	if (bool(localStorage["status_pandora"])) {
+	if (bool(localStorage.status_pandora)) {
 		pcs += " || host == 'www.pandora.com'";
 	}
 
 
 	pcs += " || url.indexOf('bbc.co.uk') != -1";
 
-	if (bool(localStorage["status_gplay"])) {
+	if (bool(localStorage.status_gplay)) {
 		pcs += " || url.indexOf('play.google.com') != -1";
 	}
-	if (bool(localStorage["status_hulu"]) && bool(localStorage["status_cproxy"])) {
+	if (bool(localStorage.status_hulu) && bool(localStorage.status_cproxy)) {
 		pcs += " || url.indexOf('hulu.com') != -1";
 	}
 
-	if (bool(localStorage["status_grooveshark"])) {
+	if (bool(localStorage.status_grooveshark)) {
 		pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
 	}
 
@@ -92,18 +46,71 @@ var setProxy = function(url, port) {
 		"}";
 
 	pac_config = {
-	  mode: "pac_script",
-	  pacScript: {
-	    data: pcs
-	  }
+		mode: "pac_script",
+		pacScript: {
+			data: pcs
+		}
 	};
 
 	chrome.proxy.settings.set(
-	    {value: pac_config, scope: 'regular'},
-	    function() {});
-}
+		{value: pac_config, scope: 'regular'},
+		function () {}
+	);
+};
 
-var init = (function() {
+var resetProxy = function () {
+	"use strict";
+	var url, port;
+
+	url = "";
+	port = 0;
+
+	if (bool(localStorage.status_cproxy)) {
+		url = localStorage.cproxy_url;
+		port = parseInt(localStorage.cproxy_port, 10);
+	} else {
+		url = localStorage.proxy_url;
+		port = parseInt(localStorage.proxy_port, 10);
+	}
+
+	setProxy(url, port);
+};
+
+// Handler for extension icon click
+var togglePluginstatus = function () {
+	"use strict";
+	var toggle = bool(localStorage.status);
+
+	if (toggle) {
+		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
+
+		localStorage.status = false;
+
+		// Remove proxy
+		chrome.proxy.settings.clear({});
+	} else {
+		chrome.browserAction.setIcon({path: "images/icon128.png"});
+
+		localStorage.status = true;
+
+		// Start setting the old proxy
+		resetProxy();
+	}
+};
+
+var initStorage = function (str, val) {
+	"use strict";
+	if (val === undefined) {
+		val = true;
+	}
+
+	if (localStorage[str] === undefined) {
+		localStorage[str] = val;
+	}
+};
+
+var init = (function () {
+	"use strict";
 
 	// Init some storage space we need later
 	initStorage("firststart");
@@ -125,36 +132,34 @@ var init = (function() {
 	initStorage("proxy_port", "");
 
 	// Is it the first start? Spam some tabs! 
-	var firstStart = localStorage["firststart"];
+	var firstStart, url, port, xhr;
 
-	if (firstStart == "true") {
-		chrome.tabs.create(
-		{
+	firstStart = localStorage.firststart;
+	if (firstStart === "true") {
+		chrome.tabs.create({
 			url: "http://www.personalitycores.com/projects/proxmate"
 		});
 
-		chrome.tabs.create(
-		{
-			url: "https://www.facebook.com/ProxMate/"			
+		chrome.tabs.create({
+			url: "https://www.facebook.com/ProxMate/"
 		});
 
-		localStorage["firststart"] = false;
+		localStorage.firststart = false;
 	}
 
-
-	var url = "";
-	var port = "";
+	url = "";
+	port = "";
 
 	// Request a proxy from master server & Error handling
 
-	var xhr = new XMLHttpRequest();
+	xhr = new XMLHttpRequest();
 
-	xhr.addEventListener("error", function() {
+	xhr.addEventListener("error", function () {
 		url = "proxy.personalitycores.com";
 		port = 8000;
 	}, false);
 
-	xhr.addEventListener("load", function() {
+	xhr.addEventListener("load", function () {
 
 		var json = xhr.responseText;
 		json = JSON.parse(json);
@@ -165,71 +170,71 @@ var init = (function() {
 	}, false);
 
 	try {
-		xhr.open("GET","http://direct.personalitycores.com:8000?country=us",false);
+		xhr.open("GET", "http://direct.personalitycores.com:8000?country=us", false);
 		xhr.send();
-	}
-	catch(e) {
+	} catch (e) {
 		url = "proxy.personalitycores.com";
 		port = 8000;
 	}
 
 	// Save the currently assigned proxy for later use
-	localStorage["proxy_url"] = url;
-	localStorage["proxy_port"] = port; 
+	localStorage.proxy_url = url;
+	localStorage.proxy_port = port;
 
 	// Set the icon color on start
-	if (bool(localStorage["status"]) == false) {
+	if (bool(localStorage.status) === false) {
 		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
 		chrome.proxy.settings.clear({});
 	} else {
 		resetProxy();
 	}
 
-})();
+}());
 
 chrome.browserAction.onClicked.addListener(togglePluginstatus);
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-	
-	if (request.action == "setproxy") 
-	{
-		var config = {
+chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
+	"use strict";
+	var config, module, status;
+
+	if (request.action === "setproxy") {
+		config = {
 			mode: "fixed_servers",
 			rules: {
 				singleProxy: {
-					host: localStorage["proxy_url"],
-					port: parseInt(localStorage["proxy_port"])
+					host: localStorage.proxy_url,
+					port: parseInt(localStorage.proxy_port, 10)
 				}
 			}
-		}
+		};
 
-		chrome.proxy.settings.set({value: config, scope: 'regular'}, function() {});
+		chrome.proxy.settings.set({value: config, scope: 'regular'}, function () {});
 
 		sendResponse({
 			status: true
-		});	
+		});
 	}
 
 	// ResetProxy to default
-	if (request.action == "resetproxy") 
-	{
+	if (request.action === "resetproxy") {
 		resetProxy();
 	}
 
-	if (request.action == "checkStatus") {
-		var module = request.param;
-		var status = false;
+	if (request.action === "checkStatus") {
 
-		switch(module) {
-			case "global":
-				var status = bool(localStorage["status"]);
-				break;
-			case "cproxy": 
-				var status = bool(localStorage["status_cproxy"]);
-				break;
-			default: 
-				var status = bool(localStorage[module]);
-				break;
+		module = request.param;
+		status = false;
+
+		switch (module) {
+		case "global":
+			status = bool(localStorage.status);
+			break;
+		case "cproxy":
+			status = bool(localStorage.status_cproxy);
+			break;
+		default:
+			status = bool(localStorage[module]);
+			break;
 		}
 
 		sendResponse({
