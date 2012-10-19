@@ -1,13 +1,11 @@
 {
-	"name": "proxmate", 
-	"license": "MPL 1.1/GPL 2.0/LGPL 2.1",
-	"icon": "data/images/icon128.png",	
-	"author": "personalitycores.com", 
-	"homepage": "http://www.personalitycores.com/projects/proxmate/",
-	"version": "2.0.5", 
-	"fullName": "ProxMate - unblock the Internet!", 
-	"id": "jid1-QpHD8URtZWJC2A@jetpack", 
-	"description": "Unblocks youtube, grooveshark, google play and pandora for free!",
+	"name": "proxmate",
+	"license": "MPL 2.0",
+	"author": "",
+	"version": "0.1",
+	"fullName": "neu",
+	"id": "jid1-s6QMpA6kpqs7kw",
+	"description": "a basic add-on",
 	"preferences": [
 		{
 			"name": "testpref",
@@ -18,20 +16,17 @@
 		{
 			"name": "status_cproxy",
 			"title": "Use own Proxy",
-			"type": "bool",
-			"value": false
+			"type": "bool"
 		},
 		{
 			"name": "cproxy_url",
 			"title": "Proxy Url",
-			"type": "string",
-			"value": "your-proxy.com"
+			"type": "string"
 		},
 		{
 			"name": "cproxy_port",
 			"title": "Proxy Port",
-			"type": "integer",
-			"value": 0
+			"type": "integer"
 		},
 		{
 			"name": "status_youtube",

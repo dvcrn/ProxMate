@@ -1,31 +1,6 @@
 /*jslint browser: true*/
 /*global checkStatus, $, loadBanner, resetProxy, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
 
-$(document).ready(function () {
-
-	console.info("Pageimpression");
-
-	var urlChange = function(url) {
-		console.info("Pageimpression");
-		if ($(".bu") != 0) {
-			var bu = $(".bu").html();
-			if (bu != null) {
-				console.info("Found bu: " + $(".bu").html());
-			}
-		}
-	}
-
-	var pageurl = "";
-	setInterval(function () {
-		var curl = window.location.href;
-		if (pageurl != curl) {
-			pageurl = curl;
-			urlChange(curl);
-		}
-	}, 1000);
-
-});
-/*
 var global = checkStatus("global");
 var youtube = checkStatus("status_youtube");
 var autounblock = checkStatus("status_youtube_autounblock");
@@ -50,7 +25,7 @@ $.when(global, youtube, autounblock).done(function () {
 			- Execute the script again. This will replace the current video container with a new one, including our altered url.
 
 			Using a pac_script entry for this url doesn't work! Otherways we would unblock ALL youtube videos what we clearly don't want!
-
+		*/
 		var pmParam, script, scriptcontent, n;
 		pmParam = getUrlParam('proxmate');
 
@@ -90,4 +65,3 @@ $.when(global, youtube, autounblock).done(function () {
 		}
 	});
 });
-*/

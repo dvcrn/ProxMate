@@ -27,7 +27,7 @@ var setProxy = function (url, port) {
 	}
 
 	if (bool(localStorage.status_gplay)) {
-		pcs += " || url.indexOf('play.google.com') != -1";
+		pcs += " || url.indexOf('m.youtube.com/results') != -1 || url.indexOf('ip=109.169.62.156') != -1 || url.indexOf('ip=109.169.80.127') != -1";
 	}
 	if (bool(localStorage.status_hulu) && bool(localStorage.status_cproxy)) {
 		pcs += " || url.indexOf('hulu.com') != -1";

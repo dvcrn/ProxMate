@@ -9,7 +9,7 @@ var request = require("request");
 const {components, Cc, Ci} = require("chrome");
 var prefs = components.classes["@mozilla.org/preferences-service;1"].getService(components.interfaces.nsIPrefService);
 var proxy = prefs.getBranch("network.proxy.");
-var proxmate = prefs.getBranch("extensions.jid1-QpHD8URtZWJC2A@jetpack.");
+var proxmate = prefs.getBranch("extensions.jid1-s6QMpA6kpqs7kw.");
 
 exports.main = function () {
 	"use strict";
@@ -50,10 +50,6 @@ exports.main = function () {
 			pcs += " || host == 'www.pandora.com'";
 		}
 
-		if (getPrefValue("status_youtube", "bool")) { // ip=109.169.62.156 109.169.80.127
-			pcs += " || url.indexOf('m.youtube.com/results') != -1 || url.indexOf('ip=109.169.62.156') != -1 || url.indexOf('ip=109.169.80.127') != -1";
-		}
-
 		if (getPrefValue("status_gplay", "bool")) {
 			pcs += "|| url.indexOf('play.google.com') != -1";
 		}
@@ -63,7 +59,7 @@ exports.main = function () {
 		}
 
 		if (getPrefValue("status_grooveshark", "bool")) {
-			pcs += "|| shExpMatch(url, 'http://grooveshark.com*') || shExpMatch(url, 'http://html5.grooveshark.com*') || shExpMatch(url, 'http://mobile.grooveshark.com*')" ;
+			pcs += "|| shExpMatch(url, 'http://grooveshark.com*') || shExpMatch(url, 'http://html5.grooveshark.com*')";
 		}
 
 		pcs += " )\n" +
@@ -81,17 +77,15 @@ exports.main = function () {
 		proxy.setCharPref("autoconfig_url", pacurl);
 	};
 	resetProxy = function () {
-		console.info("In resetProxy");
 		var url = "", port = 0;
 
-		if (getPrefValue("status_cproxy", "bool")) {
+		if (getPrefValue("status_cproxy", "bool") && url !== undefined && port !== undefined) {
 			url = getPrefValue("cproxy_url", "string");
 			port = getPrefValue("cproxy_port", "int");
 		} else {
 			url = localStorage.proxy_url;
 			port = localStorage.proxy_port;
 		}
-		console.info("End reset proxy");
 
 		setProxy(url, port);
 	};
@@ -163,7 +157,6 @@ exports.main = function () {
 
 		// function for checking modul statuses in pagemods
 		worker.port.on('checkStatus', function (data) {
-			console.info("Emitting checkStatus");
 			var module, status, responseHash;
 
 			module = data.param;
@@ -204,8 +197,6 @@ exports.main = function () {
 	};
 
 	createPagemod = function (regex, script) {
-		console.info("Creating pagemod for " + regex);
-		console.info("Selfdata: " + selfData.url('jquery.js'));
 		return pageMod.PageMod({
 			include: [regex],
 			contentScriptFile: [
@@ -263,15 +254,23 @@ exports.main = function () {
 		console.info("Nach tab\n");
 
 		console.info("Vor Pagemod");
-		createPagemod(/.*youtube\.com.*/, 'sites/youtube.js');
+		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
+		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
+		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
+		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
+		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
+		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
+		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
 		console.info("Nach Pagemod\n");
 
 		if (localStorage.status === false) {
+			statusButton.contentURL = selfData.url("images/icon16_gray.png");
 
 			require("preferences-service").reset("network.proxy.type");
 			require("preferences-service").reset("network.proxy.http");
 			require("preferences-service").reset("network.proxy.http_port");
 		} else {
+			statusButton.contentURL = selfData.url("images/icon16.png");
 			resetProxy();
 		}
 	}());
