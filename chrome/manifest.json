@@ -44,7 +44,7 @@
     "48": "images/icon48.png",
     "16": "images/icon16.png",
     "128": "images/icon128.png"
-   }, 
+   },
    "web_accessible_resources": [
     "elements/overlay.html",
     "elements/banner.html",
@@ -57,6 +57,8 @@
     "images/cross.png"
   ],
   "permissions": [
+    "webRequest",
+    "webRequestBlocking",
     "proxy",
     "http://www.personalitycores.com/",
     "http://youtube.com/",

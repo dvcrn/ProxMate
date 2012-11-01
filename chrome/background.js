@@ -13,34 +13,9 @@ var bool = function (str) {
 	}
 };
 
-var setProxy = function (url, port) {
+var resetProxy = function () {
 	"use strict";
-	var pcs;
-
-	// Building a custom pac script dependent on the users options settings
-	pcs =	"function FindProxyForURL(url, host) {\n" +
-		" if ( " +
-		"	url.indexOf('proxmate=active') != -1 ";
-
-	if (bool(localStorage.status_pandora)) {
-		pcs += " || host == 'www.pandora.com'";
-	}
-
-	if (bool(localStorage.status_gplay)) {
-		pcs += " || url.indexOf('play.google.com') != -1";
-	}
-	if (bool(localStorage.status_hulu) && bool(localStorage.status_cproxy)) {
-		pcs += " || url.indexOf('hulu.com') != -1";
-	}
-
-	if (bool(localStorage.status_grooveshark)) {
-		pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
-	}
-
-	pcs += " )\n" +
-		"	return 'PROXY " + url + ":" + port + "';\n" +
-		"return 'DIRECT';\n" +
-		"}";
+	var pcs = localStorage.pac_script;
 
 	pac_config = {
 		mode: "pac_script",
@@ -53,24 +28,6 @@ var setProxy = function (url, port) {
 		{value: pac_config, scope: 'regular'},
 		function () {}
 	);
-};
-
-var resetProxy = function () {
-	"use strict";
-	var url, port;
-
-	url = "";
-	port = 0;
-
-	if (bool(localStorage.status_cproxy)) {
-		url = localStorage.cproxy_url;
-		port = parseInt(localStorage.cproxy_port, 10);
-	} else {
-		url = localStorage.proxy_url;
-		port = parseInt(localStorage.proxy_port, 10);
-	}
-
-	setProxy(url, port);
 };
 
 // Handler for extension icon click
@@ -106,6 +63,82 @@ var initStorage = function (str, val) {
 	}
 };
 
+chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
+	console.info("Intercepting Auth Required");
+	console.info("Authenticating with " + localStorage.proxy_user + " and " + localStorage.proxy_password);
+	console.info(details);
+	if (details.isProxy === true ) {
+		callback({ authCredentials: {username: localStorage.proxy_user, password: localStorage.proxy_password}});
+	} else {
+		callback({ cancel: false });
+	}
+}, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
+
+var loadExternalConfig = function () {
+	"use strict";
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("load", function () {
+		var json, pac_script, counter, list, rule, proxystring, proxy;
+
+		json = xhr.responseText;
+		json = JSON.parse(json);
+
+		if (json.success) {
+
+			if (json.list.auth.user !== undefined) {
+				localStorage.proxy_user = json.list.auth.user;
+				localStorage.proxy_password = json.list.auth.pass;
+			} else {
+				delete localStorage.proxy_user;
+				delete localStorage.proxy_password;
+				console.info("PW: " +localStorage.proxy_password);
+			}
+
+			pac_script = "function FindProxyForURL(url, host) {";
+			counter = 0;
+
+			for (proxy in json.list.proxies) {
+				if (json.list.proxies[proxy].nodes.length > 0 && json.list.proxies[proxy].rules.length) {
+
+					list = json.list.proxies[proxy];
+					rule = json.list.proxies[proxy].rules.join(" || ");
+
+					if (bool(localStorage.status_cproxy) === true) {
+						proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
+					} else {
+						proxystring = json.list.proxies[proxy].nodes.join("; ");
+					}
+
+					if (counter === 0) {
+						pac_script += "if ( " + rule + ") { return 'PROXY " + proxystring + "';}";
+					} else {
+						pac_script += " else if ( " + rule + ") { return 'PROXY " + proxystring + "';}";
+					}
+					counter += 1;
+				}
+			}
+
+			pac_script += " else { return 'DIRECT'; }";
+			pac_script += "}";
+			console.info("PAC: " + pac_script);
+			localStorage.pac_script = pac_script;
+		}
+
+	}, false);
+
+	xhr.addEventListener("error", function () {
+		// Do nothing
+	}, false);
+
+	try {
+		xhr.open("GET", "http://peaceful-harbor-3258.herokuapp.com/api/config.json?key=" + localStorage.api_key, false);
+		xhr.send();
+	} catch (e) {
+		// Do nothing
+	}
+};
+
 var init = (function () {
 	"use strict";
 
@@ -113,22 +146,16 @@ var init = (function () {
 	initStorage("firststart");
 
 	initStorage("status");
-	initStorage("status_youtube");
-	initStorage("status_pandora");
-	initStorage("status_grooveshark");
-	initStorage("status_hulu");
-	initStorage("status_gplay");
-
 	initStorage("status_youtube_autounblock", true);
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
 	initStorage("cproxy_port", "");
 
-	initStorage("proxy_url", "");
-	initStorage("proxy_port", "");
+	initStorage("pac_script", "");
+	initStorage("api_key", "");
 
-	// Is it the first start? Spam some tabs! 
+	// Is it the first start? Spam some tabs!
 	var firstStart, url, port, xhr;
 
 	firstStart = localStorage.firststart;
@@ -144,39 +171,8 @@ var init = (function () {
 		localStorage.firststart = false;
 	}
 
-	url = "";
-	port = "";
-
 	// Request a proxy from master server & Error handling
-
-	xhr = new XMLHttpRequest();
-
-	xhr.addEventListener("error", function () {
-		url = "proxy.personalitycores.com";
-		port = 8000;
-	}, false);
-
-	xhr.addEventListener("load", function () {
-
-		var json = xhr.responseText;
-		json = JSON.parse(json);
-
-		url = json.url;
-		port = json.port;
-
-	}, false);
-
-	try {
-		xhr.open("GET", "http://direct.personalitycores.com:8000?country=us", false);
-		xhr.send();
-	} catch (e) {
-		url = "proxy.personalitycores.com";
-		port = 8000;
-	}
-
-	// Save the currently assigned proxy for later use
-	localStorage.proxy_url = url;
-	localStorage.proxy_port = port;
+	loadExternalConfig();
 
 	// Set the icon color on start
 	if (bool(localStorage.status) === false) {

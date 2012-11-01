@@ -127,7 +127,5 @@ var loadBanner = function(callback) {
 		setTimeout(function() {
 			$("#pmBanner").addClass("smallBanner");
 		}, 5000);
-
-
 	});
 }
