@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global localStorage, chrome*/
+/*global localStorage, chrome, console*/
 var pac_config = {};
 
 var bool = function (str) {
@@ -64,10 +64,11 @@ var initStorage = function (str, val) {
 };
 
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
+	"use strict";
 	console.info("Intercepting Auth Required");
 	console.info("Authenticating with " + localStorage.proxy_user + " and " + localStorage.proxy_password);
 	console.info(details);
-	if (details.isProxy === true ) {
+	if (details.isProxy === true) {
 		callback({ authCredentials: {username: localStorage.proxy_user, password: localStorage.proxy_password}});
 	} else {
 		callback({ cancel: false });
@@ -79,12 +80,15 @@ var loadExternalConfig = function () {
 	var xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("load", function () {
-		var json, pac_script, counter, list, rule, proxystring, proxy;
+		var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
 
-		json = xhr.responseText;
-		json = JSON.parse(json);
+		jsonstring = xhr.responseText;
+		json = JSON.parse(jsonstring);
 
 		if (json.success) {
+
+			// Save last config in localStorage for possible later use.
+			localStorage.last_config = jsonstring;
 
 			if (json.list.auth.user !== undefined) {
 				localStorage.proxy_user = json.list.auth.user;
@@ -92,31 +96,48 @@ var loadExternalConfig = function () {
 			} else {
 				delete localStorage.proxy_user;
 				delete localStorage.proxy_password;
-				console.info("PW: " +localStorage.proxy_password);
+				console.info("PW: " + localStorage.proxy_password);
 			}
 
 			pac_script = "function FindProxyForURL(url, host) {";
 			counter = 0;
 
-			for (proxy in json.list.proxies) {
-				if (json.list.proxies[proxy].nodes.length > 0 && json.list.proxies[proxy].rules.length) {
+			for (country in json.list.proxies) {
+				console.info("COuntry: " + country);
+				if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
 
-					list = json.list.proxies[proxy];
-					rule = json.list.proxies[proxy].rules.join(" || ");
+
+					list = json.list.proxies[country].services;
+					console.info(list);
+
+					var service_rules = [];
+					for (service in list) {
+						if (list[service].length > 0) {
+							var rules = list[service].join(" || ");
+							console.info(rules);
+							service_rules.push(rules);
+							console.info("-----> Rule for " + service + ": " + rules);
+						}
+					}
+
+					rule = service_rules.join(" || ");
+
 
 					if (bool(localStorage.status_cproxy) === true) {
 						proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
 					} else {
-						proxystring = json.list.proxies[proxy].nodes.join("; ");
+						proxystring = json.list.proxies[country].nodes.join("; ");
 					}
 
 					if (counter === 0) {
-						pac_script += "if ( " + rule + ") { return 'PROXY " + proxystring + "';}";
+						pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
 					} else {
-						pac_script += " else if ( " + rule + ") { return 'PROXY " + proxystring + "';}";
+						pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
 					}
+
 					counter += 1;
 				}
+
 			}
 
 			pac_script += " else { return 'DIRECT'; }";
