@@ -16,13 +16,16 @@ var bool = function (str) {
 var resetProxy = function () {
 	"use strict";
 	var pcs = localStorage.pac_script;
-
+	var pac_config;
+	console.info("setting pac: " + pcs);
 	pac_config = {
 		mode: "pac_script",
 		pacScript: {
 			data: pcs
 		}
 	};
+
+	console.info(pac_config);
 
 	chrome.proxy.settings.set(
 		{value: pac_config, scope: 'regular'},
@@ -75,6 +78,74 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	}
 }, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
 
+var createPacFromConfig = function (config) {
+	"use strict";
+	if (config === undefined) {
+		config = localStorage.last_config;
+	}
+
+	var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
+	json = JSON.parse(config);
+
+	if (json.list.auth.user !== undefined) {
+		localStorage.proxy_user = json.list.auth.user;
+		localStorage.proxy_password = json.list.auth.pass;
+	} else {
+		delete localStorage.proxy_user;
+		delete localStorage.proxy_password;
+		console.info("PW: " + localStorage.proxy_password);
+	}
+
+	pac_script = "function FindProxyForURL(url, host) {";
+	counter = 0;
+
+	for (country in json.list.proxies) {
+		console.info("COuntry: " + country);
+		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+
+
+			list = json.list.proxies[country].services;
+			console.info(list);
+
+			var service_rules = [];
+			for (service in list) {
+				if (list[service].length > 0) {
+					var rules = list[service].join(" || ");
+					console.info(rules);
+					service_rules.push(rules);
+					console.info("-----> Rule for " + service + ": " + rules);
+				}
+			}
+
+			if (service_rules.length == 0) {
+				continue;
+			}
+
+			rule = service_rules.join(" || ");
+
+
+			if (bool(localStorage.status_cproxy) === true) {
+				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
+			} else {
+				proxystring = json.list.proxies[country].nodes.join("; ");
+			}
+
+			if (counter === 0) {
+				pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+			} else {
+				pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+			}
+
+			counter += 1;
+		}
+
+	}
+
+	pac_script += " else { return 'DIRECT'; }";
+	pac_script += "}";
+	localStorage.pac_script = pac_script;
+}
+
 var loadExternalConfig = function () {
 	"use strict";
 	var xhr = new XMLHttpRequest();
@@ -89,61 +160,7 @@ var loadExternalConfig = function () {
 
 			// Save last config in localStorage for possible later use.
 			localStorage.last_config = jsonstring;
-
-			if (json.list.auth.user !== undefined) {
-				localStorage.proxy_user = json.list.auth.user;
-				localStorage.proxy_password = json.list.auth.pass;
-			} else {
-				delete localStorage.proxy_user;
-				delete localStorage.proxy_password;
-				console.info("PW: " + localStorage.proxy_password);
-			}
-
-			pac_script = "function FindProxyForURL(url, host) {";
-			counter = 0;
-
-			for (country in json.list.proxies) {
-				console.info("COuntry: " + country);
-				if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
-
-
-					list = json.list.proxies[country].services;
-					console.info(list);
-
-					var service_rules = [];
-					for (service in list) {
-						if (list[service].length > 0) {
-							var rules = list[service].join(" || ");
-							console.info(rules);
-							service_rules.push(rules);
-							console.info("-----> Rule for " + service + ": " + rules);
-						}
-					}
-
-					rule = service_rules.join(" || ");
-
-
-					if (bool(localStorage.status_cproxy) === true) {
-						proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
-					} else {
-						proxystring = json.list.proxies[country].nodes.join("; ");
-					}
-
-					if (counter === 0) {
-						pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-					} else {
-						pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-					}
-
-					counter += 1;
-				}
-
-			}
-
-			pac_script += " else { return 'DIRECT'; }";
-			pac_script += "}";
-			console.info("PAC: " + pac_script);
-			localStorage.pac_script = pac_script;
+			createPacFromConfig(jsonstring);
 		}
 
 	}, false);
