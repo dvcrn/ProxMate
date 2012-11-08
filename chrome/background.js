@@ -15,9 +15,12 @@ var bool = function (str) {
 
 var resetProxy = function () {
 	"use strict";
-	var pcs = localStorage.pac_script;
-	var pac_config;
-	console.info("setting pac: " + pcs);
+	var pcs, pac_config;
+
+	pcs = localStorage.pac_script;
+
+	console.info("Setting " + pcs);
+
 	pac_config = {
 		mode: "pac_script",
 		pacScript: {
@@ -78,13 +81,14 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	}
 }, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
 
+// Parses config string and creates pac_script entry
 var createPacFromConfig = function (config) {
 	"use strict";
 	if (config === undefined) {
 		config = localStorage.last_config;
 	}
 
-	var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
+	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
 	json = JSON.parse(config);
 
 	if (json.list.auth.user !== undefined) {
@@ -99,25 +103,34 @@ var createPacFromConfig = function (config) {
 	pac_script = "function FindProxyForURL(url, host) {";
 	counter = 0;
 
+	service_list = [];
 	for (country in json.list.proxies) {
 		console.info("COuntry: " + country);
 		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
 
 
 			list = json.list.proxies[country].services;
-			console.info(list);
+			//console.info(list);
 
-			var service_rules = [];
+			service_rules = [];
 			for (service in list) {
+
 				if (list[service].length > 0) {
-					var rules = list[service].join(" || ");
-					console.info(rules);
-					service_rules.push(rules);
-					console.info("-----> Rule for " + service + ": " + rules);
+					var ls_string = "st_" + service;
+					initStorage(ls_string);
+
+					service_list.push(service);
+					if (bool(localStorage[ls_string]) === true) {
+
+						rules = list[service].join(" || ");
+						//console.info(rules);
+						service_rules.push(rules);
+						//console.info("-----> Rule for " + service + ": " + rules);
+					}
 				}
 			}
 
-			if (service_rules.length == 0) {
+			if (service_rules.length === 0) {
 				continue;
 			}
 
@@ -143,8 +156,13 @@ var createPacFromConfig = function (config) {
 
 	pac_script += " else { return 'DIRECT'; }";
 	pac_script += "}";
+	console.info("Services: ");
+	console.info(service_list);
+	localStorage.services = service_list;
+	console.info("Reading...");
+	console.info(localStorage.services);
 	localStorage.pac_script = pac_script;
-}
+};
 
 var loadExternalConfig = function () {
 	"use strict";
@@ -248,6 +266,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 	// ResetProxy to default
 	if (request.action === "resetproxy") {
+		createPacFromConfig();
 		resetProxy();
 	}
 
