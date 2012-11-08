@@ -22,7 +22,9 @@ $(document).ready(function () {
 	};
 
 	checkBoxToggle = function (storage, ele) {
+		console.info("Reading: " + storage + " - " + localStorage[storage]);
 		if (bool(localStorage[storage])) {
+			console.info("Checking checkbox");
 			ele.prop("checked", "true");
 		}
 	};
@@ -39,6 +41,26 @@ $(document).ready(function () {
 		cproxy_url.val(localStorage.cproxy_url);
 		cproxy_port.val(localStorage.cproxy_port);
 		api_key.val(localStorage.api_key);
+
+		// Loading packages depending on localStorage entries
+		var pa = $("#packages_area");
+		var services = localStorage.services;
+		services = services.split(",");
+
+		console.info(services);
+
+		for (var i = 0; i < services.length; i++) {
+			var service = services[i];
+			var service_escaped = service;
+			service_escaped = service_escaped.replace(/ /g,"_");
+			service_escaped = service_escaped.replace(/\./g,"_");
+
+			var s = "st_" + service;
+
+			console.info("LocalStorage Module: " + s + " - " + localStorage[s]);
+			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'">Enable module "<span>'+services[i]+'</span>"</label></p>');
+			checkBoxToggle(s, $("#"+service_escaped));
+		}
 
 	}());
 
@@ -74,6 +96,14 @@ $(document).ready(function () {
 		localStorage.cproxy_url = cproxy_url;
 		localStorage.cproxy_port = cproxy_port;
 		localStorage.api_key = api_key;
+
+		var packages = $(".package");
+		packages.each(function(index, el) {
+			var pkg = $(packages[index]);
+			var module = pkg.find("span").html();
+			var value = pkg.find("input").prop("checked");
+			localStorage["st_" + module] = value;
+		});
 
 		// Send action to background page
 		sendAction("resetproxy");
