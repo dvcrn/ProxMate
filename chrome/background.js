@@ -122,7 +122,7 @@ var createPacFromConfig = function (config) {
 					service_list.push(service);
 					if (bool(localStorage[ls_string]) === true) {
 
-						rules = list[service].join(" || ");
+						rules = list[service].join(" || ");
 						//console.info(rules);
 						service_rules.push(rules);
 						//console.info("-----> Rule for " + service + ": " + rules);
@@ -166,6 +166,7 @@ var createPacFromConfig = function (config) {
 
 var loadExternalConfig = function () {
 	"use strict";
+	console.info("Fetching external config");
 	var xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("load", function () {
@@ -188,18 +189,25 @@ var loadExternalConfig = function () {
 	}, false);
 
 	try {
-		xhr.open("GET", "http://peaceful-harbor-3258.herokuapp.com/api/config.json?key=" + localStorage.api_key, false);
+		xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + localStorage.api_key, false);
 		xhr.send();
 	} catch (e) {
 		// Do nothing
 	}
 };
 
+setInterval(function () {
+	"use strict";
+	loadExternalConfig();
+	resetProxy();
+}, 600000);
+
 var init = (function () {
 	"use strict";
 
 	// Init some storage space we need later
 	initStorage("firststart");
+	initStorage("pre21");
 
 	initStorage("status");
 	initStorage("status_youtube_autounblock", true);
@@ -217,7 +225,7 @@ var init = (function () {
 	firstStart = localStorage.firststart;
 	if (firstStart === "true") {
 		chrome.tabs.create({
-			url: "http://www.personalitycores.com/projects/proxmate"
+			url: "http://proxmate.dave.cx"
 		});
 
 		chrome.tabs.create({
@@ -225,6 +233,13 @@ var init = (function () {
 		});
 
 		localStorage.firststart = false;
+		localStorage.pre21 = false;
+	}
+
+	if (localStorage.pre21) {
+		chrome.tabs.create({
+			url: "http://proxmate.dave.cx/changelog/"
+		});
 	}
 
 	// Request a proxy from master server & Error handling
@@ -266,7 +281,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 	// ResetProxy to default
 	if (request.action === "resetproxy") {
-		createPacFromConfig();
+		loadExternalConfig();
 		resetProxy();
 	}
 
