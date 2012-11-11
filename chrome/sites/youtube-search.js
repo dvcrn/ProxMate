@@ -2,7 +2,7 @@
 /*global checkStatus, $, loadBanner, getUrlParam, getUrlFor*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("status_youtube");
+var youtube = checkStatus("st_General");
 
 $.when(global, youtube).done(function () {
 	"use strict";

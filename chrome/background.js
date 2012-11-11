@@ -221,7 +221,8 @@ var init = (function () {
 		localStorage.pre21 = false;
 	}
 
-	if (localStorage.pre21) {
+	if (bool(localStorage.pre21)) {
+		localStorage.pre21 = false;
 		chrome.tabs.create({
 			url: "http://proxmate.dave.cx/changelog/"
 		});

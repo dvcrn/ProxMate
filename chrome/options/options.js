@@ -58,7 +58,7 @@ $(document).ready(function () {
 			var s = "st_" + service;
 
 			console.info("LocalStorage Module: " + s + " - " + localStorage[s]);
-			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'">Enable module "<span>'+services[i]+'</span>"</label></p>');
+			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'"> Enable module "<span>'+services[i]+'</span>"</label></p>');
 			checkBoxToggle(s, $("#"+service_escaped));
 		}
 
