@@ -19,7 +19,6 @@ var resetProxy = function () {
 
 	pcs = localStorage.pac_script;
 
-	console.info("Setting " + pcs);
 
 	pac_config = {
 		mode: "pac_script",
@@ -28,7 +27,6 @@ var resetProxy = function () {
 		}
 	};
 
-	console.info(pac_config);
 
 	chrome.proxy.settings.set(
 		{value: pac_config, scope: 'regular'},
@@ -71,9 +69,6 @@ var initStorage = function (str, val) {
 
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	"use strict";
-	console.info("Intercepting Auth Required");
-	console.info("Authenticating with " + localStorage.proxy_user + " and " + localStorage.proxy_password);
-	console.info(details);
 	if (details.isProxy === true) {
 		callback({ authCredentials: {username: localStorage.proxy_user, password: localStorage.proxy_password}});
 	} else {
@@ -97,7 +92,6 @@ var createPacFromConfig = function (config) {
 	} else {
 		delete localStorage.proxy_user;
 		delete localStorage.proxy_password;
-		console.info("PW: " + localStorage.proxy_password);
 	}
 
 	pac_script = "function FindProxyForURL(url, host) {";
@@ -105,12 +99,10 @@ var createPacFromConfig = function (config) {
 
 	service_list = [];
 	for (country in json.list.proxies) {
-		console.info("COuntry: " + country);
 		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
 
 
 			list = json.list.proxies[country].services;
-			//console.info(list);
 
 			service_rules = [];
 			for (service in list) {
@@ -123,9 +115,7 @@ var createPacFromConfig = function (config) {
 					if (bool(localStorage[ls_string]) === true) {
 
 						rules = list[service].join(" || ");
-						//console.info(rules);
 						service_rules.push(rules);
-						//console.info("-----> Rule for " + service + ": " + rules);
 					}
 				}
 			}
@@ -156,17 +146,12 @@ var createPacFromConfig = function (config) {
 
 	pac_script += " else { return 'DIRECT'; }";
 	pac_script += "}";
-	console.info("Services: ");
-	console.info(service_list);
 	localStorage.services = service_list;
-	console.info("Reading...");
-	console.info(localStorage.services);
 	localStorage.pac_script = pac_script;
 };
 
 var loadExternalConfig = function () {
 	"use strict";
-	console.info("Fetching external config");
 	var xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("load", function () {
