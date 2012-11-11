@@ -12,9 +12,9 @@ var sendAction = function(actionString, param) {
 		{
 			action: actionString,
 			param: param
-		}, 
+		},
 		function(response) {
-			if (response) 
+			if (response)
 			{
 				// Response zum promise adden, damit später darauf zugegriffen werden kann
 				defer.response = response;
@@ -30,7 +30,7 @@ var checkStatus = function(module) {
 	return sendAction("checkStatus", module);
 }
 
-var proxifyUri = function(uri, reload) 
+var proxifyUri = function(uri, reload)
 {
 	if (reload === undefined)
 	{
@@ -45,16 +45,16 @@ var proxifyUri = function(uri, reload)
 	promise.done(function() {
 
 		if (reload) {
-			window.location = uri;		
-			location.reload();	
+			window.location = uri;
+			location.reload();
 		} else {
-			window.location = uri;		
+			window.location = uri;
 		}
 
 	});
 }
 
-var resetProxy = function() 
+var resetProxy = function()
 {
 	sendAction("resetproxy");
 }
@@ -70,7 +70,7 @@ var getUrlFor = function(file) {
 }
 
 function bool(str){
-	if (str === undefined) 
+	if (str === undefined)
 		return false;
 
     if (str.toLowerCase()=='false'){
@@ -79,11 +79,11 @@ function bool(str){
        return true;
     } else {
        return undefined;
-    }; 
+    };
 };
 
 var loadOverlay = function(callback) {
-	
+
 	// Load the overlay
 	$('<link>').attr('rel','stylesheet')
 	  .attr('type','text/css')
@@ -100,13 +100,6 @@ var loadOverlay = function(callback) {
 }
 
 var loadBanner = function(callback) {
-	(function() {
-	    var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
-	    s.type = 'text/javascript';
-	    s.async = true;
-	    s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
-	    t.parentNode.insertBefore(s, t);
-	})();
 
 	// Load the overlay
 	$('<link>').attr('rel','stylesheet')
@@ -117,7 +110,7 @@ var loadBanner = function(callback) {
 	$.get(getUrlFor("elements/banner.html"), function(data) {
 		$("body").append(data);
 		$("#pmBanner").fadeIn("slow");
-		
+
 		$("#pmBannerClose").click(function() {
 			$("#pmBanner").fadeOut("slow", function() {
 				$("#pmPusher").slideUp("slow");
