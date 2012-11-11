@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - unblock the Internet!",
-  "version": "2.0.5.1",
+  "version": "2.1",
   "description": "Unblocks youtube, grooveshark, google play and pandora for free!",
   "background": {
     "scripts": ["background.js"]
