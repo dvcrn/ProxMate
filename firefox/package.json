@@ -25,6 +25,11 @@
 			"type": "integer"
 		},
 		{
+			"name": "api_key",
+			"title": "Confirmation Number",
+			"type": "string"
+		},
+		{
 			"name": "status_youtube",
 			"title": "Enable for youtube.com",
 			"type": "bool",

@@ -5,61 +5,117 @@ var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
 var preferences = require("simple-prefs");
 var request = require("request");
+var timers = require("timers");
 
 exports.main = function () {
 	"use strict";
-	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init;
+	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig;
 
-	setProxy = function (url, port) {
-		var pcs, pacurl;
-		url = String.quote(url).slice(1, -1);
-		port = String.quote(port).slice(1, -1);
+	resetProxy = function () {
+		var pacurl;
+		console.info("setting proxy...");
 
-		// Building a custom pac script dependent on the users options settings
-		pcs =	"function FindProxyForURL(url, host) {\n" +
-			" if ( " +
-			"	url.indexOf('proxmate=active') != -1 ";
+		pacurl = "data:text/javascript," + encodeURIComponent(localStorage.pac_script);
 
-		if (preferences.prefs.status_pandora) {
-			pcs += " || host == 'www.pandora.com'";
-		}
-
-		if (preferences.prefs.status_gplay) {
-			pcs += "|| url.indexOf('play.google.com') != -1";
-		}
-
-		if (preferences.prefs.status_hulu && preferences.prefs.status_cproxy) {
-			pcs += "|| url.indexOf('hulu.com') != -1";
-		}
-
-		if (preferences.prefs.status_grooveshark) {
-			pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
-		}
-
-		pcs += " )\n" +
-			"	return 'PROXY " + url + ":" + port + "';\n" +
-			"return 'DIRECT';\n" +
-			"}";
-
-		// In firefox, the only way of setting a pac script is by retrieving it from a url.
-		// We are using data urls here to get around that
-		pacurl = "data:text/javascript," + encodeURIComponent(pcs);
-
+		console.info(pacurl);
 		require("preferences-service").set("network.proxy.type", 2);
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
 	};
-	resetProxy = function () {
-		var url = "", port = 0;
 
-		if (preferences.prefs.status_cproxy && url !== undefined && port !== undefined) {
-			url = preferences.prefs.cproxy_url;
-			port = preferences.prefs.cproxy_port;
-		} else {
-			url = localStorage.proxy_url;
-			port = localStorage.proxy_port;
+	createPacFromConfig = function (config) {
+		console.info("Creating PAC from config...");
+		if (config === undefined) {
+			config = localStorage.last_config;
 		}
 
-		setProxy(url, port);
+		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+		json = JSON.parse(config);
+
+		if (json.list.auth.user !== undefined) {
+			localStorage.proxy_user = json.list.auth.user;
+			localStorage.proxy_password = json.list.auth.pass;
+		} else {
+			delete localStorage.proxy_user;
+			delete localStorage.proxy_password;
+		}
+
+		pac_script = "function FindProxyForURL(url, host) {";
+		counter = 0;
+
+		service_list = [];
+		for (country in json.list.proxies) {
+			if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+
+
+				list = json.list.proxies[country].services;
+
+				service_rules = [];
+				for (service in list) {
+
+					if (list[service].length > 0) {
+						var ls_string = "st_" + service;
+						initStorage(ls_string);
+
+						service_list.push(service);
+						if (localStorage[ls_string] === true) {
+
+							rules = list[service].join(" || ");
+							service_rules.push(rules);
+						}
+					}
+				}
+
+				if (service_rules.length === 0) {
+					continue;
+				}
+
+				rule = service_rules.join(" || ");
+
+
+				if (localStorage.status_cproxy === true) {
+					proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
+				} else {
+					proxystring = json.list.proxies[country].nodes.join("; ");
+				}
+
+				if (counter === 0) {
+					pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+				} else {
+					pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+				}
+
+				counter += 1;
+			}
+
+		}
+
+		pac_script += " else { return 'DIRECT'; }";
+		pac_script += "}";
+		console.info(pac_script);
+		localStorage.services = service_list;
+		localStorage.pac_script = pac_script;
+		console.info("Saved pac script in storage... \n\n");
+		console.info("Saved the following: " + localStorage.pac_script);
+	};
+
+	loadExternalConfig = function (callback) {
+		if (callback === undefined) {
+			callback = function () {};
+		}
+
+		console.info("Loading external config...");
+		request.Request({
+			url: "http://proxmate.dave.cx/api/config.json?key=" + preferences.prefs.api_key,
+			onComplete: function (response) {
+				var config = response.text;
+				console.info("Success!! Loaded \n\n" + config);
+				localStorage.last_config = config;
+				console.info("Writing config in localStorage...");
+				createPacFromConfig(config);
+
+				callback();
+			}
+		}).get();
 	};
 
 	setPluginStatus = function () {
@@ -93,39 +149,6 @@ exports.main = function () {
 	};
 
 	initListeners = function (worker) {
-
-		worker.port.on('setproxy',
-			function (data) {
-				var responseHash, cproxy, url, port;
-
-				responseHash = data.hash;
-				cproxy = preferences.prefs.status_cproxy;
-
-				if (cproxy) {
-					url = preferences.prefs.cproxy_url;
-					port = preferences.prefs.cproxy_port;
-
-					require("preferences-service").set("network.proxy.type", 1);
-					require("preferences-service").set("network.proxy.http", url);
-					require("preferences-service").set("network.proxy.http_port", port);
-				} else {
-					require("preferences-service").set("network.proxy.type", 1);
-					require("preferences-service").set("network.proxy.http", localStorage.proxy_url);
-					require("preferences-service").set("network.proxy.http_port", localStorage.proxy_port);
-				}
-
-				worker.port.emit(responseHash, {
-					success: true
-				});
-			});
-
-		worker.port.on('resetproxy',
-			function (data) {
-				var responseHash = data.hash;
-
-				resetProxy();
-				worker.port.emit(responseHash, {success: true});
-			});
 
 		// function for checking modul statuses in pagemods
 		worker.port.on('checkStatus', function (data) {
@@ -180,6 +203,10 @@ exports.main = function () {
 		});
 	};
 
+	timers.setInterval(function () {
+		loadExternalConfig(resetProxy);
+	}, 600000);
+
 	init = (function () {
 
 		var statusButton = require("widget").Widget({
@@ -191,24 +218,15 @@ exports.main = function () {
 
 		initStorage("firststart");
 		initStorage("status");
+		initStorage("pre21");
+		initStorage("pac_script", "");
 
-		// Get proxy from proxybalancer. Will be set async
-		localStorage.proxy_url = "proxy.personalitycores.com";
-		localStorage.proxy_port = 8000;
-
-		request.Request({
-			url: "http://direct.personalitycores.com:8000?country=us",
-			onComplete: function (response) {
-				localStorage.proxy_url = response.json.url;
-				localStorage.proxy_port = response.json.port;
-				resetProxy();
-			}
-		}).get();
-
+		console.info("Init...");
+		loadExternalConfig(resetProxy);
 
 		if (localStorage.firststart === true) {
 
-			require("tab-browser").addTab("http://www.personalitycores.com/projects/proxmate/");
+			require("tab-browser").addTab("http://proxmate.dave.cx/");
 			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage.firststart = false;
@@ -230,7 +248,6 @@ exports.main = function () {
 			require("preferences-service").reset("network.proxy.http_port");
 		} else {
 			statusButton.contentURL = selfData.url("images/icon16.png");
-			resetProxy();
 		}
 	}());
 
