@@ -72,8 +72,8 @@ exports.main = function () {
 				rule = service_rules.join(" || ");
 
 
-				if (localStorage.status_cproxy === true) {
-					proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
+				if (preferences.prefs.status_cproxy === true) {
+					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
 				} else {
 					proxystring = json.list.proxies[country].nodes.join("; ");
 				}
@@ -204,7 +204,13 @@ exports.main = function () {
 	};
 
 	timers.setInterval(function () {
-		loadExternalConfig(resetProxy);
+		if (localStorage.status === true) {
+			console.info("Fetching external config");
+			loadExternalConfig(resetProxy);
+		} else {
+			console.info("Would fetch external config but plugin is disabled");
+			loadExternalConfig();
+		}
 	}, 600000);
 
 	init = (function () {
@@ -222,7 +228,11 @@ exports.main = function () {
 		initStorage("pac_script", "");
 
 		console.info("Init...");
-		loadExternalConfig(resetProxy);
+		if (localStorage.status === true) {
+			loadExternalConfig(resetProxy);
+		} else {
+			loadExternalConfig();
+		}
 
 		if (localStorage.firststart === true) {
 
@@ -252,12 +262,19 @@ exports.main = function () {
 	}());
 
 	function onPrefChange(prefName) {
+		console.info("----> Creating pac from config... \n\n\n");
+		createPacFromConfig();
+		console.info("----> Resetting proxy... \n\n\n");
 		resetProxy();
 	}
 
 	preferences.on("status_cproxy", onPrefChange);
 	preferences.on("cproxy_url", onPrefChange);
 	preferences.on("cproxy_port", onPrefChange);
+
+	preferences.on("api_key", function() {
+		loadExternalConfig(resetProxy);
+	});
 
 	preferences.on("status_gplay", onPrefChange);
 	preferences.on("status_youtube", onPrefChange);
