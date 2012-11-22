@@ -183,8 +183,12 @@ var loadExternalConfig = function () {
 
 setInterval(function () {
 	"use strict";
-	loadExternalConfig();
-	resetProxy();
+	if (bool(localStorage.status) === true) {
+		loadExternalConfig();
+		resetProxy();
+	} else {
+		loadExternalConfig();
+	}
 }, 600000);
 
 var init = (function () {
