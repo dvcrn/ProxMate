@@ -240,6 +240,12 @@ exports.main = function () {
 			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage.firststart = false;
+			localStorage.pre21 = false;
+		}
+
+		if (localStorage.pre21) {
+			localStorage.pre21 = false;
+			require("tab-browser").addTab("http://proxmate.dave.cx/changelog/");
 		}
 
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
