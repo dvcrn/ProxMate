@@ -40,14 +40,14 @@ var togglePluginstatus = function () {
 	var toggle = bool(localStorage.status);
 
 	if (toggle) {
-		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
 
 		localStorage.status = false;
 
 		// Remove proxy
 		chrome.proxy.settings.clear({});
 	} else {
-		chrome.browserAction.setIcon({path: "images/icon128.png"});
+		chrome.browserAction.setIcon({path: "images/icon24.png"});
 
 		localStorage.status = true;
 
@@ -237,7 +237,7 @@ var init = (function () {
 
 	// Set the icon color on start
 	if (bool(localStorage.status) === false) {
-		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
 		chrome.proxy.settings.clear({});
 	} else {
 		resetProxy();
