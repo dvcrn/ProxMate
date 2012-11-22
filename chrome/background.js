@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global localStorage, chrome*/
+/*global localStorage, chrome, console*/
 var pac_config = {};
 
 var bool = function (str) {
@@ -13,34 +13,12 @@ var bool = function (str) {
 	}
 };
 
-var setProxy = function (url, port) {
+var resetProxy = function () {
 	"use strict";
-	var pcs;
+	var pcs, pac_config;
 
-	// Building a custom pac script dependent on the users options settings
-	pcs =	"function FindProxyForURL(url, host) {\n" +
-		" if ( " +
-		"	url.indexOf('proxmate=active') != -1 ";
+	pcs = localStorage.pac_script;
 
-	if (bool(localStorage.status_pandora)) {
-		pcs += " || host == 'www.pandora.com'";
-	}
-
-	if (bool(localStorage.status_gplay)) {
-		pcs += " || url.indexOf('play.google.com') != -1";
-	}
-	if (bool(localStorage.status_hulu) && bool(localStorage.status_cproxy)) {
-		pcs += " || url.indexOf('hulu.com') != -1";
-	}
-
-	if (bool(localStorage.status_grooveshark)) {
-		pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
-	}
-
-	pcs += " )\n" +
-		"	return 'PROXY " + url + ":" + port + "';\n" +
-		"return 'DIRECT';\n" +
-		"}";
 
 	pac_config = {
 		mode: "pac_script",
@@ -49,28 +27,11 @@ var setProxy = function (url, port) {
 		}
 	};
 
+
 	chrome.proxy.settings.set(
 		{value: pac_config, scope: 'regular'},
 		function () {}
 	);
-};
-
-var resetProxy = function () {
-	"use strict";
-	var url, port;
-
-	url = "";
-	port = 0;
-
-	if (bool(localStorage.status_cproxy)) {
-		url = localStorage.cproxy_url;
-		port = parseInt(localStorage.cproxy_port, 10);
-	} else {
-		url = localStorage.proxy_url;
-		port = parseInt(localStorage.proxy_port, 10);
-	}
-
-	setProxy(url, port);
 };
 
 // Handler for extension icon click
@@ -79,14 +40,14 @@ var togglePluginstatus = function () {
 	var toggle = bool(localStorage.status);
 
 	if (toggle) {
-		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
 
 		localStorage.status = false;
 
 		// Remove proxy
 		chrome.proxy.settings.clear({});
 	} else {
-		chrome.browserAction.setIcon({path: "images/icon128.png"});
+		chrome.browserAction.setIcon({path: "images/icon24.png"});
 
 		localStorage.status = true;
 
@@ -106,35 +67,154 @@ var initStorage = function (str, val) {
 	}
 };
 
+chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
+	"use strict";
+	if (details.isProxy === true) {
+		callback({ authCredentials: {username: localStorage.proxy_user, password: localStorage.proxy_password}});
+	} else {
+		callback({ cancel: false });
+	}
+}, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
+
+// Parses config string and creates pac_script entry
+var createPacFromConfig = function (config) {
+	"use strict";
+	if (config === undefined) {
+		config = localStorage.last_config;
+	}
+
+	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+	json = JSON.parse(config);
+
+	if (json.list.auth.user !== undefined) {
+		localStorage.proxy_user = json.list.auth.user;
+		localStorage.proxy_password = json.list.auth.pass;
+	} else {
+		delete localStorage.proxy_user;
+		delete localStorage.proxy_password;
+	}
+
+	pac_script = "function FindProxyForURL(url, host) {";
+	counter = 0;
+
+	service_list = [];
+	for (country in json.list.proxies) {
+		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+
+
+			list = json.list.proxies[country].services;
+
+			service_rules = [];
+			for (service in list) {
+
+				if (list[service].length > 0) {
+					var ls_string = "st_" + service;
+					initStorage(ls_string);
+
+					service_list.push(service);
+					if (bool(localStorage[ls_string]) === true) {
+
+						rules = list[service].join(" || ");
+						service_rules.push(rules);
+					}
+				}
+			}
+
+			if (service_rules.length === 0) {
+				continue;
+			}
+
+			rule = service_rules.join(" || ");
+
+
+			if (bool(localStorage.status_cproxy) === true) {
+				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
+			} else {
+				proxystring = json.list.proxies[country].nodes.join("; ");
+			}
+
+			if (counter === 0) {
+				pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+			} else {
+				pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+			}
+
+			counter += 1;
+		}
+
+	}
+
+	pac_script += " else { return 'DIRECT'; }";
+	pac_script += "}";
+	localStorage.services = service_list;
+	localStorage.pac_script = pac_script;
+};
+
+var loadExternalConfig = function () {
+	"use strict";
+	var xhr = new XMLHttpRequest();
+
+	xhr.addEventListener("load", function () {
+		var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
+
+		jsonstring = xhr.responseText;
+		json = JSON.parse(jsonstring);
+
+		if (json.success) {
+
+			// Save last config in localStorage for possible later use.
+			localStorage.last_config = jsonstring;
+			createPacFromConfig(jsonstring);
+		}
+
+	}, false);
+
+	xhr.addEventListener("error", function () {
+		// Do nothing
+	}, false);
+
+	try {
+		xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + localStorage.api_key, false);
+		xhr.send();
+	} catch (e) {
+		// Do nothing
+	}
+};
+
+setInterval(function () {
+	"use strict";
+	if (bool(localStorage.status) === true) {
+		loadExternalConfig();
+		resetProxy();
+	} else {
+		loadExternalConfig();
+	}
+}, 600000);
+
 var init = (function () {
 	"use strict";
 
 	// Init some storage space we need later
 	initStorage("firststart");
+	initStorage("pre21");
 
 	initStorage("status");
-	initStorage("status_youtube");
-	initStorage("status_pandora");
-	initStorage("status_grooveshark");
-	initStorage("status_hulu");
-	initStorage("status_gplay");
-
 	initStorage("status_youtube_autounblock", true);
 
 	initStorage("status_cproxy", false);
 	initStorage("cproxy_url", "");
 	initStorage("cproxy_port", "");
 
-	initStorage("proxy_url", "");
-	initStorage("proxy_port", "");
+	initStorage("pac_script", "");
+	initStorage("api_key", "");
 
-	// Is it the first start? Spam some tabs! 
+	// Is it the first start? Spam some tabs!
 	var firstStart, url, port, xhr;
 
 	firstStart = localStorage.firststart;
 	if (firstStart === "true") {
 		chrome.tabs.create({
-			url: "http://www.personalitycores.com/projects/proxmate"
+			url: "http://proxmate.dave.cx"
 		});
 
 		chrome.tabs.create({
@@ -142,45 +222,22 @@ var init = (function () {
 		});
 
 		localStorage.firststart = false;
+		localStorage.pre21 = false;
 	}
 
-	url = "";
-	port = "";
+	if (bool(localStorage.pre21)) {
+		localStorage.pre21 = false;
+		chrome.tabs.create({
+			url: "http://proxmate.dave.cx/changelog/"
+		});
+	}
 
 	// Request a proxy from master server & Error handling
-
-	xhr = new XMLHttpRequest();
-
-	xhr.addEventListener("error", function () {
-		url = "proxy.personalitycores.com";
-		port = 8000;
-	}, false);
-
-	xhr.addEventListener("load", function () {
-
-		var json = xhr.responseText;
-		json = JSON.parse(json);
-
-		url = json.url;
-		port = json.port;
-
-	}, false);
-
-	try {
-		xhr.open("GET", "http://direct.personalitycores.com:8000?country=us", false);
-		xhr.send();
-	} catch (e) {
-		url = "proxy.personalitycores.com";
-		port = 8000;
-	}
-
-	// Save the currently assigned proxy for later use
-	localStorage.proxy_url = url;
-	localStorage.proxy_port = port;
+	loadExternalConfig();
 
 	// Set the icon color on start
 	if (bool(localStorage.status) === false) {
-		chrome.browserAction.setIcon({path: "images/icon128_gray.png"});
+		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
 		chrome.proxy.settings.clear({});
 	} else {
 		resetProxy();
@@ -214,6 +271,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 	// ResetProxy to default
 	if (request.action === "resetproxy") {
+		loadExternalConfig();
 		resetProxy();
 	}
 

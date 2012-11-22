@@ -5,63 +5,134 @@ var pageMod = require("page-mod");
 var localStorage = require("simple-storage").storage;
 var preferences = require("simple-prefs");
 var request = require("request");
+var timers = require("timers");
 
 exports.main = function () {
 	"use strict";
-	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init;
+	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig;
 
-	setProxy = function (url, port) {
-		var pcs, pacurl;
-		url = String.quote(url).slice(1, -1);
-		port = String.quote(port).slice(1, -1);
+	/*
+	 * Get pac_script form localStorage and set
+	 */
+	resetProxy = function () {
+		var pacurl;
 
-		// Building a custom pac script dependent on the users options settings
-		pcs =	"function FindProxyForURL(url, host) {\n" +
-			" if ( " +
-			"	url.indexOf('proxmate=active') != -1 ";
-
-		if (preferences.prefs.status_pandora) {
-			pcs += " || host == 'www.pandora.com'";
-		}
-
-		if (preferences.prefs.status_gplay) {
-			pcs += "|| url.indexOf('play.google.com') != -1";
-		}
-
-		if (preferences.prefs.status_hulu && preferences.prefs.status_cproxy) {
-			pcs += "|| url.indexOf('hulu.com') != -1";
-		}
-
-		if (preferences.prefs.status_grooveshark) {
-			pcs += "|| shExpMatch(url, 'http://grooveshark.com*')";
-		}
-
-		pcs += " )\n" +
-			"	return 'PROXY " + url + ":" + port + "';\n" +
-			"return 'DIRECT';\n" +
-			"}";
-
-		// In firefox, the only way of setting a pac script is by retrieving it from a url.
-		// We are using data urls here to get around that
-		pacurl = "data:text/javascript," + encodeURIComponent(pcs);
+		pacurl = "data:text/javascript," + encodeURIComponent(localStorage.pac_script);
 
 		require("preferences-service").set("network.proxy.type", 2);
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
 	};
-	resetProxy = function () {
-		var url = "", port = 0;
 
-		if (preferences.prefs.status_cproxy && url !== undefined && port !== undefined) {
-			url = preferences.prefs.cproxy_url;
-			port = preferences.prefs.cproxy_port;
-		} else {
-			url = localStorage.proxy_url;
-			port = localStorage.proxy_port;
+	/*
+	 * Parses script and saves generated proxy autoconfig in localStorage
+	 *
+	 * @param {string} config a json string. If none set, the last in localStorage will be used.
+	 */
+	createPacFromConfig = function (config) {
+		if (config === undefined) {
+			config = localStorage.last_config;
 		}
 
-		setProxy(url, port);
+		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+		json = JSON.parse(config);
+
+		// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
+		if (json.list.auth.user !== undefined) {
+			localStorage.proxy_user = json.list.auth.user;
+			localStorage.proxy_password = json.list.auth.pass;
+		} else {
+			delete localStorage.proxy_user;
+			delete localStorage.proxy_password;
+		}
+
+		// create a proxy auto config string
+		pac_script = "function FindProxyForURL(url, host) {";
+		counter = 0;
+
+		service_list = [];
+		for (country in json.list.proxies) {
+			// Only parse if there are nodes and proxies available for the specific country
+			if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+
+
+				list = json.list.proxies[country].services;
+
+				service_rules = [];
+				for (service in list) {
+					// Apply only if we have rules under the current service
+					if (list[service].length > 0) {
+						// Create localStorage space for the current service.
+						// This will enable toggling when using a custom options page
+						var ls_string = "st_" + service;
+						initStorage(ls_string);
+
+						service_list.push(service);
+						// check if the current service is enabled by the user. If no, skip it, if yes, join by OR condition
+						if (localStorage[ls_string] === true) {
+							rules = list[service].join(" || ");
+							service_rules.push(rules);
+						}
+					}
+				}
+
+				// Check if we have some rules available
+				if (service_rules.length === 0) {
+					continue;
+				}
+
+				rule = service_rules.join(" || ");
+
+				// Check for custom userproxy
+				if (preferences.prefs.status_cproxy === true) {
+					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
+				} else {
+					proxystring = json.list.proxies[country].nodes.join("; ");
+				}
+
+				// Some special treatment on first iteration
+				if (counter === 0) {
+					pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+				} else {
+					pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
+				}
+
+				counter += 1;
+			}
+
+		}
+
+		pac_script += " else { return 'DIRECT'; }";
+		pac_script += "}";
+		localStorage.services = service_list;
+		localStorage.pac_script = pac_script;
 	};
 
+	/*
+	 * Loads external config and saves in localStorage.
+	 * Invokes createPacFromConfig after fetching
+	 *
+	 * @param {function} callback a desired callback function
+	 */
+	loadExternalConfig = function (callback) {
+		if (callback === undefined) {
+			callback = function () {};
+		}
+
+		request.Request({
+			url: "http://proxmate.dave.cx/api/config.json?key=" + preferences.prefs.api_key,
+			onComplete: function (response) {
+				var config = response.text;
+				localStorage.last_config = config;
+				createPacFromConfig(config);
+
+				callback();
+			}
+		}).get();
+	};
+
+	/*
+	 * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
+	 */
 	setPluginStatus = function () {
 		var toggle = localStorage.status;
 
@@ -81,7 +152,12 @@ exports.main = function () {
 		}
 	};
 
-	// Function for initial creating / filling of storages
+	/*
+	 * For initialising localStorage entries.
+	 *
+	 * @param {string} str the localStorage key
+	 * @param {string} val the value for initialising. If none is set, true will be used
+	 */
 	initStorage = function (str, val) {
 		if (val === undefined) {
 			val = true;
@@ -92,45 +168,18 @@ exports.main = function () {
 		}
 	};
 
+	/*
+	 * Creates listeners for reacting on worker events
+	 *
+	 * @param {object} worker pagemod
+	 */
 	initListeners = function (worker) {
-
-		worker.port.on('setproxy',
-			function (data) {
-				var responseHash, cproxy, url, port;
-
-				responseHash = data.hash;
-				cproxy = preferences.prefs.status_cproxy;
-
-				if (cproxy) {
-					url = preferences.prefs.cproxy_url;
-					port = preferences.prefs.cproxy_port;
-
-					require("preferences-service").set("network.proxy.type", 1);
-					require("preferences-service").set("network.proxy.http", url);
-					require("preferences-service").set("network.proxy.http_port", port);
-				} else {
-					require("preferences-service").set("network.proxy.type", 1);
-					require("preferences-service").set("network.proxy.http", localStorage.proxy_url);
-					require("preferences-service").set("network.proxy.http_port", localStorage.proxy_port);
-				}
-
-				worker.port.emit(responseHash, {
-					success: true
-				});
-			});
-
-		worker.port.on('resetproxy',
-			function (data) {
-				var responseHash = data.hash;
-
-				resetProxy();
-				worker.port.emit(responseHash, {success: true});
-			});
 
 		// function for checking modul statuses in pagemods
 		worker.port.on('checkStatus', function (data) {
 			var module, status, responseHash;
 
+			// ResponseHash is used for specific event communication
 			module = data.param;
 			status = false;
 			responseHash = data.hash;
@@ -152,7 +201,8 @@ exports.main = function () {
 				});
 		});
 
-		// Function used for making ajax calls in pagemods
+		// Function used for making ajax calls
+		// Firefox forbids this in pagemods
 		worker.port.on("loadResource", function (data) {
 			var url, responseHash;
 
@@ -168,6 +218,12 @@ exports.main = function () {
 		});
 	};
 
+	/*
+	 * Attaches a pagemod if a specific regex is matched. Will invoke initListeners
+	 *
+	 * @param {string} regex url regex rule for attaching
+	 * @param {string} script scriptfile for attaching to pagemod
+	 */
 	createPagemod = function (regex, script) {
 		return pageMod.PageMod({
 			include: [regex],
@@ -180,6 +236,17 @@ exports.main = function () {
 		});
 	};
 
+	timers.setInterval(function () {
+		if (localStorage.status === true) {
+			loadExternalConfig(resetProxy);
+		} else {
+			loadExternalConfig();
+		}
+	}, 600000);
+
+	/*
+	 * Self invoking function on browser / plugin start.
+	 */
 	init = (function () {
 
 		var statusButton = require("widget").Widget({
@@ -191,27 +258,29 @@ exports.main = function () {
 
 		initStorage("firststart");
 		initStorage("status");
+		initStorage("pre21");
+		initStorage("pac_script", "");
 
-		// Get proxy from proxybalancer. Will be set async
-		localStorage.proxy_url = "proxy.personalitycores.com";
-		localStorage.proxy_port = 8000;
-
-		request.Request({
-			url: "http://direct.personalitycores.com:8000?country=us",
-			onComplete: function (response) {
-				localStorage.proxy_url = response.json.url;
-				localStorage.proxy_port = response.json.port;
-				resetProxy();
-			}
-		}).get();
-
+		if (localStorage.status === true) {
+			loadExternalConfig(resetProxy);
+		} else {
+			loadExternalConfig();
+		}
 
 		if (localStorage.firststart === true) {
 
-			require("tab-browser").addTab("http://www.personalitycores.com/projects/proxmate/");
+			require("tab-browser").addTab("http://proxmate.dave.cx/");
 			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage.firststart = false;
+			localStorage.pre21 = false;
+		}
+
+		// Upgradecheck
+		// For reminding the user that there's new stuff available!
+		if (localStorage.pre21) {
+			localStorage.pre21 = false;
+			require("tab-browser").addTab("http://proxmate.dave.cx/changelog/");
 		}
 
 		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
@@ -230,17 +299,28 @@ exports.main = function () {
 			require("preferences-service").reset("network.proxy.http_port");
 		} else {
 			statusButton.contentURL = selfData.url("images/icon16.png");
-			resetProxy();
 		}
 	}());
 
+	/*
+	 * Function for reacting on simplepref changes
+	 */
 	function onPrefChange(prefName) {
+		createPacFromConfig();
 		resetProxy();
 	}
 
 	preferences.on("status_cproxy", onPrefChange);
 	preferences.on("cproxy_url", onPrefChange);
 	preferences.on("cproxy_port", onPrefChange);
+
+	preferences.on("api_key", function() {
+		if (localStorage.status === true) {
+			loadExternalConfig(resetProxy);
+		} else {
+			loadExternalConfig();
+		}
+	});
 
 	preferences.on("status_gplay", onPrefChange);
 	preferences.on("status_youtube", onPrefChange);

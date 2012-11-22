@@ -2,7 +2,7 @@
 /*global checkStatus, $, loadBanner, resetProxy, proxifyUri*/
 
 var global = checkStatus("global");
-var pandora = checkStatus("status_pandora");
+var pandora = checkStatus("st_pandora.com");
 
 $.when(global, pandora).done(function () {
 	"use strict";
