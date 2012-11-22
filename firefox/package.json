@@ -3,7 +3,7 @@
 	"license": "MPL 1.1/GPL 2.0/LGPL 2.1",
 	"icon": "data/images/icon128.png",
 	"author": "personalitycores.com",
-	"homepage": "http://www.personalitycores.com/projects/proxmate/",
+	"homepage": "http://proxmate.dave.cx/",
 	"version": "2.1",
 	"fullName": "ProxMate - unblock the Internet!",
 	"id": "jid1-QpHD8URtZWJC2A@jetpack",
@@ -26,7 +26,7 @@
 		},
 		{
 			"name": "api_key",
-			"title": "Confirmation Number",
+			"title": "PayPal donation number",
 			"type": "string"
 		},
 		{
