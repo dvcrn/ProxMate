@@ -4,14 +4,9 @@
 $(document).ready(function () {
 	"use strict";
 	var bool, init, checkBoxToggle, resetText,
-		toggle_youtube = $("#s-youtube-toggle"),
-		toggle_grooveshark = $("#s-grooveshark-toggle"),
-		toggle_hulu = $("#s-hulu-toggle"),
-		toggle_pandora = $("#s-pandora-toggle"),
-		toggle_gplay = $("#s-gplay-toggle"),
 
 		toggle_youtube_autounblock = $("#s-youtube-autounblock-toggle"),
-
+		api_key = $("#g-donationkey"),
 		toggle_cproxy = $("#g-cproxy-toggle"),
 		cproxy_port = $("#g-cproxy-port"),
 		cproxy_url = $("#g-cproxy-url");
@@ -27,17 +22,14 @@ $(document).ready(function () {
 	};
 
 	checkBoxToggle = function (storage, ele) {
+		console.info("Reading: " + storage + " - " + localStorage[storage]);
 		if (bool(localStorage[storage])) {
+			console.info("Checking checkbox");
 			ele.prop("checked", "true");
 		}
 	};
 
 	init = (function () {
-		checkBoxToggle("status_youtube", toggle_youtube);
-		checkBoxToggle("status_grooveshark", toggle_grooveshark);
-		checkBoxToggle("status_hulu", toggle_hulu);
-		checkBoxToggle("status_pandora", toggle_pandora);
-		checkBoxToggle("status_gplay", toggle_gplay);
 
 		checkBoxToggle("status_youtube_autounblock", toggle_youtube_autounblock);
 
@@ -48,6 +40,27 @@ $(document).ready(function () {
 
 		cproxy_url.val(localStorage.cproxy_url);
 		cproxy_port.val(localStorage.cproxy_port);
+		api_key.val(localStorage.api_key);
+
+		// Loading packages depending on localStorage entries
+		var pa = $("#packages_area");
+		var services = localStorage.services;
+		services = services.split(",");
+
+		console.info(services);
+
+		for (var i = 0; i < services.length; i++) {
+			var service = services[i];
+			var service_escaped = service;
+			service_escaped = service_escaped.replace(/ /g,"_");
+			service_escaped = service_escaped.replace(/\./g,"_");
+
+			var s = "st_" + service;
+
+			console.info("LocalStorage Module: " + s + " - " + localStorage[s]);
+			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'"> Enable module "<span>'+services[i]+'</span>"</label></p>');
+			checkBoxToggle(s, $("#"+service_escaped));
+		}
 
 	}());
 
@@ -69,31 +82,28 @@ $(document).ready(function () {
 
 	// Savebutton. Obvious :D
 	$("#savebutton").click(function () {
-		var status_youtube = toggle_youtube.prop("checked"),
-			status_grooveshark = toggle_grooveshark.prop("checked"),
-			status_hulu = toggle_hulu.prop("checked"),
-			status_pandora = toggle_pandora.prop("checked"),
-			status_gplay = toggle_gplay.prop("checked"),
-
-			status_youtube_autounblock = toggle_youtube_autounblock.prop("checked"),
+		var status_youtube_autounblock = toggle_youtube_autounblock.prop("checked"),
 
 			status_cproxy = $("#g-cproxy-toggle").prop("checked"),
 			cproxy_port = $("#g-cproxy-port").val(),
-			cproxy_url = $("#g-cproxy-url").val();
+			cproxy_url = $("#g-cproxy-url").val(),
+			api_key = $("#g-donationkey").val();
 
-		// Write current vars in local storage
-
-		localStorage.status_youtube = status_youtube;
-		localStorage.status_grooveshark = status_grooveshark;
-		localStorage.status_hulu = status_hulu;
-		localStorage.status_pandora = status_pandora;
-		localStorage.status_gplay = status_gplay;
 
 		localStorage.status_youtube_autounblock = status_youtube_autounblock;
 
 		localStorage.status_cproxy = status_cproxy;
 		localStorage.cproxy_url = cproxy_url;
 		localStorage.cproxy_port = cproxy_port;
+		localStorage.api_key = api_key;
+
+		var packages = $(".package");
+		packages.each(function(index, el) {
+			var pkg = $(packages[index]);
+			var module = pkg.find("span").html();
+			var value = pkg.find("input").prop("checked");
+			localStorage["st_" + module] = value;
+		});
 
 		// Send action to background page
 		sendAction("resetproxy");

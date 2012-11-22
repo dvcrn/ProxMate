@@ -17,7 +17,7 @@ $.when(global, youtube, autounblock).done(function () {
 
 			ProxMate unblocks all links having &proxmate=active in their url.
 			Youtube loads the video async after the initial pagecall is done. The videostream checks if the sitecall comes from the same IP as the videocall. If it doesn't, the video will be blocked.
-			Means we have to proxy both. 
+			Means we have to proxy both.
 
 			The way we came up with:
 			- Get youtubes script for creating the video
@@ -31,8 +31,10 @@ $.when(global, youtube, autounblock).done(function () {
 
 		if (pmParam === "active") {
 			script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
+			if (script === undefined) {
+				script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
+			}
 			scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
-
 			loadBanner(function () {
 				$("#page").css("margin-top", "0px");
 			});
