@@ -2,7 +2,7 @@
 /*global checkStatus, $, loadBanner*/
 
 var global = checkStatus("global");
-var gplay = checkStatus("status_gplay");
+var gplay = checkStatus("st_play.google.com");
 
 $.when(global, gplay).done(function () {
 	"use strict";

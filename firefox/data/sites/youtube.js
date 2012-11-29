@@ -2,7 +2,7 @@
 /*global checkStatus, $, loadBanner, resetProxy, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("status_youtube");
+var youtube = checkStatus("st_General");
 var autounblock = checkStatus("status_youtube_autounblock");
 
 $.when(global, youtube, autounblock).done(function () {
