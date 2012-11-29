@@ -4,7 +4,7 @@
 	"icon": "data/images/icon128.png",
 	"author": "personalitycores.com",
 	"homepage": "http://proxmate.dave.cx/",
-	"version": "2.1",
+	"version": "2.1.1",
 	"fullName": "ProxMate - unblock the Internet!",
 	"id": "jid1-QpHD8URtZWJC2A@jetpack",
 	"description": "Removes country restrictions for FREE! Just like that.",
@@ -30,7 +30,7 @@
 			"type": "string"
 		},
 		{
-			"name": "status_youtube",
+			"name": "st_General",
 			"title": "Enable for youtube.com",
 			"type": "bool",
 			"value": true
@@ -42,25 +42,25 @@
 			"value": true
 		},
 		{
-			"name": "status_pandora",
+			"name": "st_pandora.com",
 			"title": "Enable for pandora.com",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "status_grooveshark",
+			"name": "st_grooveshark.com",
 			"title": "Enable for grooveshark",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "status_gplay",
+			"name": "st_play.google.com",
 			"title": "Enable for US play.google.com",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "status_hulu",
+			"name": "st_hulu.com",
 			"title": "Enable for hulu.com (works only if own proxy is set)",
 			"type": "bool",
 			"value": true
