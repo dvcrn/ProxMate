@@ -68,7 +68,7 @@ exports.main = function () {
 
 						service_list.push(service);
 						// check if the current service is enabled by the user. If no, skip it, if yes, join by OR condition
-						if (localStorage[ls_string] === true) {
+						if (preferences.prefs[ls_string] !== false) {
 							rules = list[service].join(" || ");
 							service_rules.push(rules);
 						}
@@ -322,9 +322,9 @@ exports.main = function () {
 		}
 	});
 
-	preferences.on("status_gplay", onPrefChange);
-	preferences.on("status_youtube", onPrefChange);
-	preferences.on("status_hulu", onPrefChange);
-	preferences.on("status_pandora", onPrefChange);
-	preferences.on("status_grooveshark", onPrefChange);
+	preferences.on("st_play.google.com", onPrefChange);
+	preferences.on("st_General", onPrefChange);
+	preferences.on("st_hulu.com", onPrefChange);
+	preferences.on("st_pandora.com", onPrefChange);
+	preferences.on("st_grooveshark.com", onPrefChange);
 };

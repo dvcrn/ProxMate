@@ -2,7 +2,7 @@
 /*global checkStatus, $, loadBanner, resetProxy, proxifyUri*/
 
 var global = checkStatus("global");
-var hulu = checkStatus("status_hulu");
+var hulu = checkStatus("st_hulu.com");
 var cproxy = checkStatus("status_cproxy");
 
 $.when(global, hulu, cproxy).done(function () {
