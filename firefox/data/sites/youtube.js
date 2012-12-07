@@ -45,21 +45,23 @@ $.when(global, youtube, autounblock).done(function () {
 			}));
 
 		} else {
-			if ($("#watch-player-unavailable").length > 0) {
+			if ($("#watch7-player-unavailable").length > 0) {
 				if (autounblock.response.enabled) {
 					// Change text
-					$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
+					$(".content .message").html("ProxMate will unblock this video now :)");
+					$(".content .submessage").html("Just a moment.");
 
 					// Change Icon
-					$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
+					$("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
 					window.location.href = window.location.href + "&proxmate=active";
 				} else {
 					loadOverlay(function () {
-						// Change text
-						$("#unavailable-submessage").html("ProxMate will unblock this video now :)");
+					// Change text
+						$(".content .message").html("ProxMate will unblock this video now :)");
+						$(".content .submessage").html("Just a moment.");
 
 						// Change Icon
-						$("#watch-player-unavailable-icon-container img").prop("src", getUrlFor("images/waitajax.gif"));
+						$("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
 						window.location.href = window.location.href + "&proxmate=active";
 					});
 				}
