@@ -86,7 +86,7 @@ exports.main = function () {
 				if (preferences.prefs.status_cproxy === true) {
 					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
 				} else {
-					proxystring = json.list.proxies[country].nodes.join("; ");
+					proxystring = json.list.proxies[country].nodes.join("; PROXY ");
 				}
 
 				// Some special treatment on first iteration
