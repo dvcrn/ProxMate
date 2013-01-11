@@ -130,7 +130,7 @@ var createPacFromConfig = function (config) {
 			if (bool(localStorage.status_cproxy) === true) {
 				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
 			} else {
-				proxystring = json.list.proxies[country].nodes.join("; ");
+				proxystring = json.list.proxies[country].nodes.join("; PROXY ");
 			}
 
 			if (counter === 0) {
