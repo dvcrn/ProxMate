@@ -9,9 +9,20 @@ var timers = require("timers");
 
 exports.main = function () {
 	"use strict";
-	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig;
+	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig, shuffle;
 
-	/*
+	/**
+	 * shuffles a array and returns random result
+	 * @param  {array} o the array to shuffle
+	 * @return {array} the shuffled array
+	 */
+	shuffle = function (o) {
+		"use strict";
+    	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    	return o;
+	};
+
+	/**
 	 * Get pac_script form localStorage and set
 	 */
 	resetProxy = function () {
@@ -23,17 +34,16 @@ exports.main = function () {
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
 	};
 
-	/*
+	/**
 	 * Parses script and saves generated proxy autoconfig in localStorage
-	 *
-	 * @param {string} config a json string. If none set, the last in localStorage will be used.
+	 * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
 	 */
 	createPacFromConfig = function (config) {
 		if (config === undefined) {
 			config = localStorage.last_config;
 		}
 
-		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
 		json = JSON.parse(config);
 
 		// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
@@ -59,7 +69,7 @@ exports.main = function () {
 
 				service_rules = [];
 				for (service in list) {
-					// Apply only if we have rules under the current service
+					// Apply only if we have rules for the current service
 					if (list[service].length > 0) {
 						// Create localStorage space for the current service.
 						// This will enable toggling when using a custom options page
@@ -75,7 +85,7 @@ exports.main = function () {
 					}
 				}
 
-				// Check if we have some rules available
+				// Check if we have some rules available. If not, just skip
 				if (service_rules.length === 0) {
 					continue;
 				}
@@ -86,7 +96,9 @@ exports.main = function () {
 				if (preferences.prefs.status_cproxy === true) {
 					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
 				} else {
-					proxystring = json.list.proxies[country].nodes.join("; PROXY ");
+					// Shuffle proxies for a traffic randomizing
+					proxies = shuffle(json.list.proxies[country].nodes);
+					proxystring = proxies.join("; PROXY ");
 				}
 
 				// Some special treatment on first iteration
@@ -107,11 +119,10 @@ exports.main = function () {
 		localStorage.pac_script = pac_script;
 	};
 
-	/*
-	 * Loads external config and saves in localStorage.
+	/**
+	 * Loads external config and saves in localStorage
 	 * Invokes createPacFromConfig after fetching
-	 *
-	 * @param {function} callback a desired callback function
+	 * @param  {Function} callback callback after execution
 	 */
 	loadExternalConfig = function (callback) {
 		if (callback === undefined) {
@@ -122,6 +133,7 @@ exports.main = function () {
 			url: "http://proxmate.dave.cx/api/config.json?key=" + preferences.prefs.api_key,
 			onComplete: function (response) {
 				var config = response.text;
+				// Save the config in localStorage. For fallback
 				localStorage.last_config = config;
 				createPacFromConfig(config);
 
@@ -130,7 +142,7 @@ exports.main = function () {
 		}).get();
 	};
 
-	/*
+	/**
 	 * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
 	 */
 	setPluginStatus = function () {
@@ -148,15 +160,15 @@ exports.main = function () {
 			this.contentURL = selfData.url("images/icon16.png");
 			localStorage.status = true;
 
+			// ProxMate has just been turned on. Set the pac script for proxying.
 			resetProxy();
 		}
 	};
 
-	/*
-	 * For initialising localStorage entries.
-	 *
-	 * @param {string} str the localStorage key
-	 * @param {string} val the value for initialising. If none is set, true will be used
+	/**
+	 * Initialises a specific localStorage space
+	 * @param  {string} str localStorage key
+	 * @param  {string} val localStorage value
 	 */
 	initStorage = function (str, val) {
 		if (val === undefined) {
@@ -168,10 +180,10 @@ exports.main = function () {
 		}
 	};
 
-	/*
+	/**
 	 * Creates listeners for reacting on worker events
-	 *
-	 * @param {object} worker pagemod
+	 * Basically for pagemod <-> main.js communication
+	 * @param  {object} worker pagemod worker
 	 */
 	initListeners = function (worker) {
 
@@ -218,11 +230,10 @@ exports.main = function () {
 		});
 	};
 
-	/*
-	 * Attaches a pagemod if a specific regex is matched. Will invoke initListeners
-	 *
-	 * @param {string} regex url regex rule for attaching
-	 * @param {string} script scriptfile for attaching to pagemod
+	/**
+	 * Attaches a pagemod if regex rule matches. Will invoke initListeners
+	 * @param  {string} regex  regex url for attaching
+	 * @param  {string} script scriptfile for attaching to pagemod
 	 */
 	createPagemod = function (regex, script) {
 		return pageMod.PageMod({
@@ -236,6 +247,9 @@ exports.main = function () {
 		});
 	};
 
+	/**
+	 * Invoke proxy fetching all 10 minutes
+	 */
 	timers.setInterval(function () {
 		if (localStorage.status === true) {
 			loadExternalConfig(resetProxy);
@@ -244,8 +258,8 @@ exports.main = function () {
 		}
 	}, 600000);
 
-	/*
-	 * Self invoking function on browser / plugin start.
+	/**
+	 * main.js starting point. Will invoke itself
 	 */
 	init = (function () {
 
@@ -283,7 +297,6 @@ exports.main = function () {
 			require("tab-browser").addTab("http://proxmate.dave.cx/changelog/");
 		}
 
-		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
 		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
@@ -302,8 +315,9 @@ exports.main = function () {
 		}
 	}());
 
-	/*
+	/**
 	 * Function for reacting on simplepref changes
+	 * @param  {string} prefName the simplepref name
 	 */
 	function onPrefChange(prefName) {
 		createPacFromConfig();

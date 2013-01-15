@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, resetProxy, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
+/*global checkStatus, $, loadBanner, getUrlParam, loadOverlay, getUrlFor*/
 
 var global = checkStatus("global");
 var youtube = checkStatus("st_General");

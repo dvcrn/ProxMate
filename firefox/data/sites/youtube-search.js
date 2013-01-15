@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, getUrlParam, getUrlFor*/
+/*global checkStatus, $, loadBanner*/
 
 var global = checkStatus("global");
 var youtube = checkStatus("st_General");

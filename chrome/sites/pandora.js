@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, resetProxy, proxifyUri*/
+/*global checkStatus, $, loadBanner, proxifyUri*/
 
 var global = checkStatus("global");
 var pandora = checkStatus("st_pandora.com");
