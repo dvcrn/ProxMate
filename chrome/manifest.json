@@ -24,10 +24,6 @@
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
     },
     {
-      "matches": ["*://*.personalitycores.com/projects/proxmate/"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/personalitycores.js"]
-    },
-    {
       "matches": ["*://play.google.com/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/gplay.js"]
     },
@@ -61,7 +57,6 @@
     "webRequest",
     "webRequestBlocking",
     "proxy",
-    "http://www.personalitycores.com/",
     "http://youtube.com/",
     "http://*/"
   ]

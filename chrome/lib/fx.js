@@ -46,14 +46,6 @@ var checkStatus = function (module) {
 };
 
 /**
- * Sends "resetproxy" message to background.js
- */
-var resetProxy = function () {
-	"use strict";
-	sendAction("resetproxy");
-};
-
-/**
  * Strips a get parameter from url
  * @param  {string} name parameter key
  * @return {string}      parameter value

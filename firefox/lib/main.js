@@ -297,7 +297,6 @@ exports.main = function () {
 			require("tab-browser").addTab("http://proxmate.dave.cx/changelog/");
 		}
 
-		createPagemod(/.*personalitycores\.com\/projects\/proxmate/, 'sites/personalitycores.js');
 		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
 		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
 		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
