@@ -56,50 +56,14 @@ var loadResource = function (url) {
 	return sendAction("loadResource", url);
 };
 
-var proxifyUri = function (uri, reload) {
-	"use strict";
-	if (reload === undefined) {
-		reload = false;
-	} else {
-		reload = true;
-	}
-	var promise = sendAction("setproxy", encodeURI(window.location.href));
-	promise.done(function () {
-		if (reload) {
-			document.location = uri;
-			document.location.reload();
-		} else {
-			document.location = uri;
-		}
-	});
-};
-
-var resetProxy = function () {
-	"use strict";
-	var promise = sendAction("resetproxy");
-};
-
 var getUrlParam = function (name) {
 	"use strict";
-	return decodeURI(
-		(new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [,null])[1]
-	);
+	return decodeURI((new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [null])[1]);
 };
 
 var checkStatus = function (module) {
 	"use strict";
 	return sendAction("checkStatus", module);
-};
-
-var bool = function (str) {
-	"use strict";
-	if (str.toLowerCase() === 'false') {
-		return false;
-	} else if (str.toLowerCase() === 'true') {
-		return true;
-	} else {
-		return undefined;
-	}
 };
 
 var loadOverlay = function (callback) {

@@ -1,5 +1,5 @@
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, resetProxy, proxifyUri*/
+/*global checkStatus, $, loadBanner*/
 
 var global = checkStatus("global");
 
