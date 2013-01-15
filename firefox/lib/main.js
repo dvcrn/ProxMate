@@ -9,7 +9,12 @@ var timers = require("timers");
 
 exports.main = function () {
 	"use strict";
-	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig;
+	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig, shuffle;
+
+	shuffle = function(o){ //v1.0
+    	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    	return o;
+	};
 
 	/*
 	 * Get pac_script form localStorage and set
@@ -33,7 +38,7 @@ exports.main = function () {
 			config = localStorage.last_config;
 		}
 
-		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
 		json = JSON.parse(config);
 
 		// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
@@ -86,7 +91,9 @@ exports.main = function () {
 				if (preferences.prefs.status_cproxy === true) {
 					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
 				} else {
-					proxystring = json.list.proxies[country].nodes.join("; PROXY ");
+					// Shuffle proxies for a traffic randomizing
+					proxies = shuffle(json.list.proxies[country].nodes);
+					proxystring = proxies.join("; PROXY ");
 				}
 
 				// Some special treatment on first iteration

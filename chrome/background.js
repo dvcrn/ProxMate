@@ -13,12 +13,16 @@ var bool = function (str) {
 	}
 };
 
+var shuffle = function(o){ //v1.0
+    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
 var resetProxy = function () {
 	"use strict";
 	var pcs, pac_config;
 
 	pcs = localStorage.pac_script;
-
 
 	pac_config = {
 		mode: "pac_script",
@@ -83,7 +87,7 @@ var createPacFromConfig = function (config) {
 		config = localStorage.last_config;
 	}
 
-	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules;
+	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
 	json = JSON.parse(config);
 
 	if (json.list.auth.user !== undefined) {
@@ -130,7 +134,9 @@ var createPacFromConfig = function (config) {
 			if (bool(localStorage.status_cproxy) === true) {
 				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
 			} else {
-				proxystring = json.list.proxies[country].nodes.join("; PROXY ");
+				// Shuffle proxies for a traffic randomizing
+				proxies = shuffle(json.list.proxies[country].nodes);
+				proxystring = proxies.join("; PROXY ");
 			}
 
 			if (counter === 0) {
