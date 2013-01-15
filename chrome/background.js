@@ -2,6 +2,12 @@
 /*global localStorage, chrome, console*/
 var pac_config = {};
 
+/**
+ * tries to cast a string into bool
+ * chrome saves localStorage vars in string only. Needed for conversion
+ * @param  {string} str string to casat
+ * @return {bool}
+ */
 var bool = function (str) {
 	"use strict";
 	if (str.toLowerCase() === 'false') {
@@ -13,11 +19,20 @@ var bool = function (str) {
 	}
 };
 
-var shuffle = function(o){ //v1.0
+/**
+ * shuffles a array and returns random result
+ * @param  {array} o the array to shuffle
+ * @return {array} the shuffled array
+ */
+var shuffle = function (o) {
+	"use strict";
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
 
+/**
+ * Get pac_script form localStorage and set
+ */
 var resetProxy = function () {
 	"use strict";
 	var pcs, pac_config;
@@ -38,28 +53,33 @@ var resetProxy = function () {
 	);
 };
 
-// Handler for extension icon click
+/**
+ * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
+ */
 var togglePluginstatus = function () {
 	"use strict";
 	var toggle = bool(localStorage.status);
 
 	if (toggle) {
 		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
-
 		localStorage.status = false;
 
-		// Remove proxy
+		// Remove proxy entirely and allow other plugins to write
 		chrome.proxy.settings.clear({});
 	} else {
 		chrome.browserAction.setIcon({path: "images/icon24.png"});
-
 		localStorage.status = true;
 
-		// Start setting the old proxy
+		// ProxMate has just been turned on. Set the proxy
 		resetProxy();
 	}
 };
 
+/**
+ * Initialises a specific localStorage space
+ * @param  {string} str localStorage key
+ * @param  {string} val localStorage value
+ */
 var initStorage = function (str, val) {
 	"use strict";
 	if (val === undefined) {
@@ -71,6 +91,9 @@ var initStorage = function (str, val) {
 	}
 };
 
+/**
+ * Experimental module for reacting on onAuthRequired prompts. Might be useful for using user auth in proxy servers
+ */
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	"use strict";
 	if (details.isProxy === true) {
@@ -80,7 +103,10 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	}
 }, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
 
-// Parses config string and creates pac_script entry
+/**
+ * Parses script and saves generated proxy autoconfig in localStorage
+ * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
+ */
 var createPacFromConfig = function (config) {
 	"use strict";
 	if (config === undefined) {
@@ -90,6 +116,7 @@ var createPacFromConfig = function (config) {
 	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
 	json = JSON.parse(config);
 
+	// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
 	if (json.list.auth.user !== undefined) {
 		localStorage.proxy_user = json.list.auth.user;
 		localStorage.proxy_password = json.list.auth.pass;
@@ -98,11 +125,13 @@ var createPacFromConfig = function (config) {
 		delete localStorage.proxy_password;
 	}
 
+	// create a proxy auto config string
 	pac_script = "function FindProxyForURL(url, host) {";
 	counter = 0;
 
 	service_list = [];
 	for (country in json.list.proxies) {
+		// Only parse if there are nodes and proxies available for the specific country
 		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
 
 
@@ -110,12 +139,15 @@ var createPacFromConfig = function (config) {
 
 			service_rules = [];
 			for (service in list) {
-
+				// Apply only if we have rules for the current service
 				if (list[service].length > 0) {
+					// Create localStorage space for the current service.
+					// This will enable toggling when using a custom options page
 					var ls_string = "st_" + service;
 					initStorage(ls_string);
 
 					service_list.push(service);
+					// check if the current service is enabled by the user. If no, skip it, if yes, join by OR condition
 					if (bool(localStorage[ls_string]) === true) {
 
 						rules = list[service].join(" || ");
@@ -124,13 +156,14 @@ var createPacFromConfig = function (config) {
 				}
 			}
 
+			// Check if we have some rules available. If not, just skip
 			if (service_rules.length === 0) {
 				continue;
 			}
 
 			rule = service_rules.join(" || ");
 
-
+			// Check for custom userproxy
 			if (bool(localStorage.status_cproxy) === true) {
 				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
 			} else {
@@ -139,6 +172,7 @@ var createPacFromConfig = function (config) {
 				proxystring = proxies.join("; PROXY ");
 			}
 
+			// Some special treatment on first iteration
 			if (counter === 0) {
 				pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
 			} else {
@@ -156,6 +190,10 @@ var createPacFromConfig = function (config) {
 	localStorage.pac_script = pac_script;
 };
 
+/**
+ * Loads external config and saves in localStorage
+ * Invokes createPacFromConfig after fetching
+ */
 var loadExternalConfig = function () {
 	"use strict";
 	var xhr = new XMLHttpRequest();
@@ -168,7 +206,7 @@ var loadExternalConfig = function () {
 
 		if (json.success) {
 
-			// Save last config in localStorage for possible later use.
+			// Save last config in localStorage. For fallback
 			localStorage.last_config = jsonstring;
 			createPacFromConfig(jsonstring);
 		}
@@ -187,6 +225,9 @@ var loadExternalConfig = function () {
 	}
 };
 
+/**
+ * Invoke proxy fetching all 10 minutes
+ */
 setInterval(function () {
 	"use strict";
 	if (bool(localStorage.status) === true) {
@@ -197,6 +238,9 @@ setInterval(function () {
 	}
 }, 600000);
 
+/**
+ * Self-invoking init function. Basically the starting point of this addon.
+ */
 var init = (function () {
 	"use strict";
 
@@ -214,7 +258,7 @@ var init = (function () {
 	initStorage("pac_script", "");
 	initStorage("api_key", "");
 
-	// Is it the first start? Spam some tabs!
+	// Is this the first start? Spam some tabs!
 	var firstStart, url, port, xhr;
 
 	firstStart = localStorage.firststart;
@@ -231,6 +275,7 @@ var init = (function () {
 		localStorage.pre21 = false;
 	}
 
+	// Used when showing a changelog page. Only neccessary for big changes
 	if (bool(localStorage.pre21)) {
 		localStorage.pre21 = false;
 		chrome.tabs.create({
@@ -251,29 +296,17 @@ var init = (function () {
 
 }());
 
+/**
+ * Add a click listener on plugin icon
+ */
 chrome.browserAction.onClicked.addListener(togglePluginstatus);
 
+/**
+ * Event listener for cummunication between page scripts / options and background.js
+ */
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
 	"use strict";
 	var config, module, status;
-
-	if (request.action === "setproxy") {
-		config = {
-			mode: "fixed_servers",
-			rules: {
-				singleProxy: {
-					host: localStorage.proxy_url,
-					port: parseInt(localStorage.proxy_port, 10)
-				}
-			}
-		};
-
-		chrome.proxy.settings.set({value: config, scope: 'regular'}, function () {});
-
-		sendResponse({
-			status: true
-		});
-	}
 
 	// ResetProxy to default
 	if (request.action === "resetproxy") {
