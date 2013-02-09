@@ -1,3 +1,10 @@
+/**
+ * ProxMate is created and © by David Mohl.
+ * It's pretty cool that you're interested in how this extension works but please don't steal what you'll find here.
+ *
+ * Interested in helping ProxMate and/or licensing? Contact me at proxmate@dave.cx
+ */
+
 /*jslint browser: true*/
 /*global checkStatus, $, loadBanner, getUrlParam, loadOverlay, getUrlFor*/
 

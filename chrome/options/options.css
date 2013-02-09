@@ -1,3 +1,10 @@
+/**
+ * ProxMate is created and © by David Mohl.
+ * It's pretty cool that you're interested in how this extension works but please don't steal what you'll find here.
+ *
+ * Interested in helping ProxMate and/or licensing? Contact me at proxmate@dave.cx
+ */
+
 body {
 	background: url('../images/background-body.png');
 	font-family: Verdana;
@@ -12,7 +19,7 @@ hr {
 h2 {
 	margin: 10px 35px;
 	font-size: 18px;
-	color: #cb5a5a;	
+	color: #cb5a5a;
 }
 
 #wrapper {
@@ -34,7 +41,7 @@ h2 {
 #header h1 {
 	text-shadow: 0px 2px 3px #555;
 	font-size: 40px;
-	color: #cb5a5a;	
+	color: #cb5a5a;
 }
 
 #header img {
@@ -65,7 +72,7 @@ h2 {
 }
 
 #footer {
-	text-align: right;	
+	text-align: right;
 	padding-bottom: 25px;
 	padding-right: 25px;
 	margin-top: -25px;
