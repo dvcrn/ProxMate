@@ -7,7 +7,6 @@
 
 /*jslint browser: true*/
 /*global localStorage, chrome, console*/
-var pac_config = {};
 
 /**
  * tries to cast a string into bool
@@ -15,14 +14,14 @@ var pac_config = {};
  * @param  {string} str string to casat
  * @return {bool}
  */
-var bool = function (str) {
+var try_parse_bool = function (str) {
 	"use strict";
 	if (str.toLowerCase() === 'false') {
 		return false;
 	} else if (str.toLowerCase() === 'true') {
 		return true;
 	} else {
-		return undefined;
+		return str;
 	}
 };
 
@@ -38,18 +37,48 @@ var shuffle = function (o) {
 };
 
 /**
- * Get pac_script form localStorage and set
+ * Return a value from localstorage
+ * @param  {string} key the saved key
+ * @return {var}     the saved value
  */
-var resetProxy = function () {
-	"use strict";
-	var pcs, pac_config;
+var get_from_storage = function(key) {
+	"use string";
+    if (localStorage[key] === undefined) {
+        return undefined;
+    } else {
+        return try_parse_bool(localStorage[key]);
+    }
 
-	pcs = localStorage.pac_script;
+}
+
+/**
+ * Saves a value to a specific team in storage
+ * @param {string} key   key for saving
+ * @param {string} value value for saving to the key
+ */
+var set_storage = function(key, value) {
+	"use string";
+	localStorage[key] = value;
+}
+
+/**
+ * Get pac_script form localStorage and set
+ * @param {script} the pac script for setting
+ */
+var set_proxy_autoconfig = function (pac_script) {
+	"use strict";
+	var pac_script, pac_config;
+
+	if (pac_script === undefined) {
+		pac_script = get_from_storage("pac_script");
+	}
+
+    console.info(pac_script);
 
 	pac_config = {
 		mode: "pac_script",
 		pacScript: {
-			data: pcs
+			data: pac_script
 		}
 	};
 
@@ -63,23 +92,32 @@ var resetProxy = function () {
 /**
  * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
  */
-var togglePluginstatus = function () {
+var toggle_pluginstatus = function (switch_status) {
 	"use strict";
-	var toggle = bool(localStorage.status);
+	var toggle = get_from_storage("status");
+
+    if (switch_status === undefined) {
+        switch_status = true;
+    }
 
 	if (toggle) {
-		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
-		localStorage.status = false;
+        chrome.browserAction.setIcon({path: "images/icon24.png"});
+        update_proxy_autoconfig();
 
 		// Remove proxy entirely and allow other plugins to write
 		chrome.proxy.settings.clear({});
 	} else {
-		chrome.browserAction.setIcon({path: "images/icon24.png"});
-		localStorage.status = true;
+        chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
 
 		// ProxMate has just been turned on. Set the proxy
-		resetProxy();
+        chrome.proxy.settings.clear({});
 	}
+
+    if (switch_status) {
+        set_storage("status", false);
+    } else {
+        set_storage("status", true);
+    }
 };
 
 /**
@@ -87,14 +125,14 @@ var togglePluginstatus = function () {
  * @param  {string} str localStorage key
  * @param  {string} val localStorage value
  */
-var initStorage = function (str, val) {
+var init_storage = function (str, val) {
 	"use strict";
 	if (val === undefined) {
 		val = true;
 	}
 
-	if (localStorage[str] === undefined) {
-		localStorage[str] = val;
+	if (get_from_storage[str] !== undefined) {
+		set_storage(str, val);
 	}
 };
 
@@ -104,105 +142,68 @@ var initStorage = function (str, val) {
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 	"use strict";
 	if (details.isProxy === true) {
-		callback({ authCredentials: {username: localStorage.proxy_user, password: localStorage.proxy_password}});
+		callback({ authCredentials: {username: get_from_storage("proxy_user"), password: get_from_storage("proxy_password")}});
 	} else {
 		callback({ cancel: false });
 	}
 }, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
 
-/**
- * Parses script and saves generated proxy autoconfig in localStorage
- * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
- */
-var createPacFromConfig = function (config) {
+var generate_pac_script_from_config = function(config) {
 	"use strict";
-	if (config === undefined) {
-		config = localStorage.last_config;
-	}
+    var counter, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
-	var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
-	json = JSON.parse(config);
+    counter = 0;
+    pac_script = "function FindProxyForUrl(url, host) {";
+    for (country in config["list"]["proxies"]) {
+        country_specific_config = config["list"]["proxies"][country];
 
-	// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
-	if (json.list.auth.user !== undefined) {
-		localStorage.proxy_user = json.list.auth.user;
-		localStorage.proxy_password = json.list.auth.pass;
-	} else {
-		delete localStorage.proxy_user;
-		delete localStorage.proxy_password;
-	}
+        // Continue parsing if nodes AND services are available for the current country
+        country_specific_service_rules = [];
+        if (country_specific_config["nodes"].length > 0 && Object.keys(country_specific_config["services"]).length > 0) {
+            country_specific_services = country_specific_config["services"];
+            for (country_specific_service in country_specific_services) {
+                if (country_specific_services[country_specific_service].length > 0) {
+                    country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
+                }
+            }
 
-	// create a proxy auto config string
-	pac_script = "function FindProxyForURL(url, host) {";
-	counter = 0;
+            // Check for custom userproxy
+            if (get_from_storage("status_cproxy") === true) {
+                proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
+            } else {
+                // Shuffle proxies for a traffic randomizing
+                proxystring = shuffle(country_specific_config["nodes"]).join("; PROXY ");
+            }
 
-	service_list = [];
-	for (country in json.list.proxies) {
-		// Only parse if there are nodes and proxies available for the specific country
-		if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+            if (counter === 0) {
+                pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+            } else {
+                pac_script += "else if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+            }
 
+            counter += 1;
+        }
+    }
 
-			list = json.list.proxies[country].services;
+    pac_script += " else { return 'DIRECT'; }";
+    pac_script += "}";
 
-			service_rules = [];
-			for (service in list) {
-				// Apply only if we have rules for the current service
-				if (list[service].length > 0) {
-					// Create localStorage space for the current service.
-					// This will enable toggling when using a custom options page
-					var ls_string = "st_" + service;
-					initStorage(ls_string);
-
-					service_list.push(service);
-					// check if the current service is enabled by the user. If no, skip it, if yes, join by OR condition
-					if (bool(localStorage[ls_string]) === true) {
-
-						rules = list[service].join(" || ");
-						service_rules.push(rules);
-					}
-				}
-			}
-
-			// Check if we have some rules available. If not, just skip
-			if (service_rules.length === 0) {
-				continue;
-			}
-
-			rule = service_rules.join(" || ");
-
-			// Check for custom userproxy
-			if (bool(localStorage.status_cproxy) === true) {
-				proxystring = localStorage.cproxy_url + ":" + localStorage.cproxy_port;
-			} else {
-				// Shuffle proxies for a traffic randomizing
-				proxies = shuffle(json.list.proxies[country].nodes);
-				proxystring = proxies.join("; PROXY ");
-			}
-
-			// Some special treatment on first iteration
-			if (counter === 0) {
-				pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-			} else {
-				pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-			}
-
-			counter += 1;
-		}
-
-	}
-
-	pac_script += " else { return 'DIRECT'; }";
-	pac_script += "}";
-	localStorage.services = service_list;
-	localStorage.pac_script = pac_script;
+    return pac_script;
 };
 
 /**
- * Loads external config and saves in localStorage
- * Invokes createPacFromConfig after fetching
+ * loads configuration from external server
+ * @param {function} callback will be invoked after successful loading
+ * @param {function} fallback will be invoked on exception
  */
-var loadExternalConfig = function () {
+var load_external_config = function (callback, fallback) {
 	"use strict";
+	if (callback === undefined) {
+		callback = function() {};
+	}
+    if (fallback === undefined) {
+        fallback = function() {};
+    }
 	var xhr = new XMLHttpRequest();
 
 	xhr.addEventListener("load", function () {
@@ -212,24 +213,43 @@ var loadExternalConfig = function () {
 		json = JSON.parse(jsonstring);
 
 		if (json.success) {
-
-			// Save last config in localStorage. For fallback
-			localStorage.last_config = jsonstring;
-			createPacFromConfig(jsonstring);
+			callback(json);
 		}
 
 	}, false);
 
 	xhr.addEventListener("error", function () {
-		// Do nothing
+        fallback();
 	}, false);
 
 	try {
-		xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + localStorage.api_key, false);
+        console.info("http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"));
+		xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"), false);
 		xhr.send();
 	} catch (e) {
-		// Do nothing
+        fallback();
 	}
+};
+
+var update_proxy_autoconfig = function() {
+    "use strict";
+    var pac_script;
+
+    load_external_config(function(config_json) {
+        pac_script = generate_pac_script_from_config(config_json);
+
+        if (get_from_storage("status") === true) {
+            set_proxy_autoconfig(pac_script);
+        }
+
+        // Save for later fallback usage
+        set_storage("pac_script", pac_script);
+    }, function() {
+        if (get_from_storage("status") === true) {
+            // Use previously saved auto config
+            set_proxy_autoconfig(get_from_storage("pac_script"));
+        }
+    });
 };
 
 /**
@@ -237,12 +257,7 @@ var loadExternalConfig = function () {
  */
 setInterval(function () {
 	"use strict";
-	if (bool(localStorage.status) === true) {
-		loadExternalConfig();
-		resetProxy();
-	} else {
-		loadExternalConfig();
-	}
+    update_proxy_autoconfig();
 }, 600000);
 
 /**
@@ -252,23 +267,22 @@ var init = (function () {
 	"use strict";
 
 	// Init some storage space we need later
-	initStorage("firststart");
-	initStorage("pre21");
+	init_storage("firststart");
 
-	initStorage("status");
-	initStorage("status_youtube_autounblock", true);
+	init_storage("status");
+	init_storage("status_youtube_autounblock", true);
 
-	initStorage("status_cproxy", false);
-	initStorage("cproxy_url", "");
-	initStorage("cproxy_port", "");
+	init_storage("status_cproxy", false);
+	init_storage("cproxy_url", "");
+	init_storage("cproxy_port", "");
 
-	initStorage("pac_script", "");
-	initStorage("api_key", "");
+	init_storage("pac_script", "");
+	init_storage("api_key", "");
 
 	// Is this the first start? Spam some tabs!
 	var firstStart, url, port, xhr;
 
-	firstStart = localStorage.firststart;
+	firstStart = get_from_storage("firststart");
 	if (firstStart === "true") {
 		chrome.tabs.create({
 			url: "http://proxmate.dave.cx"
@@ -278,38 +292,20 @@ var init = (function () {
 			url: "https://www.facebook.com/ProxMate/"
 		});
 
-		localStorage.firststart = false;
-		localStorage.pre21 = false;
+        set_storage("firststart", false);
 	}
 
-	// Used when showing a changelog page. Only neccessary for big changes
-	if (bool(localStorage.pre21)) {
-		localStorage.pre21 = false;
-		chrome.tabs.create({
-			url: "http://proxmate.dave.cx/changelog/"
-		});
-	}
-
-	// Request a proxy from master server & Error handling
-	loadExternalConfig();
-
-	// Set the icon color on start
-	if (bool(localStorage.status) === false) {
-		chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
-		chrome.proxy.settings.clear({});
-	} else {
-		resetProxy();
-	}
+    toggle_pluginstatus(false);
 
 }());
 
 /**
  * Add a click listener on plugin icon
  */
-chrome.browserAction.onClicked.addListener(togglePluginstatus);
+chrome.browserAction.onClicked.addListener(toggle_pluginstatus);
 
 /**
- * Event listener for cummunication between page scripts / options and background.js
+ * Event listener for communication between page scripts / options and background.js
  */
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
 	"use strict";
@@ -317,8 +313,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 	// ResetProxy to default
 	if (request.action === "resetproxy") {
-		loadExternalConfig();
-		resetProxy();
+        update_proxy_autoconfig()
 	}
 
 	if (request.action === "checkStatus") {
@@ -328,13 +323,13 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
 		switch (module) {
 		case "global":
-			status = bool(localStorage.status);
+			status = get_from_storage("status");
 			break;
 		case "cproxy":
-			status = bool(localStorage.status_cproxy);
+			status = get_from_storage("status_cproxy");
 			break;
 		default:
-			status = bool(localStorage[module]);
+			status = get_from_storage(module);
 			break;
 		}
 
