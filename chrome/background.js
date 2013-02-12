@@ -150,9 +150,9 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 
 var generate_pac_script_from_config = function(config) {
 	"use strict";
-    var counter, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+    var first_country, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
-    counter = 0;
+    first_country = false;
     pac_script = "function FindProxyForURL(url, host) {";
     for (country in config["list"]["proxies"]) {
         country_specific_config = config["list"]["proxies"][country];
@@ -162,9 +162,18 @@ var generate_pac_script_from_config = function(config) {
         if (country_specific_config["nodes"].length > 0 && Object.keys(country_specific_config["services"]).length > 0) {
             country_specific_services = country_specific_config["services"];
             for (country_specific_service in country_specific_services) {
-                if (country_specific_services[country_specific_service].length > 0) {
+
+            	// Check storage for setted var. This will be used for per-module toggling
+            	localstorage_string = "st_" + country_specific_service;
+            	init_storage(localstorage_string);
+
+                if (country_specific_services[country_specific_service].length > 0 && get_from_storage(localstorage_string) === true) {
                     country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
                 }
+            }
+
+            if (country_specific_service_rules.length === 0) {
+            	continue;
             }
 
             // Check for custom userproxy
@@ -175,13 +184,12 @@ var generate_pac_script_from_config = function(config) {
                 proxystring = shuffle(country_specific_config["nodes"]).join("; PROXY ");
             }
 
-            if (counter === 0) {
+            if (!first_country) {
                 pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+                first_country = true;
             } else {
                 pac_script += "else if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
             }
-
-            counter += 1;
         }
     }
 
