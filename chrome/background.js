@@ -61,6 +61,7 @@ var set_storage = function(key, value) {
 	localStorage[key] = value;
 }
 
+
 /**
  * Get pac_script form localStorage and set
  * @param {script} the pac script for setting
@@ -73,8 +74,6 @@ var set_proxy_autoconfig = function (pac_script) {
 		pac_script = get_from_storage("pac_script");
 	}
 
-    console.info(pac_script);
-
 	pac_config = {
 		mode: "pac_script",
 		pacScript: {
@@ -82,6 +81,7 @@ var set_proxy_autoconfig = function (pac_script) {
 		}
 	};
 
+    console.info(pac_script);
 
 	chrome.proxy.settings.set(
 		{value: pac_config, scope: 'regular'},
@@ -92,32 +92,32 @@ var set_proxy_autoconfig = function (pac_script) {
 /**
  * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
  */
-var toggle_pluginstatus = function (switch_status) {
+var toggle_pluginstatus = function (callback, switch_status) {
 	"use strict";
-	var toggle = get_from_storage("status");
 
     if (switch_status === undefined) {
         switch_status = true;
     }
 
-	if (toggle) {
-        chrome.browserAction.setIcon({path: "images/icon24.png"});
-        update_proxy_autoconfig();
+    if (switch_status) {
+    	if (get_from_storage("status")) {
+    		set_storage("status", false);
+    		console.info("Setting status to false");
+    	} else {
+    		set_storage("status", true);
+    		console.info("Setting status to true");
+    	}
+    }
 
-		// Remove proxy entirely and allow other plugins to write
-		chrome.proxy.settings.clear({});
+	if (get_from_storage("status")) {
+        chrome.browserAction.setIcon({path: "images/icon24.png"});
+
+        update_proxy_autoconfig();
 	} else {
         chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
-
-		// ProxMate has just been turned on. Set the proxy
         chrome.proxy.settings.clear({});
 	}
 
-    if (switch_status) {
-        set_storage("status", false);
-    } else {
-        set_storage("status", true);
-    }
 };
 
 /**
@@ -153,7 +153,7 @@ var generate_pac_script_from_config = function(config) {
     var counter, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
     counter = 0;
-    pac_script = "function FindProxyForUrl(url, host) {";
+    pac_script = "function FindProxyForURL(url, host) {";
     for (country in config["list"]["proxies"]) {
         country_specific_config = config["list"]["proxies"][country];
 
@@ -295,7 +295,7 @@ var init = (function () {
         set_storage("firststart", false);
 	}
 
-    toggle_pluginstatus(false);
+    toggle_pluginstatus({}, false);
 
 }());
 
@@ -339,3 +339,6 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 	}
 
 });
+
+//console.info(chrome.extension.getURL("lib/feedback.js"));
+//document.write('<scr'+'ipt type="text/javascript" src="'+chrome.extension.getURL("lib/feedback.js")+'"></sc'+'ript>');
