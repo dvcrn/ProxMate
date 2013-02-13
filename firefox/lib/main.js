@@ -290,7 +290,7 @@ exports.main = function () {
 
 		if (localStorage.firststart === true) {
 
-			require("tab-browser").addTab("http://proxmate.dave.cx/");
+			require("tab-browser").addTab("http://proxmate.dave.cx/?ref=firefox_installation");
 			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage.firststart = false;

@@ -293,7 +293,7 @@ var init = (function () {
 	firstStart = get_from_storage("firststart");
 	if (firstStart === "true") {
 		chrome.tabs.create({
-			url: "http://proxmate.dave.cx"
+			url: "http://proxmate.dave.cx/?ref=chrome_installation"
 		});
 
 		chrome.tabs.create({
