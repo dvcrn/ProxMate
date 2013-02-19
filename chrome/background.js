@@ -111,25 +111,25 @@ var toggle_pluginstatus = function (callback, switch_status) {
         switch_status = true;
     }
 
-    if (switch_status) {
-        if (get_from_storage("status")) {
-            set_storage("status", false);
-            console.info("Setting status to false");
-        } else {
-            set_storage("status", true);
-            console.info("Setting status to true");
-        }
-    }
-
     if (get_from_storage("status")) {
         chrome.browserAction.setIcon({path: "images/icon24.png"});
-
+        chrome.browserAction.setBadgeText({text: ""});
         update_proxy_autoconfig();
     } else {
         chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
+        chrome.browserAction.setBadgeText({text: "Off"});
         chrome.proxy.settings.clear({});
     }
 
+    if (switch_status) {
+        if (get_from_storage("status")) {
+            set_storage("status", false);
+            debug("Setting status to false");
+        } else {
+            set_storage("status", true);
+            debug("Setting status to true");
+        }
+    }
 };
 
 /**
