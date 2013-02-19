@@ -62,7 +62,7 @@ $(document).ready(function () {
 			service_escaped = service_escaped.replace(/ /g,"_");
 			service_escaped = service_escaped.replace(/\./g,"_");
 
-			var s = "st_" + service;
+			var s = "status_" + service;
 
 			console.info("LocalStorage Module: " + s + " - " + localStorage[s]);
 			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'"> Enable module "<span>'+services[i]+'</span>"</label></p>');
@@ -109,7 +109,7 @@ $(document).ready(function () {
 			var pkg = $(packages[index]);
 			var module = pkg.find("span").html();
 			var value = pkg.find("input").prop("checked");
-			localStorage["st_" + module] = value;
+			localStorage["status_" + module] = value;
 		});
 
 		// Send action to background page

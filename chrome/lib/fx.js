@@ -15,31 +15,31 @@
  * @return {object}              jQuery promise
  */
 var sendAction = function (actionString, param) {
-	"use strict";
+    "use strict";
 
-	var defer;
+    var defer;
 
-	if (param === undefined) {
-		param = null;
-	}
+    if (param === undefined) {
+        param = null;
+    }
 
-	defer = $.Deferred();
+    defer = $.Deferred();
 
-	chrome.extension.sendRequest(
-		{
-			action: actionString,
-			param: param
-		},
-		function (response) {
-			if (response) {
-				// Add response to promise and resolve it
-				defer.response = response;
-				defer.resolve();
-			}
-		}
-	);
+    chrome.extension.sendRequest(
+        {
+            action: actionString,
+            param: param
+        },
+        function (response) {
+            if (response) {
+                // Add response to promise and resolve it
+                defer.response = response;
+                defer.resolve();
+            }
+        }
+    );
 
-	return defer;
+    return defer;
 };
 
 /**
@@ -48,8 +48,8 @@ var sendAction = function (actionString, param) {
  * @return {object}        jQuery promise
  */
 var checkStatus = function (module) {
-	"use strict";
-	return sendAction("checkStatus", module);
+    "use strict";
+    return sendAction("checkStatus", module);
 };
 
 /**
@@ -58,7 +58,7 @@ var checkStatus = function (module) {
  * @return {string}      parameter value
  */
 var getUrlParam = function (name) {
-	"use strict";
+    "use strict";
     return decodeURI((new RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [null])[1]);
 };
 
@@ -68,22 +68,22 @@ var getUrlParam = function (name) {
  * @return {string}      full url for internal file
  */
 var getUrlFor = function (file) {
-	"use strict";
-	return chrome.extension.getURL(file);
+    "use strict";
+    return chrome.extension.getURL(file);
 };
 
 var bool = function (str) {
-	"use strict";
-	if (str === undefined) {
-		return false;
-	}
+    "use strict";
+    if (str === undefined) {
+        return false;
+    }
 
     if (str.toLowerCase() === 'false') {
-		return false;
+        return false;
     } else if (str.toLowerCase() === 'true') {
-		return true;
+        return true;
     } else {
-		return undefined;
+        return undefined;
     }
 };
 
@@ -92,49 +92,49 @@ var bool = function (str) {
  * @param  {Function} callback callback for executing when overlay is clicked
  */
 var loadOverlay = function (callback) {
-	"use strict";
+    "use strict";
 
-	// Load the css and html for overlay
-	$('<link>').attr('rel', 'stylesheet')
-	    .attr('type', 'text/css')
-	    .attr('href', getUrlFor("elements/overlay.css"))
-	    .appendTo('head');
+    // Load the css and html for overlay
+    $('<link>').attr('rel', 'stylesheet')
+        .attr('type', 'text/css')
+        .attr('href', getUrlFor("elements/overlay.css"))
+        .appendTo('head');
 
-	$.get(getUrlFor("elements/overlay.html"), function (data) {
-		$("body").prepend(data);
-		$("#pmOverlay").fadeIn("slow");
-		$("#pmOverlay").click(function () {
-			callback();
-		});
-	});
+    $.get(getUrlFor("elements/overlay.html"), function (data) {
+        $("body").prepend(data);
+        $("#pmOverlay").fadeIn("slow");
+        $("#pmOverlay").click(function () {
+            callback();
+        });
+    });
 };
 
 /**
  * Loads ProxMates ad banner
  */
 var loadBanner = function () {
-	"use strict";
+    "use strict";
 
-	// Load overlay css
-	$('<link>').attr('rel', 'stylesheet')
-	    .attr('type', 'text/css')
-	    .attr('href', getUrlFor("elements/overlay.css"))
-	    .appendTo('head');
+    // Load overlay css
+    $('<link>').attr('rel', 'stylesheet')
+        .attr('type', 'text/css')
+        .attr('href', getUrlFor("elements/overlay.css"))
+        .appendTo('head');
 
-	// Load banner
-	$.get(getUrlFor("elements/banner.html"), function (data) {
-		$("body").append(data);
-		$("#pmBanner").fadeIn("slow");
+    // Load banner
+    $.get(getUrlFor("elements/banner.html"), function (data) {
+        $("body").append(data);
+        $("#pmBanner").fadeIn("slow");
 
-		$("#pmBannerClose").click(function () {
-			$("#pmBanner").fadeOut("slow", function () {
-				$("#pmPusher").slideUp("slow");
-			});
-		});
+        $("#pmBannerClose").click(function () {
+            $("#pmBanner").fadeOut("slow", function () {
+                $("#pmPusher").slideUp("slow");
+            });
+        });
 
-		// Cascade banner
-		setTimeout(function () {
-			$("#pmBanner").addClass("smallBanner");
-		}, 5000);
-	});
+        // Cascade banner
+        setTimeout(function () {
+            $("#pmBanner").addClass("smallBanner");
+        }, 5000);
+    });
 };

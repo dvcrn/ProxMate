@@ -15,14 +15,14 @@
  * @return {bool}
  */
 var try_parse_bool = function (str) {
-	"use strict";
-	if (str.toLowerCase() === 'false') {
-		return false;
-	} else if (str.toLowerCase() === 'true') {
-		return true;
-	} else {
-		return str;
-	}
+    "use strict";
+    if (str.toLowerCase() === 'false') {
+        return false;
+    } else if (str.toLowerCase() === 'true') {
+        return true;
+    } else {
+        return str;
+    }
 };
 
 /**
@@ -31,7 +31,7 @@ var try_parse_bool = function (str) {
  * @return {array} the shuffled array
  */
 var shuffle = function (o) {
-	"use strict";
+    "use strict";
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
@@ -42,14 +42,14 @@ var shuffle = function (o) {
  * @return {var}     the saved value
  */
 var get_from_storage = function(key) {
-	"use string";
+    "use string";
     if (localStorage[key] === undefined) {
         return undefined;
     } else {
         return try_parse_bool(localStorage[key]);
     }
 
-}
+};
 
 /**
  * Saves a value to a specific team in storage
@@ -57,9 +57,20 @@ var get_from_storage = function(key) {
  * @param {string} value value for saving to the key
  */
 var set_storage = function(key, value) {
-	"use string";
-	localStorage[key] = value;
-}
+    "use string";
+    debug("Writing storage '" + key + "' with value '" + value + "'");
+    localStorage[key] = value;
+};
+
+/**
+ * console.log wrapper, checking for debug mode
+ * @param  {string} message the message for output
+ */
+var debug = function(message) {
+    if (get_from_storage("debug")) {
+        console.log(message);
+    }
+};
 
 
 /**
@@ -67,56 +78,57 @@ var set_storage = function(key, value) {
  * @param {script} the pac script for setting
  */
 var set_proxy_autoconfig = function (pac_script) {
-	"use strict";
-	var pac_script, pac_config;
+    "use strict";
+    var pac_config;
 
-	if (pac_script === undefined) {
-		pac_script = get_from_storage("pac_script");
-	}
+    if (pac_script === undefined) {
+        pac_script = get_from_storage("pac_script");
+    }
 
-	pac_config = {
-		mode: "pac_script",
-		pacScript: {
-			data: pac_script
-		}
-	};
+    debug("Setting pac_script...");
+    debug(pac_script);
 
-    console.info(pac_script);
+    pac_config = {
+        mode: "pac_script",
+        pacScript: {
+            data: pac_script
+        }
+    };
 
-	chrome.proxy.settings.set(
-		{value: pac_config, scope: 'regular'},
-		function () {}
-	);
+    chrome.proxy.settings.set(
+        {value: pac_config, scope: 'regular'},
+        function () {}
+    );
 };
 
 /**
  * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
  */
 var toggle_pluginstatus = function (callback, switch_status) {
-	"use strict";
+    "use strict";
 
     if (switch_status === undefined) {
         switch_status = true;
     }
 
     if (switch_status) {
-    	if (get_from_storage("status")) {
-    		set_storage("status", false);
-    		console.info("Setting status to false");
-    	} else {
-    		set_storage("status", true);
-    		console.info("Setting status to true");
-    	}
+        if (get_from_storage("status")) {
+            set_storage("status", false);
+            console.info("Setting status to false");
+        } else {
+            set_storage("status", true);
+            console.info("Setting status to true");
+        }
     }
 
-	if (get_from_storage("status")) {
+    if (get_from_storage("status")) {
         chrome.browserAction.setIcon({path: "images/icon24.png"});
 
         update_proxy_autoconfig();
-	} else {
+    } else {
         chrome.browserAction.setIcon({path: "images/icon24_grey.png"});
         chrome.proxy.settings.clear({});
-	}
+    }
 
 };
 
@@ -126,33 +138,35 @@ var toggle_pluginstatus = function (callback, switch_status) {
  * @param  {string} val localStorage value
  */
 var init_storage = function (str, val) {
-	"use strict";
-	if (val === undefined) {
-		val = true;
-	}
+    "use strict";
+    if (val === undefined) {
+        val = true;
+    }
 
-	if (get_from_storage[str] !== undefined) {
-		set_storage(str, val);
-	}
+    if (get_from_storage[str] === undefined) {
+        set_storage(str, val);
+    }
 };
 
 /**
  * Experimental module for reacting on onAuthRequired prompts. Might be useful for using user auth in proxy servers
  */
 chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
-	"use strict";
-	if (details.isProxy === true) {
-		callback({ authCredentials: {username: get_from_storage("proxy_user"), password: get_from_storage("proxy_password")}});
-	} else {
-		callback({ cancel: false });
-	}
+    "use strict";
+    if (details.isProxy === true) {
+        callback({ authCredentials: {username: get_from_storage("proxy_user"), password: get_from_storage("proxy_password")}});
+    } else {
+        callback({ cancel: false });
+    }
 }, {urls: ["<all_urls>"]}, ["asyncBlocking"]);
 
 var generate_pac_script_from_config = function(config) {
-	"use strict";
-    var first_country, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+    "use strict";
+    var first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
+    service_list = [];
     first_country = false;
+
     pac_script = "function FindProxyForURL(url, host) {";
     for (country in config["list"]["proxies"]) {
         country_specific_config = config["list"]["proxies"][country];
@@ -163,17 +177,19 @@ var generate_pac_script_from_config = function(config) {
             country_specific_services = country_specific_config["services"];
             for (country_specific_service in country_specific_services) {
 
-            	// Check storage for setted var. This will be used for per-module toggling
-            	localstorage_string = "st_" + country_specific_service;
-            	init_storage(localstorage_string);
+                // Check storage for setted var. This will be used for per-module toggling
+                localstorage_string = "status_" + country_specific_service.toLowerCase();
+                init_storage(localstorage_string);
 
                 if (country_specific_services[country_specific_service].length > 0 && get_from_storage(localstorage_string) === true) {
                     country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
                 }
+
+                service_list.push(country_specific_service.toLowerCase());
             }
 
             if (country_specific_service_rules.length === 0) {
-            	continue;
+                continue;
             }
 
             // Check for custom userproxy
@@ -193,6 +209,8 @@ var generate_pac_script_from_config = function(config) {
         }
     }
 
+    set_storage("services", service_list.join(","));
+
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";
 
@@ -205,38 +223,38 @@ var generate_pac_script_from_config = function(config) {
  * @param {function} fallback will be invoked on exception
  */
 var load_external_config = function (callback, fallback) {
-	"use strict";
-	if (callback === undefined) {
-		callback = function() {};
-	}
+    "use strict";
+    if (callback === undefined) {
+        callback = function() {};
+    }
     if (fallback === undefined) {
         fallback = function() {};
     }
-	var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
 
-	xhr.addEventListener("load", function () {
-		var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
+    xhr.addEventListener("load", function () {
+        var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
 
-		jsonstring = xhr.responseText;
-		json = JSON.parse(jsonstring);
+        jsonstring = xhr.responseText;
+        json = JSON.parse(jsonstring);
 
-		if (json.success) {
-			callback(json);
-		}
+        if (json.success) {
+            callback(json);
+        }
 
-	}, false);
+    }, false);
 
-	xhr.addEventListener("error", function () {
+    xhr.addEventListener("error", function () {
         fallback();
-	}, false);
+    }, false);
 
-	try {
-        console.info("http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"));
-		xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"), false);
-		xhr.send();
-	} catch (e) {
+    try {
+        debug("Polling: http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"));
+        xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"), false);
+        xhr.send();
+    } catch (e) {
         fallback();
-	}
+    }
 };
 
 var update_proxy_autoconfig = function() {
@@ -264,7 +282,7 @@ var update_proxy_autoconfig = function() {
  * Invoke proxy fetching all 10 minutes
  */
 setInterval(function () {
-	"use strict";
+    "use strict";
     update_proxy_autoconfig();
 }, 600000);
 
@@ -272,36 +290,36 @@ setInterval(function () {
  * Self-invoking init function. Basically the starting point of this addon.
  */
 var init = (function () {
-	"use strict";
+    "use strict";
 
-	// Init some storage space we need later
-	init_storage("firststart");
+    // Init some storage space we need later
+    init_storage("firststart");
 
-	init_storage("status");
-	init_storage("status_youtube_autounblock", true);
+    init_storage("status");
+    init_storage("status_youtube_autounblock", true);
 
-	init_storage("status_cproxy", false);
-	init_storage("cproxy_url", "");
-	init_storage("cproxy_port", "");
+    init_storage("status_cproxy", false);
+    init_storage("cproxy_url", "");
+    init_storage("cproxy_port", "");
 
-	init_storage("pac_script", "");
-	init_storage("api_key", "");
+    init_storage("pac_script", "");
+    init_storage("api_key", "");
 
-	// Is this the first start? Spam some tabs!
-	var firstStart, url, port, xhr;
+    // Is this the first start? Spam some tabs!
+    var firstStart, url, port, xhr;
 
-	firstStart = get_from_storage("firststart");
-	if (firstStart === "true") {
-		chrome.tabs.create({
-			url: "http://proxmate.dave.cx/?ref=chrome_installation"
-		});
+    firstStart = get_from_storage("firststart");
+    if (firstStart === "true") {
+        chrome.tabs.create({
+            url: "http://proxmate.dave.cx/?ref=chrome_installation"
+        });
 
-		chrome.tabs.create({
-			url: "https://www.facebook.com/ProxMate/"
-		});
+        chrome.tabs.create({
+            url: "https://www.facebook.com/ProxMate/"
+        });
 
         set_storage("firststart", false);
-	}
+    }
 
     toggle_pluginstatus({}, false);
 
@@ -316,35 +334,37 @@ chrome.browserAction.onClicked.addListener(toggle_pluginstatus);
  * Event listener for communication between page scripts / options and background.js
  */
 chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-	"use strict";
-	var config, module, status;
+    "use strict";
+    var config, module, status;
 
-	// ResetProxy to default
-	if (request.action === "resetproxy") {
-        update_proxy_autoconfig()
-	}
+    debug("Receiving event call " + request.action);
 
-	if (request.action === "checkStatus") {
+    // ResetProxy to default
+    if (request.action === "resetproxy") {
+        update_proxy_autoconfig();
+    }
 
-		module = request.param;
-		status = false;
+    if (request.action === "checkStatus") {
 
-		switch (module) {
-		case "global":
-			status = get_from_storage("status");
-			break;
-		case "cproxy":
-			status = get_from_storage("status_cproxy");
-			break;
-		default:
-			status = get_from_storage(module);
-			break;
-		}
+        module = request.param;
+        status = false;
 
-		sendResponse({
-			enabled: status
-		});
-	}
+        switch (module) {
+        case "global":
+            status = get_from_storage("status");
+            break;
+        case "cproxy":
+            status = get_from_storage("status_cproxy");
+            break;
+        default:
+            status = get_from_storage(module);
+            break;
+        }
+
+        sendResponse({
+            enabled: status
+        });
+    }
 
 });
 
