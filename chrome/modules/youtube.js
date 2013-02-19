@@ -9,7 +9,7 @@
 /*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("st_General");
+var youtube = checkStatus("status_general");
 var autounblock = checkStatus("status_youtube_autounblock");
 
 $.when(global, youtube, autounblock).done(function () {

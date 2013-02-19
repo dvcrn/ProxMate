@@ -11,25 +11,15 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/results*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-search.js"]
-    },{
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-search.js"]
+    },
+    {
       "matches": ["*://*.youtube.com/watch*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube.js"]
-    },{
-      "matches": ["*://*.grooveshark.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube.js"]
     },
     {
-      "matches": ["*://*.pandora.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
-    },
-    {
-      "matches": ["*://play.google.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/gplay.js"]
-    },
-    {
-      "matches": ["*://*.hulu.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
+      "matches": ["*://*/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/bannerLoader.js"]
     }
   ],
   "browser_action": {
@@ -58,6 +48,8 @@
     "webRequestBlocking",
     "proxy",
     "http://youtube.com/",
-    "http://*/"
+    "*://*/",
+    "tabs",
+    "webNavigation"
   ]
 }
