@@ -143,7 +143,7 @@ var init_storage = function (str, val) {
         val = true;
     }
 
-    if (get_from_storage[str] === undefined) {
+    if (get_from_storage(str) === undefined) {
         set_storage(str, val);
     }
 };
@@ -374,6 +374,10 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
         sendResponse({
             data: get_from_storage(request.param)
         });
+    }
+
+    if (request.action === "setStorage") {
+        set_storage(request.param.key, request.param.val);
     }
 
 });

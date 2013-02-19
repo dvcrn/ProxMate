@@ -103,6 +103,7 @@ h2 {
 	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
 	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
 	background-color:#dfdfdf;
+	cursor: pointer;
 }#savebutton:active {
 	position:relative;
 	top:1px;
