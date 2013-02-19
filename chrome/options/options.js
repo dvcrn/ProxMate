@@ -6,7 +6,7 @@
  */
 
 /*jslint browser: true*/
-/*global checkStatus, sendAction, $*/
+/*global checkStatus, sendAction, sendActionWithCallback $*/
 
 $(document).ready(function () {
 	"use strict";
@@ -26,6 +26,42 @@ $(document).ready(function () {
 		} else {
 			return undefined;
 		}
+	};
+
+	/**
+	 * Ouputs a debug message (in background.js)
+	 * @param  {string} message the debug message
+	 */
+	var debug = function(message) {
+		sendAction("debug", message);
+	};
+
+	// TODO: Get service list and explode it (from background, with callback)
+	// Iterate over all entries, check status if enabled (background again, with callback)
+	// Create box element and tick it if enabled
+
+	var create_option_toggle_for_service = function (service) {
+		sendActionWithCallback("checkStatus", "status_" + service, function (data) {
+			var is_enabled, packages_area;
+
+			packages_area = $("#packages_area");
+			is_enabled = data.enabled;
+			// TODO: Create checkbox element and container and tick if is_enabled = true
+			console.info(is_enabled);
+		});
+	};
+
+	sendActionWithCallback("getFromStorage", "services", function (data) {
+		var services, service;
+		services = data.data.split(",");
+
+		for (var i = 0; i < services.length; i++) {
+			create_option_toggle_for_service(services[i]);
+		}
+	});
+
+	var dummy = function() {
+
 	};
 
 	checkBoxToggle = function (storage, ele) {

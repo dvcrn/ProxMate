@@ -344,6 +344,10 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
         update_proxy_autoconfig();
     }
 
+    if (request.action === "debug") {
+        debug(request.param);
+    }
+
     if (request.action === "checkStatus") {
 
         module = request.param;
@@ -363,6 +367,12 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
 
         sendResponse({
             enabled: status
+        });
+    }
+
+    if (request.action === "getFromStorage") {
+        sendResponse({
+            data: get_from_storage(request.param)
         });
     }
 
