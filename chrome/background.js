@@ -43,12 +43,38 @@ var shuffle = function (o) {
  */
 var get_from_storage = function(key) {
     "use string";
+
     if (localStorage[key] === undefined) {
         return undefined;
     } else {
         return try_parse_bool(localStorage[key]);
     }
 
+};
+
+/**
+ * Syncs all localStorage entries with the cloud
+ */
+var save_storage_in_cloud = function () {
+    debug("Writing localStorage in google cloud...");
+    chrome.storage.sync.clear(function () {
+        chrome.storage.sync.set(localStorage);
+    });
+};
+
+/**
+ * Overwrites localStorage with contents from cloud
+ */
+var apply_storage_from_cloud = function () {
+    debug("Applying cloud storage on localStorage");
+    chrome.storage.sync.get(null, function (items) {
+        var service_key;
+
+        localStorage.clear();
+        for (service_key in items) {
+            set_storage(service_key, items[service_key]);
+        }
+    });
 };
 
 /**
@@ -257,6 +283,9 @@ var load_external_config = function (callback, fallback) {
     }
 };
 
+/**
+ * Fetches a new external auto config, parses it and sets proxy if status = true
+ */
 var update_proxy_autoconfig = function() {
     "use strict";
     var pac_script;
@@ -284,6 +313,7 @@ var update_proxy_autoconfig = function() {
 setInterval(function () {
     "use strict";
     update_proxy_autoconfig();
+    save_storage_in_cloud();
 }, 600000);
 
 /**
@@ -291,6 +321,9 @@ setInterval(function () {
  */
 var init = (function () {
     "use strict";
+
+    // Load previous config if available
+    apply_storage_from_cloud();
 
     // Init some storage space we need later
     init_storage("firststart");

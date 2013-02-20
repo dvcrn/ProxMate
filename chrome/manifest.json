@@ -50,6 +50,7 @@
     "http://youtube.com/",
     "*://*/",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "storage"
   ]
 }
