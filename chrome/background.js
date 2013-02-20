@@ -327,9 +327,9 @@ var init = (function () {
 
     // Init some storage space we need later
     init_storage("firststart");
-
     init_storage("status");
-    init_storage("status_youtube_autounblock", true);
+
+    init_storage("status_data_collect");
 
     init_storage("status_cproxy", false);
     init_storage("cproxy_url", "");
@@ -375,6 +375,7 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
     // ResetProxy to default
     if (request.action === "resetproxy") {
         update_proxy_autoconfig();
+        save_storage_in_cloud();
     }
 
     if (request.action === "debug") {

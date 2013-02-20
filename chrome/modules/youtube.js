@@ -19,6 +19,12 @@ $.when(global, youtube, autounblock).done(function () {
     }
 
     $(document).ready(function () {
+        /**
+         * Creates a banenr, places it over the youtube video
+         * Clicking the banner will switch from us -> uk and uk -> us
+         * @param  {string} current_country     the string of the current country used for unblocking
+         * @param  {string} alternative_country the string of the alternative country used for unblocking
+         */
         var create_youtube_banner = function (current_country, alternative_country) {
             $.get(getUrlFor("elements/youtube-proxmatebar.html"), function (data) {
 
@@ -63,6 +69,13 @@ $.when(global, youtube, autounblock).done(function () {
         proxmate_parameter = getUrlParam('proxmate');
 
         if (proxmate_parameter !== "undefined") {
+
+            if (proxmate_parameter === "us") {
+                create_youtube_banner(proxmate_parameter, "uk");
+            } else {
+                create_youtube_banner(proxmate_parameter, "us");
+            }
+
             script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
             if (script === undefined) {
                 script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
@@ -71,12 +84,6 @@ $.when(global, youtube, autounblock).done(function () {
             loadBanner(function () {
                 $("#page").css("margin-top", "0px");
             });
-
-            if (proxmate_parameter === "us") {
-                create_youtube_banner(proxmate_parameter, "uk");
-            } else {
-                create_youtube_banner(proxmate_parameter, "us");
-            }
 
             // videoplayback%253F
             n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253D" + proxmate_parameter + "%2526"); // Append our proxmate param so the pac script wil care of it
@@ -87,25 +94,13 @@ $.when(global, youtube, autounblock).done(function () {
 
         } else {
             if ($("#watch7-player-unavailable").length > 0) {
-                if (autounblock.response.enabled) {
-                    // Change text
-                    $(".content .message").html("ProxMate will unblock this video now :)");
-                    $(".content .submessage").html("Just a moment.");
 
-                    // Change Icon
-                    $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
-                    window.location.href = window.location.href + "&proxmate=us";
-                } else {
-                    loadOverlay(function () {
-                        // Change text
-                        $(".content .message").html("ProxMate will unblock this video now :)");
-                        $(".content .submessage").html("Just a moment.");
+                $(".content .message").html("ProxMate will unblock this video now :)");
+                $(".content .submessage").html("Just a moment.");
 
-                        // Change Icon
-                        $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
-                        window.location.href = window.location.href + "&proxmate=us";
-                    });
-                }
+                // Change Icon
+                $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
+                window.location.href = window.location.href + "&proxmate=us";
             }
         }
     });

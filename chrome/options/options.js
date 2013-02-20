@@ -14,7 +14,7 @@ $(document).ready(function () {
 		init,
 		checkBoxToggle,
 		resetText,
-		toggle_youtube_autounblock = $("#s-youtube-autounblock-toggle"),
+		allow_data_collect = $("#s-data-collect-toggle"),
 		api_key = $("#g-donationkey"),
 		toggle_cproxy = $("#g-cproxy-toggle"),
 		cproxy_port = $("#g-cproxy-port"),
@@ -80,7 +80,7 @@ $(document).ready(function () {
 	 * Starting point for option.js
 	 */
 	init = (function () {
-		checkBoxToggle("status_youtube_autounblock", toggle_youtube_autounblock);
+		checkBoxToggle("status_data_collect", allow_data_collect);
 		checkBoxToggle("status_cproxy", toggle_cproxy);
 
 		sendActionWithCallback("getFromStorage", "services", function (data) {
@@ -122,14 +122,14 @@ $(document).ready(function () {
 	});
 
 	$("#savebutton").click(function () {
-		var status_youtube_autounblock = toggle_youtube_autounblock.prop("checked"),
+		var status_data_collect = allow_data_collect.prop("checked"),
 
 		status_cproxy = $("#g-cproxy-toggle").prop("checked"),
 		cproxy_url = $("#g-cproxy-url").val(),
 		cproxy_port = $("#g-cproxy-port").val(),
 		api_key = $("#g-donationkey").val();
 
-		sendAction("setStorage", {key: "status_youtube_autounblock", val: status_youtube_autounblock});
+		sendAction("setStorage", {key: "status_data_collect", val: status_data_collect});
 
 		sendAction("setStorage", {key: "status_cproxy", val: status_cproxy});
 		sendAction("setStorage", {key: "cproxy_url", val: cproxy_url});
