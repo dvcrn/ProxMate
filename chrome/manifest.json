@@ -41,7 +41,11 @@
     "images/background-wrapper.png",
     "images/background-body.png",
     "images/icon48.png",
-    "images/cross.png"
+    "images/cross.png",
+    "elements/youtube-proxmatebar.html",
+    "elements/youtube-proxmatebar.css",
+    "images/uk.png",
+    "images/us.png"
   ],
   "permissions": [
     "webRequest",
