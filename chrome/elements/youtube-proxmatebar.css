@@ -1,13 +1,30 @@
 .yt-proxmatebar {
+    background: lightblue;
+   opacity: 1;
+   transition: background .50s ease-in-out;
+   -moz-transition: background .50s ease-in-out;
+   -webkit-transition: background .50s ease-in-out;
+    margin-bottom: 5px;
+    padding: 2px;
+}
 
+.yt-proxmatebar:hover {
+	background: #3399FF;
+	cursor: pointer;
 }
 
 .yt-proxmatebar .pm-logo {
+    display: inline-block;
 
+    vertical-align: middle;
+    width: 25px;
 }
 
 .yt-proxmatebar .pm-country-flag {
+    display: inline-block;
 
+    vertical-align: middle;
+    width: 25px;
 }
 
 .yt-proxmatebar p span {
@@ -15,5 +32,7 @@
 }
 
 .yt-proxmatebar p {
+    display: inline-block;
 
+    line-height: 20px;
 }

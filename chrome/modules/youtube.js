@@ -19,6 +19,32 @@ $.when(global, youtube, autounblock).done(function () {
     }
 
     $(document).ready(function () {
+        var create_youtube_banner = function (current_country, alternative_country) {
+            $.get(getUrlFor("elements/youtube-proxmatebar.html"), function (data) {
+
+                $('<link>').attr('rel', 'stylesheet')
+                    .attr('type', 'text/css')
+                    .attr('href', getUrlFor("elements/youtube-proxmatebar.css"))
+                    .appendTo('head');
+
+                $("#watch7-video").prepend(data);
+                $(".yt-proxmatebar p span").html(current_country.toUpperCase());
+                $(".yt-proxmatebar p .alternative-proxy").html(alternative_country.toUpperCase());
+                $(".yt-proxmatebar .pm-logo").prop("src", getUrlFor("images/icon48.png"));
+                $(".yt-proxmatebar .pm-country-current").prop("src", getUrlFor("images/" + current_country + ".png"));
+                $(".yt-proxmatebar .pm-country-alternative").prop("src", getUrlFor("images/" + alternative_country + ".png"));
+
+                $(".yt-proxmatebar").click(function () {
+                    var oldurl, newurl;
+
+                    oldurl = window.location.href;
+                    newurl = oldurl.replace("proxmate=" + current_country, "proxmate=" + alternative_country);
+                    window.location.href = newurl;
+                });
+            });
+
+        };
+
         /*
             This code is for reviewers. To understand what we are doing here and why.
 
@@ -36,7 +62,7 @@ $.when(global, youtube, autounblock).done(function () {
         var proxmate_parameter, script, scriptcontent, n;
         proxmate_parameter = getUrlParam('proxmate');
 
-        if (proxmate_parameter !== undefined) {
+        if (proxmate_parameter !== "undefined") {
             script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
             if (script === undefined) {
                 script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
@@ -46,23 +72,14 @@ $.when(global, youtube, autounblock).done(function () {
                 $("#page").css("margin-top", "0px");
             });
 
-            $.get(getUrlFor("elements/youtube-proxmatebar.html"), function (data) {
-
-                $('<link>').attr('rel', 'stylesheet')
-                    .attr('type', 'text/css')
-                    .attr('href', getUrlFor("elements/youtube-proxmatebar.css"))
-                    .appendTo('head');
-
-                $("#watch7-video-container").prepend(data);
-                $(".yt-proxmatebar p span").html(proxmate_parameter.toUpperCase());
-                $(".yt-proxmatebar .pm-logo").prop("src", getUrlFor("images/icon48.png"));
-                $(".yt-proxmatebar .pm-country-flag").prop("src", getUrlFor("images/" + proxmate_parameter + ".png"));
-
-            });
-
+            if (proxmate_parameter === "us") {
+                create_youtube_banner(proxmate_parameter, "uk");
+            } else {
+                create_youtube_banner(proxmate_parameter, "us");
+            }
 
             // videoplayback%253F
-            n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253Dactive%2526"); // Append our proxmate param so the pac script wil care of it
+            n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253D" + proxmate_parameter + "%2526"); // Append our proxmate param so the pac script wil care of it
             $("body").append($("<script />", {
                 html: n
             }));
@@ -77,7 +94,7 @@ $.when(global, youtube, autounblock).done(function () {
 
                     // Change Icon
                     $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
-                    window.location.href = window.location.href + "&proxmate=active";
+                    window.location.href = window.location.href + "&proxmate=us";
                 } else {
                     loadOverlay(function () {
                         // Change text
@@ -86,7 +103,7 @@ $.when(global, youtube, autounblock).done(function () {
 
                         // Change Icon
                         $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
-                        window.location.href = window.location.href + "&proxmate=active";
+                        window.location.href = window.location.href + "&proxmate=us";
                     });
                 }
             }
