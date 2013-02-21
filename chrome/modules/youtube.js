@@ -97,13 +97,13 @@ $.when(global, youtube).done(function () {
 
 
         } else {
-            if ($("#watch7-player-unavailable").length > 0) {
+            if ($("[id$=player-unavailable]").length > 0) {
 
                 $(".content .message").html("ProxMate will unblock this video now :)");
                 $(".content .submessage").html("Just a moment.");
 
                 // Change Icon
-                $("#watch7-player-unavailable img").prop("src", getUrlFor("images/waitajax.gif"));
+                $("[id$=player-unavailable] img").prop("src", getUrlFor("images/waitajax.gif"));
                 window.location.href = window.location.href + "&proxmate=us";
             }
         }
