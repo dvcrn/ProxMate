@@ -188,9 +188,11 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 
 var generate_pac_script_from_config = function(config) {
     "use strict";
-    var first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+    var rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
     service_list = [];
+    rules_list = [];
+    country_list = [];
     first_country = false;
 
     pac_script = "function FindProxyForURL(url, host) {";
@@ -214,9 +216,15 @@ var generate_pac_script_from_config = function(config) {
                 service_list.push(country_specific_service.toLowerCase());
             }
 
-            if (country_specific_service_rules.length === 0) {
+            if (country_specific_service_rules.length === 0 || country_specific_config["nodes"].length === 0) {
                 continue;
             }
+
+            // Create array containing all rules
+            rules_list = rules_list.concat(country_specific_service_rules);
+
+            // Create array containing services
+            country_list.push(country);
 
             // Check for custom userproxy
             if (get_from_storage("status_cproxy") === true) {
@@ -236,6 +244,7 @@ var generate_pac_script_from_config = function(config) {
     }
 
     set_storage("services", service_list.join(","));
+    set_storage("countries_available", country_list.join(","));
 
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";

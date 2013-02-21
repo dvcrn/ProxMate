@@ -6,7 +6,7 @@
  */
 
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor*/
+/*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor, sendActionWithCallback*/
 
 var global = checkStatus("global");
 var youtube = checkStatus("status_general");
@@ -20,7 +20,7 @@ $.when(global, youtube, autounblock).done(function () {
 
     $(document).ready(function () {
         /**
-         * Creates a banenr, places it over the youtube video
+         * Creates a banner, places it over the youtube video
          * Clicking the banner will switch from us -> uk and uk -> us
          * @param  {string} current_country     the string of the current country used for unblocking
          * @param  {string} alternative_country the string of the alternative country used for unblocking
@@ -70,11 +70,16 @@ $.when(global, youtube, autounblock).done(function () {
 
         if (proxmate_parameter !== "undefined") {
 
-            if (proxmate_parameter === "us") {
-                create_youtube_banner(proxmate_parameter, "uk");
-            } else {
-                create_youtube_banner(proxmate_parameter, "us");
-            }
+            // Ensure the UK banner is only available when there's a UK proxy
+            sendActionWithCallback("getFromStorage", "countries_available", function (data) {
+                if ($.inArray("UK", data.data.split(",")) !== -1) {
+                    if (proxmate_parameter === "us") {
+                        create_youtube_banner(proxmate_parameter, "uk");
+                    } else if (proxmate_parameter === "uk") {
+                        create_youtube_banner(proxmate_parameter, "us");
+                    }
+                }
+            });
 
             script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
             if (script === undefined) {
