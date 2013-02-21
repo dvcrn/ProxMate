@@ -10,9 +10,8 @@
 
 var global = checkStatus("global");
 var youtube = checkStatus("status_general");
-var autounblock = checkStatus("status_youtube_autounblock");
 
-$.when(global, youtube, autounblock).done(function () {
+$.when(global, youtube).done(function () {
     "use strict";
     if (!global.response.enabled || !youtube.response.enabled) {
         return;

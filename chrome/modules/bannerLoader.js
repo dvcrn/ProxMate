@@ -15,10 +15,8 @@ $(document).ready(function () {
 		host = window.location.hostname;
 
 		rules = data.data.split(";;;");
-		console.info(rules);
 		for (rule in rules) {
 			is_supported_by_proxmate = eval(rules[rule]);
-			console.info(is_supported_by_proxmate + " --- " + rules[rule]);
 
 			if (is_supported_by_proxmate) {
 				loadBanner();

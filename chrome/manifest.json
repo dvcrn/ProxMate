@@ -18,6 +18,10 @@
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube.js"]
     },
     {
+      "matches": ["*://*.youtube.com/channel/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-channel.js"]
+    },
+    {
       "matches": ["*://*/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/bannerLoader.js"]
     }
