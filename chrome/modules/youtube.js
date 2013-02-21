@@ -70,7 +70,7 @@ $.when(global, youtube, autounblock).done(function () {
 
         if (proxmate_parameter !== "undefined") {
 
-            // Ensure the UK banner is only available when there's a UK proxy
+            // Ensure the UK banner is only loaded when there's a UK proxy available
             sendActionWithCallback("getFromStorage", "countries_available", function (data) {
                 if ($.inArray("UK", data.data.split(",")) !== -1) {
                     if (proxmate_parameter === "us") {
