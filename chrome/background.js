@@ -65,7 +65,11 @@ var save_storage_in_cloud = function () {
 /**
  * Overwrites localStorage with contents from cloud
  */
-var apply_storage_from_cloud = function () {
+var apply_storage_from_cloud = function (callback) {
+    if (callback === undefined) {
+        callback = function() {};
+    }
+
     debug("Applying cloud storage on localStorage");
     chrome.storage.sync.get(null, function (items) {
         var service_key;
@@ -74,6 +78,8 @@ var apply_storage_from_cloud = function () {
         for (service_key in items) {
             set_storage(service_key, items[service_key]);
         }
+
+        callback();
     });
 };
 
@@ -243,8 +249,12 @@ var generate_pac_script_from_config = function(config) {
         }
     }
 
+    debug("----> Rules");
+    debug(rules_list);
+
     set_storage("services", service_list.join(","));
     set_storage("countries_available", country_list.join(","));
+    set_storage("rules_available", rules_list.join(";;;"));
 
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";
@@ -332,39 +342,38 @@ var init = (function () {
     "use strict";
 
     // Load previous config if available
-    apply_storage_from_cloud();
+    apply_storage_from_cloud(function () {
+        // Init some storage space we need later
+        init_storage("firststart");
+        init_storage("status");
 
-    // Init some storage space we need later
-    init_storage("firststart");
-    init_storage("status");
+        init_storage("status_data_collect");
 
-    init_storage("status_data_collect");
+        init_storage("status_cproxy", false);
+        init_storage("cproxy_url", "");
+        init_storage("cproxy_port", "");
 
-    init_storage("status_cproxy", false);
-    init_storage("cproxy_url", "");
-    init_storage("cproxy_port", "");
+        init_storage("pac_script", "");
+        init_storage("api_key", "");
 
-    init_storage("pac_script", "");
-    init_storage("api_key", "");
+        // Is this the first start? Spam some tabs!
+        var url, port, xhr;
 
-    // Is this the first start? Spam some tabs!
-    var firstStart, url, port, xhr;
+        if (get_from_storage("firststart")) {
+            chrome.tabs.create({
+                url: "http://proxmate.dave.cx/?ref=chrome_installation"
+            });
 
-    firstStart = get_from_storage("firststart");
-    if (firstStart === "true") {
-        chrome.tabs.create({
-            url: "http://proxmate.dave.cx/?ref=chrome_installation"
-        });
+            chrome.tabs.create({
+                url: "https://www.facebook.com/ProxMate/"
+            });
 
-        chrome.tabs.create({
-            url: "https://www.facebook.com/ProxMate/"
-        });
+            set_storage("firststart", false);
+        }
 
-        set_storage("firststart", false);
-    }
-
-    toggle_pluginstatus({}, false);
-
+        toggle_pluginstatus({}, false);
+        save_storage_in_cloud();
+    });
 }());
 
 /**
