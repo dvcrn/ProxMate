@@ -32,7 +32,12 @@ $.when(global, youtube).done(function () {
                     .attr('href', getUrlFor("elements/youtube-proxmatebar.css"))
                     .appendTo('head');
 
-                $("#watch7-video").prepend(data);
+                if ($("#watch7-video").length > 0 ) {
+                    $("#watch7-video").prepend(data);
+                } else if ($("#watch7-player").length > 0 ) {
+                    $("#watch7-player").prepend(data);
+                }
+
                 $(".yt-proxmatebar p span").html(current_country.toUpperCase());
                 $(".yt-proxmatebar p .alternative-proxy").html(alternative_country.toUpperCase());
                 $(".yt-proxmatebar .pm-logo").prop("src", getUrlFor("images/icon48.png"));
@@ -83,6 +88,9 @@ $.when(global, youtube).done(function () {
             script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
             if (script === undefined) {
                 script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
+                if (script === undefined) {
+                    script = $("#watch7-player script")[1]; // Get the second script tag inside the #watch-video element
+                }
             }
             scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
             loadBanner(function () {
