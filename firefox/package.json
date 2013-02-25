@@ -30,7 +30,7 @@
 			"type": "string"
 		},
 		{
-			"name": "st_General",
+			"name": "st_general",
 			"title": "Enable for youtube.com",
 			"type": "bool",
 			"value": true
@@ -61,7 +61,7 @@
 		},
 		{
 			"name": "st_hulu.com",
-			"title": "Enable for hulu.com (works only if own proxy is set)",
+			"title": "Enable for hulu.com",
 			"type": "bool",
 			"value": true
 		}
