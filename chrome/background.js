@@ -194,16 +194,20 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 
 var generate_pac_script_from_config = function(config) {
     "use strict";
-    var rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+    var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
     service_list = [];
     rules_list = [];
     country_list = [];
     first_country = false;
 
+    if (config.account_type !== undefined) {
+        set_storage("account_type", config.account_type);
+    }
+
     pac_script = "function FindProxyForURL(url, host) {";
-    for (country in config["list"]["proxies"]) {
-        country_specific_config = config["list"]["proxies"][country];
+    for (country in config.list.proxies) {
+        country_specific_config = config.list.proxies[country];
 
         // Continue parsing if nodes AND services are available for the current country
         country_specific_service_rules = [];
@@ -355,6 +359,8 @@ var init = (function () {
 
         init_storage("pac_script", "");
         init_storage("api_key", "");
+
+        init_storage("account_type", 0);
 
         // Is this the first start? Spam some tabs!
         var url, port, xhr;
