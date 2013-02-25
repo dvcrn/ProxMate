@@ -39,6 +39,20 @@ var addListener = function (event, defer) {
 	});
 };
 
+/**
+ * Sends a message to background.js, executes callback on done event
+ * @param  {string}   actionString event name
+ * @param  {string}   param        param for background
+ * @param  {function} callback     function to execute on success
+ */
+var sendActionWithCallback = function (actionString, param, callback) {
+    "use strict";
+    var defer = sendAction(actionString, param);
+    defer.done(function () {
+        callback(defer.response);
+    });
+};
+
 var sendAction = function (actionString, param) {
 	"use strict";
 	if (param === undefined) {

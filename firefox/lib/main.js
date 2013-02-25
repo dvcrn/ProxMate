@@ -29,6 +29,15 @@ exports.main = function () {
     	return o;
 	};
 
+/**
+ * console.log wrapper, checking for debug mode
+ * @param  {string} message the message for output
+ */
+var debug = function(message) {
+       console.log(message);
+    
+};
+
 	/**
 	 * Get pac_script form localStorage and set
 	 */
@@ -41,6 +50,8 @@ exports.main = function () {
 		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
 	};
 
+
+
 	/**
 	 * Parses script and saves generated proxy autoconfig in localStorage
 	 * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
@@ -50,13 +61,13 @@ exports.main = function () {
 			config = localStorage.last_config;
 		}
 
-		var json, pac_script, counter, list, rule, proxystring, proxy, country, service, service_list, service_rules, rules, proxies;
-		json = JSON.parse(config);
+    var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+		config = JSON.parse(config);
 
 		// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
-		if (json.list.auth.user !== undefined) {
-			localStorage.proxy_user = json.list.auth.user;
-			localStorage.proxy_password = json.list.auth.pass;
+		if (config.list.auth.user !== undefined) {
+			localStorage.proxy_user = config.list.auth.user;
+			localStorage.proxy_password = config.list.auth.pass;
 		} else {
 			delete localStorage.proxy_user;
 			delete localStorage.proxy_password;
@@ -64,66 +75,122 @@ exports.main = function () {
 
 		// create a proxy auto config string
 		pac_script = "function FindProxyForURL(url, host) {";
-		counter = 0;
 
 		service_list = [];
-		for (country in json.list.proxies) {
-			// Only parse if there are nodes and proxies available for the specific country
-			if (json.list.proxies[country].nodes.length > 0 && Object.keys(json.list.proxies[country].services).length > 0) {
+
+	    service_list = [];
+	    rules_list = [];
+	    country_list = [];
+	    first_country = false;
+		
+		for (country in config.list.proxies) {
+        
+
+        country_specific_config = config.list.proxies[country];
+
+        // Continue parsing if nodes AND services are available for the current country
+        country_specific_service_rules = [];
+        if (country_specific_config["nodes"].length > 0 && Object.keys(country_specific_config["services"]).length > 0) {
+            country_specific_services = country_specific_config["services"];
+            for (country_specific_service in country_specific_services) {
+
+                // Check storage for setted var. This will be used for per-module toggling
+                localstorage_string = "status_" + country_specific_service.toLowerCase();
+                initStorage(localstorage_string);
+
+                if (country_specific_services[country_specific_service].length > 0 && get_from_storage(localstorage_string) === true) {
+                    country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
+                }
+
+                service_list.push(country_specific_service.toLowerCase());
+            }
+
+            if (country_specific_service_rules.length === 0 || country_specific_config["nodes"].length === 0) {
+                continue;
+            }
+
+            // Create array containing all rules
+            rules_list = rules_list.concat(country_specific_service_rules);
+
+            // Create array containing services
+            country_list.push(country);
+
+            // Check for custom userproxy
+            if (get_from_storage("status_cproxy") === true) {
+                proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
+            } else {
+                // Shuffle proxies for a traffic randomizing
+                proxystring = shuffle(country_specific_config["nodes"]).join("; PROXY ");
+            }
+
+            if (!first_country) {
+                pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+                first_country = true;
+            } else {
+                pac_script += "else if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+            }
+        }
+    }
+
+    debug("----> Rules");
+    debug(rules_list);
+
+    set_storage("services", service_list.join(","));
+    set_storage("countries_available", country_list.join(","));
+    set_storage("rules_available", rules_list.join(";;;"));
 
 
-				list = json.list.proxies[country].services;
+    pac_script += " else { return 'DIRECT'; }";
+    pac_script += "}";
 
-				service_rules = [];
-				for (service in list) {
-					// Apply only if we have rules for the current service
-					if (list[service].length > 0) {
-						// Create localStorage space for the current service.
-						// This will enable toggling when using a custom options page
-						var ls_string = "st_" + service;
-						initStorage(ls_string);
+    set_storage("pac_script", pac_script);
 
-						service_list.push(service);
-						// check if the current service is enabled by the user. If no, skip it, if yes, join by OR condition
-						if (preferences.prefs[ls_string] !== false) {
-							rules = list[service].join(" || ");
-							service_rules.push(rules);
-						}
-					}
-				}
 
-				// Check if we have some rules available. If not, just skip
-				if (service_rules.length === 0) {
-					continue;
-				}
+	};
+	
+	/**
+	 * tries to cast a string into bool
+	 * chrome saves localStorage vars in string only. Needed for conversion
+	 * @param  {string} str string to casat
+	 * @return {bool}
+	 */
+	var try_parse_bool = function (str) {
+	    "use strict";
+	    debug(str);
+	    if (str === 'false') {
+	        return false;
+	    } else if (str === 'true') {
+	        return true;
+	    } else {
+	        return str;
+	    }
+	};
 
-				rule = service_rules.join(" || ");
+	/**
+	 * Return a value from localstorage
+	 * @param  {string} key the saved key
+	 * @return {var}     the saved value
+	 */
+	var get_from_storage = function(key) {
+	    "use string";
 
-				// Check for custom userproxy
-				if (preferences.prefs.status_cproxy === true) {
-					proxystring = preferences.prefs.cproxy_url + ":" + preferences.prefs.cproxy_port;
-				} else {
-					// Shuffle proxies for a traffic randomizing
-					proxies = shuffle(json.list.proxies[country].nodes);
-					proxystring = proxies.join("; PROXY ");
-				}
+	    if (localStorage[key] === undefined) {
+	        return undefined;
+	    } else {
+	        return try_parse_bool(localStorage[key]);
+	    }
 
-				// Some special treatment on first iteration
-				if (counter === 0) {
-					pac_script += "if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-				} else {
-					pac_script += " else if (" + rule + ") { return 'PROXY " + proxystring + "';}";
-				}
+	};
 
-				counter += 1;
-			}
-
-		}
-
-		pac_script += " else { return 'DIRECT'; }";
-		pac_script += "}";
-		localStorage.services = service_list;
-		localStorage.pac_script = pac_script;
+	/**
+	 * Saves a value to a specific team in storage
+	 * @param {string} key   key for saving
+	 * @param {string} value value for saving to the key
+	 */
+	var set_storage = function(key, value) {
+	    "use string";
+	    debug("Writing storage '" + key + "' with value '" + value + "'");
+	    localStorage[key] = value;
 	};
 
 	/**
@@ -281,6 +348,8 @@ exports.main = function () {
 		initStorage("status");
 		initStorage("pre21");
 		initStorage("pac_script", "");
+
+		initStorage("account_type" , 0);
 
 		if (localStorage.status === true) {
 			loadExternalConfig(resetProxy);
