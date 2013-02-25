@@ -9,7 +9,7 @@
 /*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor, sendActionWithCallback*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("status_general");
+var youtube = checkStatus("status_general_us");
 
 $.when(global, youtube).done(function () {
     "use strict";
