@@ -30,37 +30,37 @@
 			"type": "string"
 		},
 		{
-			"name": "st_general",
+			"name": "status_general_us",
 			"title": "Enable for youtube.com",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "status_youtube_autounblock",
-			"title": "Autounblock youtube videos",
+			"name": "status_data_collect",
+			"title": "Allow anonymous data collecting",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "st_pandora.com",
+			"name": "status_pandora.com",
 			"title": "Enable for pandora.com",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "st_grooveshark.com",
+			"name": "status_grooveshark.com",
 			"title": "Enable for grooveshark",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "st_play.google.com",
+			"name": "status_play.google.com",
 			"title": "Enable for US play.google.com",
 			"type": "bool",
 			"value": true
 		},
 		{
-			"name": "st_hulu.com",
+			"name": "status_hulu.com",
 			"title": "Enable for hulu.com",
 			"type": "bool",
 			"value": true
