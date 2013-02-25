@@ -1,69 +1,74 @@
+/**
+ * ProxMate is created and © by David Mohl.
+ * It's pretty cool that you're interested in how this extension works but please don't steal what you'll find here.
+ *
+ * Interested in helping ProxMate and/or licensing? Contact me at proxmate@dave.cx
+ */
+
 /*jslint browser: true*/
-/*global checkStatus, sendAction, $*/
+/*global checkStatus, sendAction, sendActionWithCallback $*/
 
 $(document).ready(function () {
 	"use strict";
-	var bool, init, checkBoxToggle, resetText,
-
-		toggle_youtube_autounblock = $("#s-youtube-autounblock-toggle"),
+	var bool,
+		init,
+		checkBoxToggle,
+		resetText,
+		allow_data_collect = $("#s-data-collect-toggle"),
 		api_key = $("#g-donationkey"),
 		toggle_cproxy = $("#g-cproxy-toggle"),
 		cproxy_port = $("#g-cproxy-port"),
 		cproxy_url = $("#g-cproxy-url");
 
-	bool = function (str) {
-		if (str.toLowerCase() === 'false') {
-			return false;
-		} else if (str.toLowerCase() === 'true') {
-			return true;
-		} else {
-			return undefined;
-		}
+	/**
+	 * Ouputs a debug message (in background.js)
+	 * @param  {string} message the debug message
+	 */
+	var debug = function(message) {
+		sendAction("debug", message);
 	};
 
-	checkBoxToggle = function (storage, ele) {
-		console.info("Reading: " + storage + " - " + localStorage[storage]);
-		if (bool(localStorage[storage])) {
-			console.info("Checking checkbox");
-			ele.prop("checked", "true");
-		}
-	};
+	/**
+	 * Creates a checkBox plus wrapper for module, checks the box depending on the localStorage state
+	 * @param  {string} service the service name
+	 */
+	var create_option_toggle_for_service = function (service) {
+		sendActionWithCallback("checkStatus", "status_" + service, function (data) {
+			var is_enabled, packages_area, service_escaped;
 
-	init = (function () {
-
-		checkBoxToggle("status_youtube_autounblock", toggle_youtube_autounblock);
-
-		checkBoxToggle("status_cproxy", toggle_cproxy);
-		if (bool(localStorage.status_cproxy)) {
-			$("#g-cproxy-area").css("display", "block");
-		}
-
-		cproxy_url.val(localStorage.cproxy_url);
-		cproxy_port.val(localStorage.cproxy_port);
-		api_key.val(localStorage.api_key);
-
-		// Loading packages depending on localStorage entries
-		var pa = $("#packages_area");
-		var services = localStorage.services;
-		services = services.split(",");
-
-		console.info(services);
-
-		for (var i = 0; i < services.length; i++) {
-			var service = services[i];
-			var service_escaped = service;
+			service_escaped = service;
 			service_escaped = service_escaped.replace(/ /g,"_");
 			service_escaped = service_escaped.replace(/\./g,"_");
 
-			var s = "st_" + service;
+			packages_area = $("#packages_area");
+			is_enabled = data.enabled;
 
-			console.info("LocalStorage Module: " + s + " - " + localStorage[s]);
-			pa.append('<p class="package"><input id="'+service_escaped+'" type="checkbox" value=""><label for="'+service_escaped+'"> Enable module "<span>'+services[i]+'</span>"</label></p>');
-			checkBoxToggle(s, $("#"+service_escaped));
-		}
+			packages_area.append('<p class="package"><input id="' + service_escaped + '" type="checkbox" value=""><label for="' + service_escaped + '"> Enable module "<span>' + service + '</span>"</label></p>');
 
-	}());
+			if (is_enabled) {
+				$("#" + service_escaped).prop("checked", "true");
+			}
+		});
+	};
 
+	/**
+	 * Toggles a checkbox depending on the localStorage state in storage
+	 * @param  {string} storage the storage key
+	 * @param  {object} ele     checkbox for toggling
+	 */
+	checkBoxToggle = function (storage, ele) {
+		sendActionWithCallback("checkStatus", storage, function(data) {
+			if (data.enabled) {
+				ele.prop("checked", "true");
+			}
+		});
+	};
+
+	/**
+	 * Resets a text after to previous state a current time
+	 * @param  {string} ele  the element to reset
+	 * @param  {int} time time for reset
+	 */
 	resetText = function (ele, time) {
 		var text = ele.html();
 		setTimeout(function () {
@@ -71,44 +76,78 @@ $(document).ready(function () {
 		}, time);
 	};
 
-	// Eigener Proxy Bereich
+	/**
+	 * Starting point for option.js
+	 */
+	init = (function () {
+		checkBoxToggle("status_data_collect", allow_data_collect);
+		checkBoxToggle("status_cproxy", toggle_cproxy);
+
+		sendActionWithCallback("getFromStorage", "services", function (data) {
+			var services, service;
+			services = data.data.split(",");
+
+			for (var i = 0; i < services.length; i++) {
+				create_option_toggle_for_service(services[i]);
+			}
+		});
+
+		sendActionWithCallback("checkStatus", "status_cproxy", function(data) {
+			if (data.enabled) {
+				$("#g-cproxy-area").css("display", "block");
+			}
+		});
+
+		sendActionWithCallback("getFromStorage", "cproxy_url", function(data) {
+			cproxy_url.val(data.data);
+		});
+
+		sendActionWithCallback("getFromStorage", "cproxy_port", function(data) {
+			cproxy_port.val(data.data);
+		});
+
+		sendActionWithCallback("getFromStorage", "api_key", function(data) {
+			api_key.val(data.data);
+		});
+	}());
+
+	// Slide toggle for custom proxy field
 	$("#g-cproxy-toggle").click(function () {
 		$("#g-cproxy-area").slideToggle("slow");
 	});
 
+	// Little helper, click the label has the same effect as clicking the box
 	$("#g-cproxy-toggle-label").click(function () {
 		$("#g-cproxy-toggle").click();
 	});
 
-	// Savebutton. Obvious :D
 	$("#savebutton").click(function () {
-		var status_youtube_autounblock = toggle_youtube_autounblock.prop("checked"),
+		var status_data_collect = allow_data_collect.prop("checked"),
 
-			status_cproxy = $("#g-cproxy-toggle").prop("checked"),
-			cproxy_port = $("#g-cproxy-port").val(),
-			cproxy_url = $("#g-cproxy-url").val(),
-			api_key = $("#g-donationkey").val();
+		status_cproxy = $("#g-cproxy-toggle").prop("checked"),
+		cproxy_url = $("#g-cproxy-url").val(),
+		cproxy_port = $("#g-cproxy-port").val(),
+		api_key = $("#g-donationkey").val();
 
+		sendAction("setStorage", {key: "status_data_collect", val: status_data_collect});
 
-		localStorage.status_youtube_autounblock = status_youtube_autounblock;
-
-		localStorage.status_cproxy = status_cproxy;
-		localStorage.cproxy_url = cproxy_url;
-		localStorage.cproxy_port = cproxy_port;
-		localStorage.api_key = api_key;
+		sendAction("setStorage", {key: "status_cproxy", val: status_cproxy});
+		sendAction("setStorage", {key: "cproxy_url", val: cproxy_url});
+		sendAction("setStorage", {key: "cproxy_port", val: cproxy_port});
+		sendAction("setStorage", {key: "api_key", val: api_key});
 
 		var packages = $(".package");
 		packages.each(function(index, el) {
 			var pkg = $(packages[index]);
 			var module = pkg.find("span").html();
 			var value = pkg.find("input").prop("checked");
-			localStorage["st_" + module] = value;
+			sendAction("setStorage", {key: "status_" + module, val: value});
 		});
 
-		// Send action to background page
+		// Tells background page to re-do the proxy config using the new config just set
 		sendAction("resetproxy");
 
-		// Change button text
+		// Change button text for user feedback
 		resetText($(this), 5000);
 		$(this).html("Success");
 	});

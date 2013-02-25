@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - unblock the Internet!",
-  "version": "2.1.7",
+  "version": "2.2",
   "description": "Removes country restrictions for FREE! Just like that.",
   "background": {
     "scripts": ["background.js"]
@@ -11,25 +11,19 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/results*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube-search.js"]
-    },{
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-search.js"]
+    },
+    {
       "matches": ["*://*.youtube.com/watch*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/youtube.js"]
-    },{
-      "matches": ["*://*.grooveshark.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/grooveshark.js"]
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube.js"]
     },
     {
-      "matches": ["*://*.pandora.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/pandora.js"]
+      "matches": ["*://*.youtube.com/channel/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-channel.js"]
     },
     {
-      "matches": ["*://play.google.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/gplay.js"]
-    },
-    {
-      "matches": ["*://*.hulu.com/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","sites/hulu.js"]
+      "matches": ["*://*/*"],
+      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/bannerLoader.js"]
     }
   ],
   "browser_action": {
@@ -51,13 +45,20 @@
     "images/background-wrapper.png",
     "images/background-body.png",
     "images/icon48.png",
-    "images/cross.png"
+    "images/cross.png",
+    "elements/youtube-proxmatebar.html",
+    "elements/youtube-proxmatebar.css",
+    "images/uk.png",
+    "images/us.png"
   ],
   "permissions": [
     "webRequest",
     "webRequestBlocking",
     "proxy",
     "http://youtube.com/",
-    "http://*/"
+    "*://*/",
+    "tabs",
+    "webNavigation",
+    "storage"
   ]
 }

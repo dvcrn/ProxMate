@@ -1,3 +1,10 @@
+/**
+ * ProxMate is created and © by David Mohl.
+ * It's pretty cool that you're interested in how this extension works but please don't steal what you'll find here.
+ *
+ * Interested in helping ProxMate and/or licensing? Contact me at proxmate@dave.cx
+ */
+
 /*global require, exports*/
 
 var selfData = require('self').data;
@@ -283,7 +290,7 @@ exports.main = function () {
 
 		if (localStorage.firststart === true) {
 
-			require("tab-browser").addTab("http://proxmate.dave.cx/");
+			require("tab-browser").addTab("http://proxmate.dave.cx/?ref=firefox_installation");
 			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
 			localStorage.firststart = false;

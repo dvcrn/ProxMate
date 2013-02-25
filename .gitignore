@@ -3,3 +3,4 @@ build/
 *.crx
 build.pem
 *.zip
+.idea
