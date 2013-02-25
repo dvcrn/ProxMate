@@ -151,6 +151,8 @@ var toggle_pluginstatus = function (callback, switch_status) {
             set_storage("status", true);
             debug("Setting status to true");
         }
+
+        save_storage_in_cloud();
     }
 
     if (get_from_storage("status")) {
