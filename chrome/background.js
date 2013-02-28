@@ -74,7 +74,6 @@ var apply_storage_from_cloud = function (callback) {
     chrome.storage.sync.get(null, function (items) {
         var service_key;
 
-        localStorage.clear();
         for (service_key in items) {
             set_storage(service_key, items[service_key]);
         }
