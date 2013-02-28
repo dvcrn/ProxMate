@@ -61,7 +61,7 @@ exports.main = function () {
             config = localStorage.last_config;
         }
 
-    var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+        var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
         config = JSON.parse(config);
 
         // Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage

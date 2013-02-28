@@ -36,12 +36,6 @@
 			"value": true
 		},
 		{
-			"name": "status_data_collect",
-			"title": "Allow anonymous data collecting",
-			"type": "bool",
-			"value": true
-		},
-		{
 			"name": "status_pandora.com",
 			"title": "Enable for pandora.com",
 			"type": "bool",
@@ -62,6 +56,12 @@
 		{
 			"name": "status_hulu.com",
 			"title": "Enable for hulu.com",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_data_collect",
+			"title": "Allow anonymous data collecting",
 			"type": "bool",
 			"value": true
 		}
