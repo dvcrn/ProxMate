@@ -5,7 +5,7 @@
  * Interested in helping ProxMate and/or licensing? Contact me at proxmate@dave.cx
  */
 
-/*global require, exports*/
+/*global require, exports, console*/
 
 var selfData = require('self').data;
 var pageMod = require("page-mod");
@@ -24,19 +24,19 @@ exports.main = function () {
      * @return {array} the shuffled array
      */
     shuffle = function (o) {
-        "use strict";
+
         for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
     };
 
-/**
- * console.log wrapper, checking for debug mode
- * @param  {string} message the message for output
- */
-var debug = function(message) {
+    /**
+     * console.log wrapper, checking for debug mode
+     * @param  {string} message the message for output
+     */
+    var debug = function(message) {
        console.log(message);
 
-};
+    };
 
     /**
      * Get pac_script form localStorage and set
@@ -90,8 +90,8 @@ var debug = function(message) {
 
         // Continue parsing if nodes AND services are available for the current country
         country_specific_service_rules = [];
-        if (country_specific_config["nodes"].length > 0 && Object.keys(country_specific_config["services"]).length > 0) {
-            country_specific_services = country_specific_config["services"];
+        if (country_specific_config.nodes.length > 0 && Object.keys(country_specific_config.services).length > 0) {
+            country_specific_services = country_specific_config.services;
             for (country_specific_service in country_specific_services) {
 
                 // Check storage for setted var. This will be used for per-module toggling
@@ -105,7 +105,7 @@ var debug = function(message) {
                 service_list.push(country_specific_service.toLowerCase());
             }
 
-            if (country_specific_service_rules.length === 0 || country_specific_config["nodes"].length === 0) {
+            if (country_specific_service_rules.length === 0 || country_specific_config.nodes.length === 0) {
                 continue;
             }
 
@@ -120,7 +120,7 @@ var debug = function(message) {
                 proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
             } else {
                 // Shuffle proxies for a traffic randomizing
-                proxystring = shuffle(country_specific_config["nodes"]).join("; PROXY ");
+                proxystring = shuffle(country_specific_config.nodes).join("; PROXY ");
             }
 
             if (!first_country) {
@@ -155,7 +155,7 @@ var debug = function(message) {
      * @return {bool}
      */
     var try_parse_bool = function (str) {
-        "use strict";
+
         debug(str);
         if (str === 'false') {
             return false;
@@ -372,7 +372,7 @@ var debug = function(message) {
         if (localStorage.firststart === true) {
 
             require("tab-browser").addTab("http://proxmate.dave.cx/?ref=firefox_installation");
-            require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
+            require("tab-browser").addTab("https://www.facebook.com/ProxMate/");
 
             localStorage.firststart = false;
         }
