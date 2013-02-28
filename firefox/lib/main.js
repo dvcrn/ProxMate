@@ -15,19 +15,19 @@ var request = require("request");
 var timers = require("timers");
 
 exports.main = function () {
-	"use strict";
-	var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig, shuffle;
+    "use strict";
+    var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig, shuffle;
 
-	/**
-	 * shuffles a array and returns random result
-	 * @param  {array} o the array to shuffle
-	 * @return {array} the shuffled array
-	 */
-	shuffle = function (o) {
-		"use strict";
-    	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    	return o;
-	};
+    /**
+     * shuffles a array and returns random result
+     * @param  {array} o the array to shuffle
+     * @return {array} the shuffled array
+     */
+    shuffle = function (o) {
+        "use strict";
+        for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+        return o;
+    };
 
 /**
  * console.log wrapper, checking for debug mode
@@ -38,52 +38,52 @@ var debug = function(message) {
 
 };
 
-	/**
-	 * Get pac_script form localStorage and set
-	 */
-	resetProxy = function () {
-		var pacurl;
+    /**
+     * Get pac_script form localStorage and set
+     */
+    resetProxy = function () {
+        var pacurl;
 
-		pacurl = "data:text/javascript," + encodeURIComponent(localStorage.pac_script);
+        pacurl = "data:text/javascript," + encodeURIComponent(get_from_storage("pac_script"));
 
-		require("preferences-service").set("network.proxy.type", 2);
-		require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
-	};
+        require("preferences-service").set("network.proxy.type", 2);
+        require("preferences-service").set("network.proxy.autoconfig_url", pacurl);
+    };
 
 
 
-	/**
-	 * Parses script and saves generated proxy autoconfig in localStorage
-	 * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
-	 */
-	createPacFromConfig = function (config) {
-		if (config === undefined) {
-			config = localStorage.last_config;
-		}
+    /**
+     * Parses script and saves generated proxy autoconfig in localStorage
+     * @param  {string} config a config json string. If none is set, localStorage.last_config is used.
+     */
+    createPacFromConfig = function (config) {
+        if (config === undefined) {
+            config = localStorage.last_config;
+        }
 
     var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
-		config = JSON.parse(config);
+        config = JSON.parse(config);
 
-		// Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
-		if (config.list.auth.user !== undefined) {
-			localStorage.proxy_user = config.list.auth.user;
-			localStorage.proxy_password = config.list.auth.pass;
-		} else {
-			delete localStorage.proxy_user;
-			delete localStorage.proxy_password;
-		}
+        // Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
+        if (config.list.auth.user !== undefined) {
+            localStorage.proxy_user = config.list.auth.user;
+            localStorage.proxy_password = config.list.auth.pass;
+        } else {
+            delete localStorage.proxy_user;
+            delete localStorage.proxy_password;
+        }
 
-		// create a proxy auto config string
-		pac_script = "function FindProxyForURL(url, host) {";
+        // create a proxy auto config string
+        pac_script = "function FindProxyForURL(url, host) {";
 
-		service_list = [];
+        service_list = [];
 
-	    service_list = [];
-	    rules_list = [];
-	    country_list = [];
-	    first_country = false;
+        service_list = [];
+        rules_list = [];
+        country_list = [];
+        first_country = false;
 
-		for (country in config.list.proxies) {
+        for (country in config.list.proxies) {
 
 
         country_specific_config = config.list.proxies[country];
@@ -146,288 +146,261 @@ var debug = function(message) {
     set_storage("pac_script", pac_script);
 
 
-	};
+    };
 
-	/**
-	 * tries to cast a string into bool
-	 * chrome saves localStorage vars in string only. Needed for conversion
-	 * @param  {string} str string to casat
-	 * @return {bool}
-	 */
-	var try_parse_bool = function (str) {
-	    "use strict";
-	    debug(str);
-	    if (str === 'false') {
-	        return false;
-	    } else if (str === 'true') {
-	        return true;
-	    } else {
-	        return str;
-	    }
-	};
+    /**
+     * tries to cast a string into bool
+     * chrome saves localStorage vars in string only. Needed for conversion
+     * @param  {string} str string to casat
+     * @return {bool}
+     */
+    var try_parse_bool = function (str) {
+        "use strict";
+        debug(str);
+        if (str === 'false') {
+            return false;
+        } else if (str === 'true') {
+            return true;
+        } else {
+            return str;
+        }
+    };
 
-	/**
-	 * Return a value from localstorage
-	 * @param  {string} key the saved key
-	 * @return {var}     the saved value
-	 */
-	var get_from_storage = function(key) {
-	    "use string";
+    /**
+     * Return a value from localstorage
+     * @param  {string} key the saved key
+     * @return {var}     the saved value
+     */
+    var get_from_storage = function(key) {
+        "use string";
 
-	    if (localStorage[key] === undefined) {
-	        return undefined;
-	    } else {
-	        return try_parse_bool(localStorage[key]);
-	    }
+        if (localStorage[key] === undefined) {
+            return undefined;
+        } else {
+            return try_parse_bool(localStorage[key]);
+        }
 
-	};
+    };
 
-	/**
-	 * Saves a value to a specific team in storage
-	 * @param {string} key   key for saving
-	 * @param {string} value value for saving to the key
-	 */
-	var set_storage = function(key, value) {
-	    "use string";
-	    debug("Writing storage '" + key + "' with value '" + value + "'");
-	    localStorage[key] = value;
-	};
+    /**
+     * Saves a value to a specific team in storage
+     * @param {string} key   key for saving
+     * @param {string} value value for saving to the key
+     */
+    var set_storage = function(key, value) {
+        "use string";
+        debug("Writing storage '" + key + "' with value '" + value + "'");
+        localStorage[key] = value;
+    };
 
-	/**
-	 * Loads external config and saves in localStorage
-	 * Invokes createPacFromConfig after fetching
-	 * @param  {Function} callback callback after execution
-	 */
-	loadExternalConfig = function (callback) {
-		if (callback === undefined) {
-			callback = function () {};
-		}
+    /**
+     * Loads external config and saves in localStorage
+     * Invokes createPacFromConfig after fetching
+     * @param  {Function} callback callback after execution
+     */
+    loadExternalConfig = function (callback) {
+        if (callback === undefined) {
+            callback = function () {};
+        }
 
-		request.Request({
-			url: "http://proxmate.dave.cx/api/config.json?key=" + preferences.prefs.api_key,
-			onComplete: function (response) {
-				var config = response.text;
-				// Save the config in localStorage. For fallback
-				localStorage.last_config = config;
-				createPacFromConfig(config);
+        request.Request({
+            url: "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"),
+            onComplete: function (response) {
+                var config = response.text;
+                // Save the config in localStorage. For fallback
+                localStorage.last_config = config;
+                createPacFromConfig(config);
 
-				callback();
-			}
-		}).get();
-	};
+                callback();
+            }
+        }).get();
+    };
 
-	/**
-	 * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
-	 */
-	setPluginStatus = function () {
-		var toggle = localStorage.status;
+    /**
+     * Will be invoked when clicking the ProxMate logo. Simply toggles the plugins status
+     */
+    setPluginStatus = function () {
+        var toggle = localStorage.status;
 
-		if (toggle === true) {
-			this.contentURL = selfData.url("images/icon16_gray.png");
+        if (toggle === true) {
+            this.contentURL = selfData.url("images/icon16_gray.png");
 
-			localStorage.status = false;
+            localStorage.status = false;
 
-			require("preferences-service").reset("network.proxy.type");
-			require("preferences-service").reset("network.proxy.http");
-			require("preferences-service").reset("network.proxy.http_port");
-		} else {
-			this.contentURL = selfData.url("images/icon16.png");
-			localStorage.status = true;
+            require("preferences-service").reset("network.proxy.type");
+            require("preferences-service").reset("network.proxy.http");
+            require("preferences-service").reset("network.proxy.http_port");
+        } else {
+            this.contentURL = selfData.url("images/icon16.png");
+            localStorage.status = true;
 
-			// ProxMate has just been turned on. Set the pac script for proxying.
-			resetProxy();
-		}
-	};
+            // ProxMate has just been turned on. Set the pac script for proxying.
+            resetProxy();
+        }
+    };
 
-	/**
-	 * Initialises a specific localStorage space
-	 * @param  {string} str localStorage key
-	 * @param  {string} val localStorage value
-	 */
-	initStorage = function (str, val) {
-		if (val === undefined) {
-			val = true;
-		}
+    /**
+     * Initialises a specific localStorage space
+     * @param  {string} str localStorage key
+     * @param  {string} val localStorage value
+     */
+    initStorage = function (str, val) {
+        if (val === undefined) {
+            val = true;
+        }
 
-		if (localStorage[str] === undefined) {
-			localStorage[str] = val;
-		}
-	};
+        if (localStorage[str] === undefined) {
+            localStorage[str] = val;
+        }
+    };
 
-	/**
-	 * Creates listeners for reacting on worker events
-	 * Basically for pagemod <-> main.js communication
-	 * @param  {object} worker pagemod worker
-	 */
-	initListeners = function (worker) {
+    /**
+     * Creates listeners for reacting on worker events
+     * Basically for pagemod <-> main.js communication
+     * @param  {object} worker pagemod worker
+     */
+    initListeners = function (worker) {
 
-		// function for checking modul statuses in pagemods
-		worker.port.on('checkStatus', function (data) {
-			var module, status, responseHash;
+        // function for checking modul statuses in pagemods
+        worker.port.on('checkStatus', function (data) {
+            var module, status, responseHash;
 
-			// ResponseHash is used for specific event communication
-			module = data.param;
-			status = false;
-			responseHash = data.hash;
+            // ResponseHash is used for specific event communication
+            module = data.param;
+            status = false;
+            responseHash = data.hash;
 
-			switch (module) {
-			case "global":
-				status = localStorage.status;
-				break;
-			case "cproxy":
-				status = preferences.prefs.status_cproxy;
-				break;
-			default:
-				status = preferences.prefs[module];
-			}
+            switch (module) {
+            case "global":
+                status = get_from_storage("status");
+                break;
+            case "cproxy":
+                status = get_from_storage("status_cproxy");
+                break;
+            default:
+                status = get_from_storage(module);
+            }
 
-			worker.port.emit(responseHash,
-				{
-					enabled: status
-				});
-		});
+            worker.port.emit(responseHash,
+                {
+                    enabled: status
+                });
+        });
 
-		// Function used for making ajax calls
-		// Firefox forbids this in pagemods
-		worker.port.on("loadResource", function (data) {
-			var url, responseHash;
+        // Function used for making ajax calls
+        // Firefox forbids this in pagemods
+        worker.port.on("loadResource", function (data) {
+            var url, responseHash;
 
-			url = data.param;
-			responseHash = data.hash;
+            url = data.param;
+            responseHash = data.hash;
 
-			require("request").Request({
-				url: url,
-				onComplete: function (response) {
-					worker.port.emit(responseHash, { response: response.text });
-				}
-			}).get();
-		});
+            require("request").Request({
+                url: url,
+                onComplete: function (response) {
+                    worker.port.emit(responseHash, { response: response.text });
+                }
+            }).get();
+        });
 
-		worker.port.on("getFromStorage", function (data) {
-			var key, responseHash;
-			key = data.param;
-			responseHash = data.hash;
+        worker.port.on("getFromStorage", function (data) {
+            var key, responseHash;
+            key = data.param;
+            responseHash = data.hash;
 
-			debug("Get from storage:" + key);
+            debug("Get from storage:" + key);
 
-			worker.port.emit(responseHash,
-			{
-				data: get_from_storage(key)
-			});
-		});
-	};
+            worker.port.emit(responseHash,
+            {
+                data: get_from_storage(key)
+            });
+        });
+    };
 
-	/**
-	 * Attaches a pagemod if regex rule matches. Will invoke initListeners
-	 * @param  {string} regex  regex url for attaching
-	 * @param  {string} script scriptfile for attaching to pagemod
-	 */
-	createPagemod = function (regex, script) {
-		return pageMod.PageMod({
-			include: [regex],
-			contentScriptFile: [
-				selfData.url('jquery.js'),
-				selfData.url('proxy.js'),
-				selfData.url(script)
-			],
-			onAttach: initListeners
-		});
-	};
+    /**
+     * Attaches a pagemod if regex rule matches. Will invoke initListeners
+     * @param  {string} regex  regex url for attaching
+     * @param  {string} script scriptfile for attaching to pagemod
+     */
+    createPagemod = function (regex, script) {
+        return pageMod.PageMod({
+            include: [regex],
+            contentScriptFile: [
+                selfData.url('jquery.js'),
+                selfData.url('proxy.js'),
+                selfData.url(script)
+            ],
+            onAttach: initListeners
+        });
+    };
 
-	/**
-	 * Invoke proxy fetching all 10 minutes
-	 */
-	timers.setInterval(function () {
-		if (localStorage.status === true) {
-			loadExternalConfig(resetProxy);
-		} else {
-			loadExternalConfig();
-		}
-	}, 600000);
+    /**
+     * Invoke proxy fetching all 10 minutes
+     */
+    timers.setInterval(function () {
+        if (localStorage.status === true) {
+            loadExternalConfig(resetProxy);
+        } else {
+            loadExternalConfig();
+        }
+    }, 600000);
 
-	/**
-	 * main.js starting point. Will invoke itself
-	 */
-	init = (function () {
+    /**
+     * main.js starting point. Will invoke itself
+     */
+    init = (function () {
 
-		var statusButton = require("widget").Widget({
-			id: "open-proxmate-btn",
-			label: "Click to Activate/Deactivate Proxmate",
-			contentURL: selfData.url("images/icon16.png"),
-			onClick: setPluginStatus
-		});
+        var statusButton = require("widget").Widget({
+            id: "open-proxmate-btn",
+            label: "Click to Activate/Deactivate Proxmate",
+            contentURL: selfData.url("images/icon16.png"),
+            onClick: setPluginStatus
+        });
 
-		initStorage("firststart");
-		initStorage("status");
-		initStorage("pre21");
-		initStorage("pac_script", "");
+        initStorage("firststart");
+        initStorage("status");
+        initStorage("pac_script", "");
 
-		initStorage("account_type" , 0);
+        initStorage("account_type" , 0);
 
-		if (localStorage.status === true) {
-			loadExternalConfig(resetProxy);
-		} else {
-			loadExternalConfig();
-		}
+        if (localStorage.status === true) {
+            loadExternalConfig(resetProxy);
+        } else {
+            loadExternalConfig();
+        }
 
-		if (localStorage.firststart === true) {
+        if (localStorage.firststart === true) {
 
-			require("tab-browser").addTab("http://proxmate.dave.cx/?ref=firefox_installation");
-			require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
+            require("tab-browser").addTab("http://proxmate.dave.cx/?ref=firefox_installation");
+            require("tab-browser").addTab("https://www.facebook.com/pages/ProxMate/319835808054609");
 
-			localStorage.firststart = false;
-			localStorage.pre21 = false;
-		}
+            localStorage.firststart = false;
+        }
 
-		// Upgradecheck
-		// For reminding the user that there's new stuff available!
-		if (localStorage.pre21) {
-			localStorage.pre21 = false;
-			require("tab-browser").addTab("http://proxmate.dave.cx/changelog/");
-		}
+        createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
+        createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
+        createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
+        createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
+        createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
+        createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
 
-		createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
-		createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-		createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
-		createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
-		createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
-		createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
+        if (localStorage.status === false) {
+            statusButton.contentURL = selfData.url("images/icon16_gray.png");
 
-		if (localStorage.status === false) {
-			statusButton.contentURL = selfData.url("images/icon16_gray.png");
+            require("preferences-service").reset("network.proxy.type");
+            require("preferences-service").reset("network.proxy.http");
+            require("preferences-service").reset("network.proxy.http_port");
+        } else {
+            statusButton.contentURL = selfData.url("images/icon16.png");
+        }
+    }());
 
-			require("preferences-service").reset("network.proxy.type");
-			require("preferences-service").reset("network.proxy.http");
-			require("preferences-service").reset("network.proxy.http_port");
-		} else {
-			statusButton.contentURL = selfData.url("images/icon16.png");
-		}
-	}());
-
-	/**
-	 * Function for reacting on simplepref changes
-	 * @param  {string} prefName the simplepref name
-	 */
-	function onPrefChange(prefName) {
-		createPacFromConfig();
-		resetProxy();
-	}
-
-	preferences.on("status_cproxy", onPrefChange);
-	preferences.on("cproxy_url", onPrefChange);
-	preferences.on("cproxy_port", onPrefChange);
-
-	preferences.on("api_key", function() {
-		if (localStorage.status === true) {
-			loadExternalConfig(resetProxy);
-		} else {
-			loadExternalConfig();
-		}
-	});
-
-	preferences.on("st_play.google.com", onPrefChange);
-	preferences.on("st_General", onPrefChange);
-	preferences.on("st_hulu.com", onPrefChange);
-	preferences.on("st_pandora.com", onPrefChange);
-	preferences.on("st_grooveshark.com", onPrefChange);
+    preferences.on("", function(pref_name) {
+        set_storage(pref_name, preferences.prefs[pref_name]);
+        if (localStorage.status === true) {
+            loadExternalConfig(resetProxy);
+        } else {
+            loadExternalConfig();
+        }
+    });
 };
