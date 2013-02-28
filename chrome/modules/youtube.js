@@ -85,23 +85,13 @@ $.when(global, youtube).done(function () {
                 }
             });
 
-            script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
-            if (script === undefined) {
-                script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
-                if (script === undefined) {
-                    script = $("#watch7-player script")[1]; // Get the second script tag inside the #watch-video element
-                }
-            }
-            scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
-            loadBanner(function () {
-                $("#page").css("margin-top", "0px");
+            $("script").each(function () {
+                scriptcontent = $(this).contents()[0].data;
+                n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
+                $("body").append($("<script />", {
+                    html: n
+                }));
             });
-
-            // videoplayback%253F
-            n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253D" + proxmate_parameter + "%2526"); // Append our proxmate param so the pac script wil care of it
-            $("body").append($("<script />", {
-                html: n
-            }));
 
 
         } else {
