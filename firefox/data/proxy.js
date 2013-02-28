@@ -131,3 +131,7 @@ var loadBanner = function (callback) {
 		}, 5000);
 	});
 };
+
+var debug = function (obj) {
+	console.log(JSON.stringify(obj));
+};

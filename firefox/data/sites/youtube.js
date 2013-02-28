@@ -78,10 +78,7 @@ $.when(global, youtube).done(function () {
 
             // Ensure the UK banner is only loaded when there's a UK proxy available
             sendActionWithCallback("getFromStorage", "countries_available", function (data) {
-                console.info("In youtube.js");
-                console.info(data.data);
                 if ($.inArray("UK", data.data.split(",")) !== -1) {
-                    console.info("in array");
                     if (proxmate_parameter === "us") {
                         create_youtube_banner(proxmate_parameter, "uk");
                     } else if (proxmate_parameter === "uk") {
@@ -89,26 +86,19 @@ $.when(global, youtube).done(function () {
                     }
                 }
             });
-            /*
-            script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
-            if (script === undefined) {
-                script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
-                if (script === undefined) {
-                    script = $("#watch7-player script")[1]; // Get the second script tag inside the #watch-video element
+
+            var scripts = [];
+
+            $("script").each(function () {
+                if ($(this).contents()[0] !== undefined) {
+                    scriptcontent = $(this).contents()[0].data;
+                    n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
+                    scripts.push(n);
+                    $("body").append($("<script />", {
+                        html: n
+                    }));
                 }
-            }
-
-            scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
-            loadBanner(function () {
-                $("#page").css("margin-top", "0px");
             });
-
-            // videoplayback%253F
-            n = scriptcontent.replace(/videoplayback%253F/g, "videoplayback%253Fproxmate%253D" + proxmate_parameter + "%2526"); // Append our proxmate param so the pac script wil care of it
-            $("body").append($("<script />", {
-                html: n
-            }));
-*/
 
 
         } else {
