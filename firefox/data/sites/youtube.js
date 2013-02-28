@@ -6,7 +6,7 @@
  */
 
 /*jslint browser: true*/
-/*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor, sendActionWithCallback*/
+/*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor, sendActionWithCallback, loadResource*/
 
 var global = checkStatus("global");
 var youtube = checkStatus("status_general_us");
@@ -25,7 +25,9 @@ $.when(global, youtube).done(function () {
          * @param  {string} alternative_country the string of the alternative country used for unblocking
          */
         var create_youtube_banner = function (current_country, alternative_country) {
-            $.get(getUrlFor("elements/youtube-proxmatebar.html"), function (data) {
+            var ressource = loadResource(getUrlFor("elements/youtube-proxmatebar.html"));
+            ressource.done(function () {
+                var data = ressource.response.response;
 
                 $('<link>').attr('rel', 'stylesheet')
                     .attr('type', 'text/css')
@@ -76,7 +78,10 @@ $.when(global, youtube).done(function () {
 
             // Ensure the UK banner is only loaded when there's a UK proxy available
             sendActionWithCallback("getFromStorage", "countries_available", function (data) {
+                console.info("In youtube.js");
+                console.info(data.data);
                 if ($.inArray("UK", data.data.split(",")) !== -1) {
+                    console.info("in array");
                     if (proxmate_parameter === "us") {
                         create_youtube_banner(proxmate_parameter, "uk");
                     } else if (proxmate_parameter === "uk") {
@@ -84,7 +89,7 @@ $.when(global, youtube).done(function () {
                     }
                 }
             });
-
+            /*
             script = $("#watch-video script")[1]; // Get the second script tag inside the #watch-video element
             if (script === undefined) {
                 script = $("#watch7-video script")[1]; // Get the second script tag inside the #watch-video element
@@ -92,9 +97,6 @@ $.when(global, youtube).done(function () {
                     script = $("#watch7-player script")[1]; // Get the second script tag inside the #watch-video element
                 }
             }
-
-
-            debug(script);
 
             scriptcontent = $(script).contents()[0].data; // Get the script content (a.k.a the function)
             loadBanner(function () {
@@ -106,6 +108,7 @@ $.when(global, youtube).done(function () {
             $("body").append($("<script />", {
                 html: n
             }));
+*/
 
 
         } else {

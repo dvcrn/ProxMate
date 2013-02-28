@@ -35,7 +35,7 @@ exports.main = function () {
  */
 var debug = function(message) {
        console.log(message);
-    
+
 };
 
 	/**
@@ -82,9 +82,9 @@ var debug = function(message) {
 	    rules_list = [];
 	    country_list = [];
 	    first_country = false;
-		
+
 		for (country in config.list.proxies) {
-        
+
 
         country_specific_config = config.list.proxies[country];
 
@@ -147,7 +147,7 @@ var debug = function(message) {
 
 
 	};
-	
+
 	/**
 	 * tries to cast a string into bool
 	 * chrome saves localStorage vars in string only. Needed for conversion
@@ -301,6 +301,19 @@ var debug = function(message) {
 					worker.port.emit(responseHash, { response: response.text });
 				}
 			}).get();
+		});
+
+		worker.port.on("getFromStorage", function (data) {
+			var key, responseHash;
+			key = data.param;
+			responseHash = data.hash;
+
+			debug("Get from storage:" + key);
+
+			worker.port.emit(responseHash,
+			{
+				data: get_from_storage(key)
+			});
 		});
 	};
 
