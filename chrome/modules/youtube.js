@@ -86,11 +86,13 @@ $.when(global, youtube).done(function () {
             });
 
             $("script").each(function () {
-                scriptcontent = $(this).contents()[0].data;
-                n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
-                $("body").append($("<script />", {
-                    html: n
-                }));
+                if ($(this).contents()[0] !== undefined) {
+                    scriptcontent = $(this).contents()[0].data;
+                    n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
+                    $("body").append($("<script />", {
+                        html: n
+                    }));
+                }
             });
 
 
