@@ -9,7 +9,7 @@
 /*global checkStatus, $, loadBanner, getUrlParam, getUrlFor*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("st_General");
+var youtube = checkStatus("status_general_us");
 
 $.when(global, youtube).done(function () {
 	"use strict";
@@ -19,15 +19,15 @@ $.when(global, youtube).done(function () {
 
 	$(document).ready(function () {
 
-		if (getUrlParam('proxmate') !== "active") {
-			var button = '<button id="proxmate-button" type="button" class="yt-uix-button yt-uix-button-text yt-uix-button-toggle"><span class="yt-uix-button-content">Unblock this search</span></button>';
+		if (getUrlParam('proxmate') !== "us") {
+			var button = '<button style="margin:0 5px;" id="proxmate-button" type="button" class="yt-uix-button yt-uix-button-text yt-uix-button-toggle"><span class="yt-uix-button-content"><img style="width:20px;margin-right:5px;" src="' + getUrlFor("images/icon48.png") + '" />Unblock this search</span></button>';
 			// Append it in the option line
-			$(button).insertAfter($(".num-results"));
+			$(button).insertBefore($(".num-results"));
 			$("#proxmate-button").click(function () {
 				var oldhtml = $("#proxmate-button span").html();
 				$("#proxmate-button span").html(oldhtml + " <img src='" + getUrlFor("images/load.gif") + "' />");
 
-				window.location.href = window.location.href + "&proxmate=active";
+				window.location.href = window.location.href + "&proxmate=us";
 			});
 		}
 	});
