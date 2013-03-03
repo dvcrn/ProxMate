@@ -35,7 +35,6 @@ exports.main = function () {
      */
     var debug = function(message) {
        console.log(message);
-
     };
 
     /**
@@ -64,13 +63,8 @@ exports.main = function () {
         var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
         config = JSON.parse(config);
 
-        // Do we have user infos in answer json? If yes, save them. If no, remove old ones from storage
-        if (config.list.auth.user !== undefined) {
-            localStorage.proxy_user = config.list.auth.user;
-            localStorage.proxy_password = config.list.auth.pass;
-        } else {
-            delete localStorage.proxy_user;
-            delete localStorage.proxy_password;
+        if (config.account_type !== undefined) {
+            set_storage("account_type", config.account_type);
         }
 
         // create a proxy auto config string
@@ -85,54 +79,53 @@ exports.main = function () {
 
         for (country in config.list.proxies) {
 
+            country_specific_config = config.list.proxies[country];
 
-        country_specific_config = config.list.proxies[country];
+            // Continue parsing if nodes AND services are available for the current country
+            country_specific_service_rules = [];
+            if (country_specific_config.nodes.length > 0 && Object.keys(country_specific_config.services).length > 0) {
+                country_specific_services = country_specific_config.services;
+                for (country_specific_service in country_specific_services) {
 
-        // Continue parsing if nodes AND services are available for the current country
-        country_specific_service_rules = [];
-        if (country_specific_config.nodes.length > 0 && Object.keys(country_specific_config.services).length > 0) {
-            country_specific_services = country_specific_config.services;
-            for (country_specific_service in country_specific_services) {
+                    // Check storage for setted var. This will be used for per-module toggling
+                    localstorage_string = "status_" + country_specific_service.toLowerCase();
+                    debug(localstorage_string);
+                    initStorage(localstorage_string);
 
-                // Check storage for setted var. This will be used for per-module toggling
-                localstorage_string = "status_" + country_specific_service.toLowerCase();
-                initStorage(localstorage_string);
+                    if (country_specific_services[country_specific_service].length > 0 && get_from_storage(localstorage_string) === true) {
+                        country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
+                    }
 
-                if (country_specific_services[country_specific_service].length > 0 && get_from_storage(localstorage_string) === true) {
-                    country_specific_service_rules.push(country_specific_services[country_specific_service].join(" || "));
+                    service_list.push(country_specific_service.toLowerCase());
                 }
 
-                service_list.push(country_specific_service.toLowerCase());
+                if (country_specific_service_rules.length === 0 || country_specific_config.nodes.length === 0) {
+                    continue;
+                }
+
+                // Create array containing all rules
+                rules_list = rules_list.concat(country_specific_service_rules);
+
+                // Create array containing services
+                country_list.push(country);
+
+                // Check for custom userproxy
+                if (get_from_storage("status_cproxy") === true) {
+                    proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
+                } else {
+                    // Shuffle proxies for a traffic randomizing
+                    proxystring = shuffle(country_specific_config.nodes).join("; PROXY ");
+                }
+
+                if (!first_country) {
+                    pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+                    first_country = true;
+                } else {
+                    pac_script += "else if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
+                }
             }
-
-            if (country_specific_service_rules.length === 0 || country_specific_config.nodes.length === 0) {
-                continue;
-            }
-
-            // Create array containing all rules
-            rules_list = rules_list.concat(country_specific_service_rules);
-
-            // Create array containing services
-            country_list.push(country);
-
-            // Check for custom userproxy
-            if (get_from_storage("status_cproxy") === true) {
-                proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
-            } else {
-                // Shuffle proxies for a traffic randomizing
-                proxystring = shuffle(country_specific_config.nodes).join("; PROXY ");
-            }
-
-            if (!first_country) {
-                pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
-                first_country = true;
-            } else {
-                pac_script += "else if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
-            }
-        }
     }
 
-    debug("----> Rules");
     debug(rules_list);
 
     set_storage("services", service_list.join(","));
@@ -377,12 +370,11 @@ exports.main = function () {
             localStorage.firststart = false;
         }
 
-        createPagemod(/^.*\/\/(?:.*\.)?grooveshark\.com(?:\/.*)?$/, 'sites/grooveshark.js');
-        createPagemod(/.*youtube\.com\/results.*/, 'sites/youtube-search.js');
-        createPagemod(/.*hulu\.com\/.*/, 'sites/hulu.js');
-        createPagemod(/.*youtube\.com\/watch.*/, 'sites/youtube.js');
-        createPagemod(/.*play\.google\.com\/.*/, 'sites/gplay.js');
-        createPagemod(/.*pandora\.com\/.*/, 'sites/pandora.js');
+
+        // I asked in #amo-editors if a pagemod for EVERY page would be acceptable. Answer was yes.
+        createPagemod(/.*/, 'modules/bannerloader.js');
+        createPagemod(/.*youtube\.com\/results.*/, 'modules/youtube-search.js');
+        createPagemod(/.*youtube\.com\/watch.*/, 'modules/youtube.js');
 
         if (localStorage.status === false) {
             statusButton.contentURL = selfData.url("images/icon16_gray.png");
