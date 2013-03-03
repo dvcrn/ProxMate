@@ -36,12 +36,6 @@
 			"value": true
 		},
 		{
-			"name": "status_data_collect",
-			"title": "Allow anonymous data collecting",
-			"type": "bool",
-			"value": true
-		},
-		{
 			"name": "status_pandora.com",
 			"title": "Enable for pandora.com",
 			"type": "bool",
@@ -62,6 +56,42 @@
 		{
 			"name": "status_hulu.com",
 			"title": "Enable for hulu.com",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_southparkstudios",
+			"title": "Enable for Southparkstudios",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_mtv",
+			"title": "Enable for MTV",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_turntable.fm",
+			"title": "Enable for turntable.fm",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_iheart",
+			"title": "Enable for iHeart",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_vevo",
+			"title": "Enable for Vevo",
+			"type": "bool",
+			"value": true
+		},
+		{
+			"name": "status_data_collect",
+			"title": "Allow anonymous data collecting",
 			"type": "bool",
 			"value": true
 		}
