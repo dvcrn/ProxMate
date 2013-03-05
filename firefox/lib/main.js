@@ -372,7 +372,7 @@ exports.main = function () {
 
 
         // I asked in #amo-editors if a pagemod for EVERY page would be acceptable. Answer was yes.
-        createPagemod(/.*/, 'modules/bannerloader.js');
+        // createPagemod(/.*/, 'modules/bannerloader.js');
         createPagemod(/.*youtube\.com\/results.*/, 'modules/youtube-search.js');
         createPagemod(/.*youtube\.com\/watch.*/, 'modules/youtube.js');
 
