@@ -281,6 +281,7 @@ var load_external_config = function (callback, fallback) {
         fallback = function() {};
     }
     var xhr = new XMLHttpRequest();
+    var url;
 
     xhr.addEventListener("load", function () {
         var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
@@ -298,9 +299,15 @@ var load_external_config = function (callback, fallback) {
         fallback();
     }, false);
 
+    url = "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key");
+
+    if (get_from_storage("status_data_collect")) {
+        url = "http://proxmate.dave.cx/api/config.json?data_collection=on" + "&key=" + get_from_storage("api_key");
+    }
+
     try {
-        debug("Polling: http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"));
-        xhr.open("GET", "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"), false);
+        debug("Polling: " + url);
+        xhr.open("GET", url, false);
         xhr.send();
     } catch (e) {
         fallback();
@@ -376,6 +383,15 @@ var init = (function () {
             });
 
             set_storage("firststart", false);
+        } else {
+            if (!get_from_storage("saw_data_collection")) {
+
+                chrome.tabs.create({
+                    url: "http://proxmate.dave.cx/proxmate_and_sitemeter/"
+                });
+
+                set_storage("saw_data_collection", true);
+            }
         }
 
         toggle_pluginstatus({}, false);

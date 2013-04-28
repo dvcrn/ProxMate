@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "ProxMate - unblock the Internet!",
-  "version": "2.2.4",
-  "description": "Removes country restrictions for FREE! Just like that.",
+  "name": "ProxMate - Improve your Internet!",
+  "version": "2.3",
+  "description": "Supercharge your internet experience.",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js", "vendor/feedback.js"]
   },
   "options_page": "options/options.html",
   "homepage_url": "http://proxmate.dave.cx/",
