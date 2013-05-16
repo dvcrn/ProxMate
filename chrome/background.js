@@ -8,6 +8,9 @@
 /*jslint browser: true*/
 /*global localStorage, chrome, console*/
 
+var mothership_host = "http://proxmate.dave.cx";
+var feedback_host = "http://web02.proxmate.dave.cx";
+
 /**
  * tries to cast a string into bool
  * chrome saves localStorage vars in string only. Needed for conversion
@@ -103,6 +106,35 @@ var debug = function(message) {
     }
 };
 
+/**
+ * Generates a user unique identifier
+ * @return {string} the unique id
+ */
+var get_unique_identifier = function () {
+    var uuid = get_from_storage("uuid");
+    if (uuid) {
+        return uuid;
+    }
+
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    var random_string_1 = "";
+    var random_string_2 = "";
+
+    for( var i=0; i < 9; i++ ) {
+        random_string_1 += possible.charAt(Math.floor(Math.random() * possible.length));
+        random_string_2 += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+
+    var current_time = new Date().getTime();
+    var random_number = Math.floor(Math.random()*99999);
+
+    var identifier_put_together = "prox-" + current_time + random_string_1 + random_number + random_string_2;
+    var identifier = identifier_put_together.substring(0, 32);
+
+    set_storage("uuid", identifier);
+
+    return identifier;
+};
 
 /**
  * Get pac_script form localStorage and set
@@ -299,10 +331,10 @@ var load_external_config = function (callback, fallback) {
         fallback();
     }, false);
 
-    url = "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key");
+    url = mothership_host + "/api/config.json?key=" + get_from_storage("api_key");
 
     if (get_from_storage("status_data_collect")) {
-        url = "http://proxmate.dave.cx/api/config.json?data_collection=on" + "&key=" + get_from_storage("api_key");
+        url = mothership_host + "/api/config.json?data_collection=on" + "&key=" + get_from_storage("api_key");
     }
 
     try {
@@ -370,6 +402,8 @@ var init = (function () {
 
         init_storage("account_type", 0);
 
+        init_storage("feedback_sent_date", 0);
+
         // Is this the first start? Spam some tabs!
         var url, port, xhr;
 
@@ -391,6 +425,29 @@ var init = (function () {
                 });
 
                 set_storage("saw_data_collection", true);
+            }
+
+        }
+
+        // Ensures that every month the feedback will be sent
+        if ((new Date().getTime() - get_from_storage("feedback_sent_date")) >= 2592000000) {
+            var uuid = get_unique_identifier();
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", feedback_host + "/api/feedback.json", true);
+            xhr.send("uuid=" + uuid + "&allow_feedback=" + get_from_storage("status_data_collect"));
+
+            xhr.onreadystatechange = function (aEvt) {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var json = JSON.parse(xhr.responseText);
+
+                        if (json.success) {
+                            set_storage("feedback_sent_date", new Date().getTime());
+                            save_storage_in_cloud();
+                        }
+
+                    }
+                }
             }
         }
 
@@ -455,7 +512,8 @@ chrome.extension.onRequest.addListener(function (request, sender, sendResponse) 
         set_storage(request.param.key, request.param.val);
     }
 
-});
+    if (request.action === "resetFeedback") {
+        set_storage("feedback_sent_date", 0);
+    }
 
-//console.info(chrome.extension.getURL("lib/feedback.js"));
-//document.write('<scr'+'ipt type="text/javascript" src="'+chrome.extension.getURL("lib/feedback.js")+'"></sc'+'ript>');
+});

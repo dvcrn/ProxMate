@@ -34,11 +34,7 @@ $.when(global, youtube).done(function () {
                     .attr('href', getUrlFor("elements/youtube-proxmatebar.css"))
                     .appendTo('head');
 
-                if ($("#watch7-video").length > 0 ) {
-                    $("#watch7-video").prepend(data);
-                } else if ($("#watch7-player").length > 0 ) {
-                    $("#watch7-player").prepend(data);
-                }
+                $("#player").prepend(data);
 
                 $(".yt-proxmatebar p span").html(current_country.toUpperCase());
                 $(".yt-proxmatebar p .alternative-proxy").html(alternative_country.toUpperCase());

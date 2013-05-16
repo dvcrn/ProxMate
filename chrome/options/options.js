@@ -129,7 +129,13 @@ $(document).ready(function () {
 		cproxy_port = $("#g-cproxy-port").val(),
 		api_key = $("#g-donationkey").val();
 
-		sendAction("setStorage", {key: "status_data_collect", val: status_data_collect});
+		// If the data collect field has changed, we need to reset the "has_sent_feedback" flag to report that this user now allows / disallows data collection
+		sendActionWithCallback("checkStatus", "status_data_collect", function(data) {
+			if (data.enabled !== status_data_collect) {
+				sendAction("setStorage", {key: "status_data_collect", val: status_data_collect});
+				sendAction("resetFeedback");
+			}
+		});
 
 		sendAction("setStorage", {key: "status_cproxy", val: status_cproxy});
 		sendAction("setStorage", {key: "cproxy_url", val: cproxy_url});
