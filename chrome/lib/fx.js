@@ -152,3 +152,30 @@ var loadBanner = function () {
         }, 5000);
     });
 };
+
+/**
+ * Loads jQuery into page context and executes callback
+ * @param  {Function} callback callback to execute with jQuery instance
+ */
+var loadJquery = function(cb) {
+    // Load the script
+    var script = document.createElement("SCRIPT");
+    script.src = getUrlFor("lib/jquery-1.7.1.min.js");
+    script.type = 'text/javascript';
+    document.getElementsByTagName("head")[0].appendChild(script);
+
+    // Poll for jQuery to come into existance
+    var checkReady = function(callback) {
+        if (window.jQuery) {
+            callback(jQuery);
+        }
+        else {
+            window.setTimeout(function() { checkReady(callback); }, 100);
+        }
+    };
+
+    // Start polling...
+    checkReady(function($) {
+        cb($);
+    });
+}
