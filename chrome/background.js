@@ -435,12 +435,20 @@ var init = (function () {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", feedback_host + "/api/feedback.json", true);
             xhr.send("uuid=" + uuid + "&allow_feedback=" + get_from_storage("status_data_collect"));
-            debug(uuid);
 
-            xhr.addEventListener("load", function () {
-                set_storage("feedback_sent_date", new Date().getTime());
-                save_storage_in_cloud();
-            }, false);
+            xhr.onreadystatechange = function (aEvt) {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var json = JSON.parse(xhr.responseText);
+
+                        if (json.success) {
+                            set_storage("feedback_sent_date", new Date().getTime());
+                            save_storage_in_cloud();
+                        }
+
+                    }
+                }
+            }
         }
 
         toggle_pluginstatus({}, false);
