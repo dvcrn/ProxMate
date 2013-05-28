@@ -18,6 +18,7 @@ $.when(global, youtube).done(function () {
     }
 
     $(document).ready(function () {
+
         /**
          * Creates a banner, places it over the youtube video
          * Clicking the banner will switch from us -> uk and uk -> us
@@ -63,7 +64,7 @@ $.when(global, youtube).done(function () {
 
             Using a pac_script entry for this url doesn't work! Otherways we would unblock ALL youtube videos what we clearly don't want!
         */
-        var proxmate_parameter, script, scriptcontent, n;
+        var proxmate_parameter, script, scriptcontent, n, superscript, script_count, iteration;
         proxmate_parameter = getUrlParam('proxmate');
 
         if (proxmate_parameter !== "undefined") {
@@ -79,13 +80,20 @@ $.when(global, youtube).done(function () {
                 }
             });
 
+            $("#player-api").html("");
+            superscript = "";
+            script_count = $("script").length;
+            iteration = 0;
             $("script").each(function () {
+                iteration++;
                 if ($(this).contents()[0] !== undefined) {
                     scriptcontent = $(this).contents()[0].data;
                     n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
-                    $("body").append($("<script />", {
-                        html: n
-                    }));
+                    superscript += " " + n;
+                }
+
+                if (iteration === script_count) {
+                    executeScript(superscript);
                 }
             });
 

@@ -162,3 +162,15 @@ var loadJquery = function(cb) {
         cb($);
     });
 }
+
+/**
+ * Executes a script in page context
+ * @param  {string} script the script itself
+ */
+var executeScript = function (script) {
+    var g, s;
+    g = document.createElement('script');
+    s = document.getElementsByTagName('script')[0];
+    g.text = script;
+    s.parentNode.insertBefore(g, s);
+};

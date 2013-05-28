@@ -4,10 +4,10 @@
 	"icon": "data/images/icon128.png",
 	"author": "personalitycores.com",
 	"homepage": "http://proxmate.dave.cx/",
-	"version": "2.2.2",
-	"fullName": "ProxMate - unblock the Internet!",
+	"version": "2.2.3",
+	"fullName": "ProxMate - Improve your Internet!",
 	"id": "jid1-QpHD8URtZWJC2A@jetpack",
-	"description": "Removes country restrictions for FREE! Just like that.",
+	"description": "Supercharge your internet experience.",
 	"preferences": [
 		{
 			"name": "status_cproxy",
