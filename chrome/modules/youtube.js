@@ -99,7 +99,8 @@ $.when(global, youtube).done(function () {
 
 
         } else {
-            if ($("[id$=player-unavailable]").length > 0) {
+            var element = $("[id$=player-unavailable]");
+            if (element.length > 0 && !element.hasClass("hid")) {
 
                 $(".content .message").html("ProxMate will unblock this video now :)");
                 $(".content .submessage").html("Just a moment.");
