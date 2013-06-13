@@ -392,6 +392,7 @@ var init = (function () {
         init_storage("status");
 
         init_storage("status_data_collect");
+        init_storage("status_autounblock_youtube_search", false);
 
         init_storage("status_cproxy", false);
         init_storage("cproxy_url", "");

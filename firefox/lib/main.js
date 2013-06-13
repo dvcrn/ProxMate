@@ -352,6 +352,7 @@ exports.main = function () {
 
         initStorage("firststart");
         initStorage("status");
+        initStorage("status_autounblock_youtube_search", false);
         initStorage("pac_script", "");
 
         initStorage("account_type" , 0);

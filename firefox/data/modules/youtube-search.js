@@ -11,10 +11,11 @@
 var global = checkStatus("global");
 var general = checkStatus("status_general_us");
 var youtube = checkStatus("status_youtube");
+var autounblock = checkStatus("status_autounblock_youtube_search");
 
-$.when(global, youtube, general).done(function () {
+$.when(global, youtube, general, autounblock).done(function () {
     "use strict";
-    if (!global.response.enabled || !youtube.response.enabled || !general.response.enabled) {
+    if (!global.response.enabled || !youtube.response.enabled || !general.response.enabled || autounblock.response.enabled) {
         return;
     }
 
