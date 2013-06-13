@@ -22,6 +22,14 @@
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-channel.js"]
     },
     {
+      "matches": ["*://*.youtube.com/movie/*"],
+      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-movies.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/user/*"],
+      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-paid.js"]
+    },
+    {
       "matches": ["*://*/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/bannerLoader.js"]
     }
