@@ -352,6 +352,7 @@ exports.main = function () {
 
         initStorage("firststart");
         initStorage("status");
+        initStorage("status_autounblock_youtube_search", false);
         initStorage("pac_script", "");
 
         initStorage("account_type" , 0);
@@ -375,6 +376,8 @@ exports.main = function () {
         // createPagemod(/.*/, 'modules/bannerloader.js');
         createPagemod(/.*youtube\.com\/results.*/, 'modules/youtube-search.js');
         createPagemod(/.*youtube\.com\/watch.*/, 'modules/youtube.js');
+        createPagemod(/.*youtube\.com\/movie.*/, 'modules/youtube-movies.js');
+        createPagemod(/.*youtube\.com\/user.*/, 'modules/youtube-paid.js');
 
         if (localStorage.status === false) {
             statusButton.contentURL = selfData.url("images/icon16_gray.png");

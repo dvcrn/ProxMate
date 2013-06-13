@@ -9,11 +9,12 @@
 /*global checkStatus, $, loadBanner, proxifyUri, getUrlParam, loadOverlay, getUrlFor, sendActionWithCallback, loadResource*/
 
 var global = checkStatus("global");
-var youtube = checkStatus("status_general_us");
+var general = checkStatus("status_general_us");
+var youtube = checkStatus("status_youtube");
 
-$.when(global, youtube).done(function () {
+$.when(global, youtube, general).done(function () {
     "use strict";
-    if (!global.response.enabled || !youtube.response.enabled) {
+    if (!global.response.enabled || !youtube.response.enabled || !general.response.enabled) {
         return;
     }
 

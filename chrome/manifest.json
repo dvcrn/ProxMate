@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Improve your Internet!",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "Supercharge your internet experience.",
   "background": {
     "scripts": ["background.js", "vendor/feedback.js"]
@@ -20,6 +20,14 @@
     {
       "matches": ["*://*.youtube.com/channel/*"],
       "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-channel.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/movie/*"],
+      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-movies.js"]
+    },
+    {
+      "matches": ["*://*.youtube.com/user/*"],
+      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-paid.js"]
     },
     {
       "matches": ["*://*/*"],

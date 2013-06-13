@@ -19,16 +19,14 @@ $.when(global, youtube, general).done(function () {
     }
 
     $(document).ready(function () {
+        var proxmate_parameter, url;
 
-        if (getUrlParam('proxmate') !== "us") {
-            if ($(".channel-empty-message").length > 0) {
-                $(".channel-empty-message h2").html("ProxMate will unblock this channel in a bit. :)");
-
-                if (window.location.href.indexOf("?") !== -1) {
-                    window.location.href = window.location.href + "&proxmate=us";
-                } else {
-                    window.location.href = window.location.href + "?proxmate=us";
-                }
+        proxmate_parameter = getUrlParam('proxmate');
+        if (proxmate_parameter === "undefined") {
+            if ($('.ypc-channel-offers-nooffer-warning').length > 0) {
+                $('.ypc-channel-offers-nooffer-warning').html("ProxMate will unblock this channel now");
+                url = window.location.href;
+                window.location.href = url.substring(0, url.indexOf('?')) + "?proxmate=us";
             }
         }
     });
