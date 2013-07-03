@@ -8,8 +8,8 @@
 /*jslint browser: true*/
 /*global localStorage, chrome, console*/
 
-var mothership_host = "http://proxmate.dave.cx";
-var feedback_host = "http://web02.proxmate.dave.cx";
+var mothership01 = "http://proxmate.dave.cx";
+var mothership02 = "http://web02.proxmate.dave.cx";
 
 /**
  * tries to cast a string into bool
@@ -315,35 +315,46 @@ var load_external_config = function (callback, fallback) {
     var xhr = new XMLHttpRequest();
     var url;
 
-    xhr.addEventListener("load", function () {
-        var json, jsonstring, pac_script, counter, list, rule, proxystring, proxy, country, service;
 
-        jsonstring = xhr.responseText;
-        json = JSON.parse(jsonstring);
+    debug("loading external config");
+    // Request mothership01, if statuscode not 200, request mothership02
+    // If mothership02 also not 200, use fallback
+	url = mothership01 + "/api/config.json?key=" + get_from_storage("api_key");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.send();
 
-        if (json.success) {
-            callback(json);
+    xhr.onreadystatechange = function (aEvt) {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                var json = JSON.parse(xhr.responseText);
+		        if (json.success) {
+		            callback(json);
+		        }
+            } else {
+            	debug("Main request failed, trying fallback server");
+				url = mothership02 + "/api/config.json?key=" + get_from_storage("api_key");
+	            var fallback_xhr = new XMLHttpRequest();
+	            fallback_xhr.open("GET", url, true);
+	            fallback_xhr.send();
+
+	            fallback_xhr.onreadystatechange = function (aEvt) {
+	                if (fallback_xhr.readyState == 4) {
+	                    if (fallback_xhr.status == 200) {
+	                        var json = JSON.parse(fallback_xhr.responseText);
+					        if (json.success) {
+					            callback(json);
+					        }
+	                    } else {
+	                    	debug("Fallback server failed too, using offline config");
+	                    	fallback();
+	                    }
+	                }
+	            }
+            }
         }
-
-    }, false);
-
-    xhr.addEventListener("error", function () {
-        fallback();
-    }, false);
-
-    url = mothership_host + "/api/config.json?key=" + get_from_storage("api_key");
-
-    if (get_from_storage("status_data_collect")) {
-        url = mothership_host + "/api/config.json?data_collection=on" + "&key=" + get_from_storage("api_key");
     }
 
-    try {
-        debug("Polling: " + url);
-        xhr.open("GET", url, false);
-        xhr.send();
-    } catch (e) {
-        fallback();
-    }
 };
 
 /**
@@ -434,7 +445,7 @@ var init = (function () {
         if ((new Date().getTime() - get_from_storage("feedback_sent_date")) >= 2592000000) {
             var uuid = get_unique_identifier();
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", feedback_host + "/api/feedback.json", true);
+            xhr.open("POST", mothership02 + "/api/feedback.json", true);
             xhr.send("uuid=" + uuid + "&allow_feedback=" + get_from_storage("status_data_collect"));
 
             xhr.onreadystatechange = function (aEvt) {

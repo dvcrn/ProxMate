@@ -14,6 +14,9 @@ var preferences = require("simple-prefs");
 var request = require("request");
 var timers = require("timers");
 
+var mothership01 = "http://proxmate.dave.cx";
+var mothership02 = "http://web02.proxmate.dave.cx";
+
 exports.main = function () {
     "use strict";
     var setProxy, resetProxy, setPluginStatus, initStorage, initListeners, createPagemod, init, loadExternalConfig, createPacFromConfig, shuffle;
@@ -196,15 +199,37 @@ exports.main = function () {
             callback = function () {};
         }
 
+        // Request mothership01, if statuscode not 200, request mothership02
+        // If also not 200, use offline config
+        debug("Requesting config");
         request.Request({
-            url: "http://proxmate.dave.cx/api/config.json?key=" + get_from_storage("api_key"),
+            url: mothership01 + "/api/config.json?key=" + get_from_storage("api_key"),
             onComplete: function (response) {
-                var config = response.text;
-                // Save the config in localStorage. For fallback
-                localStorage.last_config = config;
-                createPacFromConfig(config);
+                if (response.status == 200) {
+                    var config = response.text;
+                    // Save the config in localStorage. For fallback
+                    localStorage.last_config = config;
+                    createPacFromConfig(config);
 
-                callback();
+                    callback();
+                } else {
+                    debug("Config request failed, trying fallback host");
+                    request.Request({
+                        url: mothership02 + "/api/config.json?key=" + get_from_storage("api_key"),
+                        onComplete: function (fallback_response) {
+                            if (fallback_response.status == 200) {
+                                var config = fallback_response.text;
+
+                                localStorage.last_config = config;
+                                createPacFromConfig(config);
+                            } else {
+                                debug("Fallback host failed too, using offline");
+                                createPacFromConfig(localStorage.last_config);
+                            }
+                        }
+                    }).get();
+                }
+
             }
         }).get();
     };
