@@ -320,6 +320,11 @@ var load_external_config = function (callback, fallback) {
     // Request mothership01, if statuscode not 200, request mothership02
     // If mothership02 also not 200, use fallback
 	url = mothership01 + "/api/config.json?key=" + get_from_storage("api_key");
+	if (get_from_storage("status_data_collect")) {
+		url = mothership01 + "/api/config.json?data_collection=on&key=" + get_from_storage("api_key");
+	}
+
+
     var xhr = new XMLHttpRequest();
     xhr.open("GET", url, true);
     xhr.send();
@@ -334,6 +339,9 @@ var load_external_config = function (callback, fallback) {
             } else {
             	debug("Main request failed, trying fallback server");
 				url = mothership02 + "/api/config.json?key=" + get_from_storage("api_key");
+				if (get_from_storage("status_data_collect")) {
+						url = mothership02 + "/api/config.json?data_collection=on&key=" + get_from_storage("api_key");
+				}
 	            var fallback_xhr = new XMLHttpRequest();
 	            fallback_xhr.open("GET", url, true);
 	            fallback_xhr.send();
