@@ -101,7 +101,7 @@ var set_storage = function(key, value) {
  * @param  {string} message the message for output
  */
 var debug = function(message) {
-    if (get_from_storage("debug") || true) {
+    if (get_from_storage("debug")) {
         console.log(message);
     }
 };
