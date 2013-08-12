@@ -11,6 +11,13 @@
 var mothership01 = "http://proxmate.dave.cx";
 var mothership02 = "http://web02.proxmate.dave.cx";
 
+// tries to identify if extension is unpacked
+
+var isDebug = false;
+chrome.management.get(chrome.runtime.id, function(result) {
+    if(result.installType == "development") isDebug = true;
+});
+
 /**
  * tries to cast a string into bool
  * chrome saves localStorage vars in string only. Needed for conversion
@@ -101,7 +108,7 @@ var set_storage = function(key, value) {
  * @param  {string} message the message for output
  */
 var debug = function(message) {
-    if (get_from_storage("debug")) {
+    if (get_from_storage("debug") || isDebug) {
         console.log(message);
     }
 };
@@ -321,9 +328,7 @@ var generate_pac_script_from_config = function(config) {
 
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";
-
-    debug(pac_script);
-
+    
     return pac_script;
 };
 
