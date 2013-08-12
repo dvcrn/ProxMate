@@ -78,6 +78,72 @@ h2 {
 	margin-top: -25px;
 }
 
+#cs-url-href {
+	width: 445px;
+}
+
+#cs-url-add {
+	height: 24px;
+	margin: 0;
+	width: 46px;
+}
+
+.cs-url-item {
+	min-height: 20px;
+	background: rgba(255, 255, 255, 0.5);
+	width: 590px;
+	padding: 5px;
+}
+
+.cs-url-item:first-child {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.cs-url-item:last-child {
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.cs-url-item:hover {
+	background: rgba(255, 255, 255, 0.75);
+}
+
+.cs-url-item .cs-url-item-href {
+	width: 470px;
+	display: inline-block;
+	vertical-align: top;
+	word-break: break-all;
+}
+
+.cs-url-item .cs-url-item-active {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	vertical-align: top;
+	text-align: center;
+}
+
+.cs-url-item .cs-url-item-delete {
+	width: 100px;
+	height: 20px;
+	display: inline-block;
+	vertical-align: top;
+	text-align: center;
+}
+
+.cs-url-item .cs-url-item-delete input {
+	margin: -1px 0 0 0;
+}
+
+#cs-url-proxy {
+	width: 452px;
+}
+
+#cs-url-proxy-port {
+	width: 60px;
+}
+
 #savebutton {
 	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
