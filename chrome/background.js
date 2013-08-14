@@ -239,7 +239,7 @@ var generate_pac_script_from_config = function(config) {
     service_list = [];
     rules_list = [];
     country_list = [];
-    nodes_list = [];
+    // nodes_list = [];
     first_country = false;
 
     //cache proxy details
@@ -284,7 +284,7 @@ var generate_pac_script_from_config = function(config) {
             country_list.push(country);
 
             // Create array containing all nodes
-            nodes_list = nodes_list.concat(country_specific_config["nodes"]);
+            // nodes_list = nodes_list.concat(country_specific_config["nodes"]);
 
             // Check for custom userproxy
             proxystring = cachedproxy || shuffle(country_specific_config["nodes"]).join("; PROXY ");
@@ -310,19 +310,19 @@ var generate_pac_script_from_config = function(config) {
     // Load custom rules from storage
     var customrules = JSON.parse(get_from_storage("csurl-list"));
     debug(customrules);
-    var customrulesym = [];
+    var customrulesym = {};
     for(var href in customrules) {
         if(customrules[href][0] === false) continue;
-        if(customrules[href][1] !== undefined && customrules[href][1] !== null) {
-            var csrp = customrules[href][1] + ":" + (customrules[href][2] || "3128");
-            pac_script += "else if ( url.indexOf('"+href+"') != -1 ) { return 'PROXY " + csrp + "'; } ";
-            continue;
-        }
-        customrulesym.push("url.indexOf('"+href+"') != -1");
+        if((customrules[href][1] === null || customrules[href][0] === undefined) && cachedproxy === undefined) continue;
+        if(customrulesym[href[1]+":"+href[2]] === undefined) customrulesym[href[1]+":"+href[2]] = [];
+        customrulesym[href[1]+":"+href[2]].push("url.indexOf('"+href+"') != -1");
     }
-    if(customrulesym.length) {
-        proxystring = cachedproxy || shuffle(nodes_list).join("; PROXY ");
-        pac_script += "else if ( "+customrulesym.join("||") + ") { return 'PROXY " + proxystring + "'; } ";
+    
+    for(var crproxy in customrulesym) {
+        var proxyarray = [];
+        if(crproxy != ":") proxyarray.push(crproxy); 
+        if(cachedproxy !== undefined) proxyarray.push(cachedproxy);
+        pac_script += "else if ( "+customrulesym[crproxy].join("||") + ") { return 'PROXY " + proxyarray.join("; PROXY ") + "'; } ";
     }
 
 

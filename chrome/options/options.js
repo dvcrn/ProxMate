@@ -153,12 +153,24 @@ $(document).ready(function () {
 		});
 	}());
 
+	var csurlalert = function(message) {
+		$("#csurl_alert").show().html(message);
+	}
+
+	var csvalidproxy = function() {
+		if(["false", false].indexOf($("#g-cproxy-toggle").prop("checked")) == -1) return false;
+		if($("#g-cproxy-url").val().length == 0) return false;
+		if(parseInt($("#g-cproxy-port").val()) < 1) return false;
+		return true;
+	}
+
 	// Custom URLs input
 	$("#cs-url-add").click(function() {
 		var href = $("#cs-url-href").val().replace(/[^\w-.]/g, "");
-		if(href.length == 0) return;
+		var csprox = $("#cs-url-proxy").val().replace(/[^\w-.]/g, "");
+		if(href.length == 0) return csurlalert("Href needs to be an URL");
+		if(csprox.length == 0 && !csvalidproxy()) return csurlalert("Custom proxy is required");
 		if(csurllist === undefined) csurllist = {};
-		var csprox = $("#cs-url-proxy").val().replace(/[^\w-.]/g, ""); if(csprox.length == 0) csprox = undefined;
 		var csproxp = parseInt($("#cs-url-proxy-port").val());
 		csurllist[href] = [true, csprox, csproxp];
 		create_csurl_item(href, true);

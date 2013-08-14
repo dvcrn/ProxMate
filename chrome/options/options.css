@@ -144,6 +144,11 @@ h2 {
 	width: 60px;
 }
 
+#csurl_alert {
+	padding: 15px 0;
+	display: none;
+}
+
 #savebutton {
 	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
