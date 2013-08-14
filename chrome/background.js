@@ -312,10 +312,11 @@ var generate_pac_script_from_config = function(config) {
     debug(customrules);
     var customrulesym = {};
     for(var href in customrules) {
-        if(customrules[href][0] === false) continue;
-        if((customrules[href][1] === null || customrules[href][0] === undefined) && cachedproxy === undefined) continue;
-        if(customrulesym[href[1]+":"+href[2]] === undefined) customrulesym[href[1]+":"+href[2]] = [];
-        customrulesym[href[1]+":"+href[2]].push("url.indexOf('"+href+"') != -1");
+        var hhref = customrules[href];
+        if(hhref[0] === false) continue;
+        if((hhref[1] === null || hhref[0] === undefined) && cachedproxy === undefined) continue;
+        if(customrulesym[hhref[1]+":"+hhref[2]] === undefined) customrulesym[hhref[1]+":"+hhref[2]] = [];
+        customrulesym[hhref[1]+":"+hhref[2]].push("url.indexOf('"+href+"') != -1");
     }
     
     for(var crproxy in customrulesym) {
