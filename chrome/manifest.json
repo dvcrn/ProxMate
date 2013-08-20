@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Improve your Internet!",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Supercharge your internet experience.",
   "background": {
     "scripts": ["background.js", "vendor/feedback.js"]
@@ -70,7 +70,6 @@
     "*://*/",
     "tabs",
     "webNavigation",
-    "storage",
-    "management"
+    "storage"
   ]
 }
