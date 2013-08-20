@@ -13,11 +13,6 @@ var mothership02 = "http://web02.proxmate.dave.cx";
 
 // tries to identify if extension is unpacked
 
-var isDebug = false;
-chrome.management.get(chrome.runtime.id, function(result) {
-    if(result.installType == "development") isDebug = true;
-});
-
 /**
  * tries to cast a string into bool
  * chrome saves localStorage vars in string only. Needed for conversion
@@ -108,7 +103,7 @@ var set_storage = function(key, value) {
  * @param  {string} message the message for output
  */
 var debug = function(message) {
-    if (get_from_storage("debug") || isDebug) {
+    if (get_from_storage("debug")) {
         console.log(message);
     }
 };
@@ -318,10 +313,10 @@ var generate_pac_script_from_config = function(config) {
         if(customrulesym[hhref[1]+":"+hhref[2]] === undefined) customrulesym[hhref[1]+":"+hhref[2]] = [];
         customrulesym[hhref[1]+":"+hhref[2]].push("url.indexOf('"+href+"') != -1");
     }
-    
+
     for(var crproxy in customrulesym) {
         var proxyarray = [];
-        if(crproxy != ":") proxyarray.push(crproxy); 
+        if(crproxy != ":") proxyarray.push(crproxy);
         if(cachedproxy !== undefined) proxyarray.push(cachedproxy);
         pac_script += "else if ( "+customrulesym[crproxy].join("||") + ") { return 'PROXY " + proxyarray.join("; PROXY ") + "'; } ";
     }
@@ -329,7 +324,7 @@ var generate_pac_script_from_config = function(config) {
 
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";
-    
+
     return pac_script;
 };
 
