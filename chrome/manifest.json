@@ -58,7 +58,9 @@
     "elements/youtube-proxmatebar.css",
     "images/uk.png",
     "images/us.png",
-    "lib/jquery-1.7.1.min.js"
+    "lib/jquery-1.7.1.min.js",
+    "lib/jquery-2.0.3.min.js",
+    "lib/jquery-2.0.3.min.map"
   ],
   "permissions": [
     "webRequest",

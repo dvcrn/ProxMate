@@ -158,9 +158,10 @@ var loadBanner = function () {
  * @param  {Function} callback callback to execute with jQuery instance
  */
 var loadJquery = function (cb) {
+    cb = cb || function () {};
     // Load the script
     var script = document.createElement("SCRIPT");
-    script.src = getUrlFor("lib/jquery-1.7.1.min.js");
+    script.src = getUrlFor("lib/jquery-2.0.3.min.js");
     script.type = 'text/javascript';
     document.getElementsByTagName("head")[0].appendChild(script);
 
@@ -183,8 +184,14 @@ var loadJquery = function (cb) {
 /**
  * Executes a script in page context
  * @param  {string} script the script itself
+ * @param {bool} isFunction if the to execute script is a function
  */
-var executeScript = function (script) {
+var executeScript = function (script, isFunction) {
+    var isFunction = isFunction || false;
+    if (isFunction) {
+        script = "(" + script + ")();"
+    }
+
     var g, s;
     g = document.createElement('script');
     s = document.getElementsByTagName('script')[0];
