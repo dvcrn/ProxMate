@@ -68,6 +68,7 @@
     "*://*/",
     "tabs",
     "webNavigation",
-    "storage"
+    "storage",
+    "management"
   ]
 }
