@@ -71,6 +71,18 @@ $.when(global, youtube, general).done(function () {
         var proxmate_parameter, script, scriptcontent, n, superscript, iteration, script_count;
         proxmate_parameter = getUrlParam('proxmate');
 
+        // Moving this into own function so we can inject it later into the page body
+        function proxmateCheckAndReload () {
+            var element = $("[id^=player-unavailable]");
+            if (element.length > 0 && !element.hasClass("hid")) {
+
+                $(".content .message").html("ProxMate will unblock this video now :)");
+                $(".content .submessage").html("Just a moment.");
+
+                window.location.href = window.location.href + "&proxmate=us";
+            }
+        }
+
         if (proxmate_parameter !== "undefined") {
 
             // Ensure the UK banner is only loaded when there's a UK proxy available
@@ -103,16 +115,52 @@ $.when(global, youtube, general).done(function () {
 
 
         } else {
-            var element = $("[id^=player-unavailable]");
-            if (element.length > 0 && !element.hasClass("hid")) {
-
-                $(".content .message").html("ProxMate will unblock this video now :)");
-                $(".content .submessage").html("Just a moment.");
-
-                // Change Icon
-                $("[id$=player-unavailable] img").prop("src", getUrlFor("images/waitajax.gif"));
-                window.location.href = window.location.href + "&proxmate=us";
-            }
+            proxmateCheckAndReload();
         }
+
+        // This function will be injected in youtube to automatically monitor all ajax requests and check back with ProxMate
+        function overRideAjax () {
+            var open = window.XMLHttpRequest.prototype.open,
+                send = window.XMLHttpRequest.prototype.send,
+                onReadyStateChange;
+
+            function openReplacement (method, url, async, user, password) {
+                this.url = url;
+                return open.apply(this, arguments);
+            }
+
+            function onReadyStateChangeReplacement () {
+                if (this.readyState == 4) {
+                    var expression = /youtube.com\/watch\?v=(.*)/g;
+                    // Check if the loaded url is a youtube watch URL
+                    if (this.url.search(expression) != -1) {
+                        $(document).ready(function () {
+                            setTimeout(proxmateCheckAndReload, 1000);
+                        });
+                    }
+                }
+
+                if(this._onreadystatechange) {
+                    return this._onreadystatechange.apply(this, arguments);
+                }
+            }
+
+            function sendReplacement (data) {
+                if(this.onreadystatechange) {
+                    this._onreadystatechange = this.onreadystatechange;
+                }
+                this.onreadystatechange = onReadyStateChangeReplacement;
+
+                return send.apply(this, arguments);
+            }
+
+            window.XMLHttpRequest.prototype.open = openReplacement;
+            window.XMLHttpRequest.prototype.send = sendReplacement;
+        }
+
+        loadJquery();
+        // by not using the isFunction parameter, the function will become available in the document context itself
+        executeScript(proxmateCheckAndReload);
+        executeScript(overRideAjax, true);
     });
 });
