@@ -160,7 +160,7 @@ $(document).ready(function () {
 	var csvalidproxy = function() {
 		if(["false", false].indexOf($("#g-cproxy-toggle").prop("checked")) == -1) return false;
 		if($("#g-cproxy-url").val().length == 0) return false;
-		if(parseInt($("#g-cproxy-port").val()) < 1) return false;
+		if(parseInt($("#g-cproxy-port").val()) < 1 || $('#cs-url-proxy').val().length == 0) return false;
 		return true;
 	}
 
