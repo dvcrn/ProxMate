@@ -11,6 +11,13 @@
 var mothership01 = "http://proxmate.dave.cx";
 var mothership02 = "http://web02.proxmate.dave.cx";
 
+// tries to identify if extension is unpacked
+
+var isDebug = false;
+chrome.management.get(chrome.runtime.id, function(result) {
+    if(result.installType == "development") isDebug = true;
+});
+
 /**
  * tries to cast a string into bool
  * chrome saves localStorage vars in string only. Needed for conversion
@@ -101,7 +108,7 @@ var set_storage = function(key, value) {
  * @param  {string} message the message for output
  */
 var debug = function(message) {
-    if (get_from_storage("debug")) {
+    if (get_from_storage("debug") || isDebug) {
         console.log(message);
     }
 };
@@ -227,12 +234,19 @@ chrome.webRequest.onAuthRequired.addListener(function (details, callback) {
 
 var generate_pac_script_from_config = function(config) {
     "use strict";
-    var account_type, rules_list, country_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
+    var customproxy, cachedproxy, account_type, rules_list, country_list, nodes_list, first_country, service_list, localstorage_string, pac_script, proxystring, country, country_specific_config, country_specific_services, country_specific_service, country_specific_service_rules;
 
     service_list = [];
     rules_list = [];
     country_list = [];
+    // nodes_list = [];
     first_country = false;
+
+    //cache proxy details
+    customproxy = get_from_storage("status_cproxy");
+    if(customproxy) {
+        cachedproxy = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
+    }
 
     if (config.account_type !== undefined) {
         set_storage("account_type", config.account_type);
@@ -269,13 +283,11 @@ var generate_pac_script_from_config = function(config) {
             // Create array containing services
             country_list.push(country);
 
+            // Create array containing all nodes
+            // nodes_list = nodes_list.concat(country_specific_config["nodes"]);
+
             // Check for custom userproxy
-            if (get_from_storage("status_cproxy") === true) {
-                proxystring = get_from_storage("cproxy_url") + ":" + get_from_storage("cproxy_port");
-            } else {
-                // Shuffle proxies for a traffic randomizing
-                proxystring = shuffle(country_specific_config["nodes"]).join("; PROXY ");
-            }
+            proxystring = cachedproxy || shuffle(country_specific_config["nodes"]).join("; PROXY ");
 
             if (!first_country) {
                 pac_script += "if (" + country_specific_service_rules.join(" || ") + ") { return 'PROXY " + proxystring + "';} ";
@@ -293,9 +305,31 @@ var generate_pac_script_from_config = function(config) {
     set_storage("countries_available", country_list.join(","));
     set_storage("rules_available", rules_list.join(";;;"));
 
+    debug("----> Custom Rules");
+
+    // Load custom rules from storage
+    var customrules = JSON.parse(get_from_storage("csurl-list"));
+    debug(customrules);
+    var customrulesym = {};
+    for(var href in customrules) {
+        var hhref = customrules[href];
+        if(hhref[0] === false) continue;
+        if((hhref[1] === null || hhref[0] === undefined) && cachedproxy === undefined) continue;
+        if(customrulesym[hhref[1]+":"+hhref[2]] === undefined) customrulesym[hhref[1]+":"+hhref[2]] = [];
+        customrulesym[hhref[1]+":"+hhref[2]].push("url.indexOf('"+href+"') != -1");
+    }
+    
+    for(var crproxy in customrulesym) {
+        var proxyarray = [];
+        if(crproxy != ":") proxyarray.push(crproxy); 
+        if(cachedproxy !== undefined) proxyarray.push(cachedproxy);
+        pac_script += "else if ( "+customrulesym[crproxy].join("||") + ") { return 'PROXY " + proxyarray.join("; PROXY ") + "'; } ";
+    }
+
+
     pac_script += " else { return 'DIRECT'; }";
     pac_script += "}";
-
+    
     return pac_script;
 };
 
@@ -404,11 +438,15 @@ setInterval(function () {
 var init = (function () {
     "use strict";
 
+    chrome.proxy.onProxyError.addListener(function(details) { debug(details); });
+
     // Load previous config if available
     apply_storage_from_cloud(function () {
         // Init some storage space we need later
         init_storage("firststart");
         init_storage("status");
+
+        init_storage("csurl-list", "{}");
 
         init_storage("status_data_collect");
         init_storage("status_autounblock_youtube_search", false);

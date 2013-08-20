@@ -20,6 +20,8 @@ $(document).ready(function () {
 		cproxy_port = $("#g-cproxy-port"),
 		cproxy_url = $("#g-cproxy-url");
 
+	var csurllist = new Object();
+
 	/**
 	 * Ouputs a debug message (in background.js)
 	 * @param  {string} message the debug message
@@ -50,6 +52,31 @@ $(document).ready(function () {
 			}
 		});
 	};
+
+	/**
+	 * Creates a custom url item element
+	 * @param {string} href    href of the url
+	 * @param {bool}   enabled if the url is enabled
+	 */
+	var create_csurl_item = function (href, enabled) {
+	 	var csurlhref = $("<div>").html(href).addClass("cs-url-item-href"), csurlactive = $("<input>").prop("data-href", href).prop("type", "checkbox").prop("checked", enabled ? "true": "false"),
+				csurldelete = $("<input>").val("Delete").prop("data-href", href).prop("type", "button");
+
+		csurlactive.click(function(e) {
+			var href = $(this).prop("data-href");
+			if(csurllist[href] !== undefined) csurllist[href] = $(this).prop("checked");
+		});
+
+		csurldelete.click(function(e) {
+			var href = $(this).prop("data-href");
+			if(csurllist[href] !== undefined) delete csurllist[href];
+			$(this).parent().parent().slideUp(200, "linear", function() {
+				$(this).remove();
+			});
+		});
+
+		$("#csurl_list").append($("<div>").addClass("cs-url-item").append(csurlhref).append($("<div>").append(csurlactive).addClass("cs-url-item-active"), $("<div>").append(csurldelete).addClass("cs-url-item-delete")));
+	 }
 
 	/**
 	 * Toggles a checkbox depending on the localStorage state in storage
@@ -109,7 +136,51 @@ $(document).ready(function () {
 		sendActionWithCallback("getFromStorage", "api_key", function(data) {
 			api_key.val(data.data);
 		});
+
+		sendActionWithCallback("getFromStorage", "csurl-list", function(data) {
+			try {
+				csurllist = JSON.parse(data.data);
+			} catch(e) {
+				return;
+			}
+
+			var itembox = $("#csurl_list");
+
+			for(var href in csurllist) {
+				//{href: active}
+				create_csurl_item(href, csurllist[href][0]);
+			}
+		});
 	}());
+
+	var csurlalert = function(message) {
+		$("#csurl_alert").show().html(message);
+	}
+
+	var csvalidproxy = function() {
+		if(["false", false].indexOf($("#g-cproxy-toggle").prop("checked")) == -1) return false;
+		if($("#g-cproxy-url").val().length == 0) return false;
+		if(parseInt($("#g-cproxy-port").val()) < 1 || $('#cs-url-proxy').val().length == 0) return false;
+		return true;
+	}
+
+	// Custom URLs input
+	$("#cs-url-add").click(function() {
+		var href = $("#cs-url-href").val().replace(/[^\w-.]/g, "");
+		var csprox = $("#cs-url-proxy").val().replace(/[^\w-.]/g, "");
+		if(href.length == 0) return csurlalert("Href needs to be an URL");
+		if(csprox.length == 0 && !csvalidproxy()) return csurlalert("Custom proxy is required");
+		if(csurllist === undefined) csurllist = {};
+		var csproxp = parseInt($("#cs-url-proxy-port").val());
+		csurllist[href] = [true, csprox, csproxp];
+		create_csurl_item(href, true);
+		$("#cs-url-href, #cs-url-proxy, #cs-url-proxy-port").val("");
+	});
+
+	// Save on enter
+	$("#cs-url-href, #cs-url-proxy, #cs-url-proxy-port").keyup(function(e) {
+		if(e.which == 13) $("#cs-url-add").trigger("click");
+	});
 
 	// Slide toggle for custom proxy field
 	$("#g-cproxy-toggle").click(function () {
@@ -141,6 +212,8 @@ $(document).ready(function () {
 		sendAction("setStorage", {key: "cproxy_url", val: cproxy_url});
 		sendAction("setStorage", {key: "cproxy_port", val: cproxy_port});
 		sendAction("setStorage", {key: "api_key", val: api_key});
+
+		sendAction("setStorage", {key: "csurl-list", val: JSON.stringify(csurllist)});
 
 		var packages = $(".package");
 		packages.each(function(index, el) {

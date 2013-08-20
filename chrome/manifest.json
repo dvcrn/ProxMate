@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Improve your Internet!",
-  "version": "2.3.9",
+  "version": "2.4.0",
   "description": "Supercharge your internet experience.",
   "background": {
     "scripts": ["background.js", "vendor/feedback.js"]
@@ -58,7 +58,9 @@
     "elements/youtube-proxmatebar.css",
     "images/uk.png",
     "images/us.png",
-    "lib/jquery-1.7.1.min.js"
+    "lib/jquery-1.7.1.min.js",
+    "lib/jquery-2.0.3.min.js",
+    "lib/jquery-2.0.3.min.map"
   ],
   "permissions": [
     "webRequest",
@@ -68,6 +70,7 @@
     "*://*/",
     "tabs",
     "webNavigation",
-    "storage"
+    "storage",
+    "management"
   ]
 }
