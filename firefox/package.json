@@ -8,6 +8,9 @@
 	"fullName": "ProxMate - Improve your Internet!",
 	"id": "jid1-QpHD8URtZWJC2A@jetpack",
 	"description": "Supercharge your internet experience.",
+	"permissions": {
+		"private-browsing": true
+	},
 	"preferences": [
 		{
 			"name": "status_cproxy",
