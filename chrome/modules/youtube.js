@@ -65,8 +65,9 @@ $.when(global, youtube, general).done(function () {
 
             Using a pac_script entry for this url doesn't work! Otherways we would unblock ALL youtube videos what we clearly don't want!
         */
-        var proxmate_parameter, script, scriptcontent, n, superscript, script_count, iteration;
+        var proxmate_parameter, script, scriptcontent, n, superscript, script_count, iteration, video_id;
         proxmate_parameter = getUrlParam('proxmate');
+        video_id = getUrlParam('v');
 
         // Moving this into own function so we can inject it later into the page body
         function proxmateCheckAndReload () {
@@ -95,13 +96,28 @@ $.when(global, youtube, general).done(function () {
 
             $("#player-api").html("");
             superscript = "";
+
+            // Replace xmlhttprequest.open to intercept the URL and append ProxMate parameter if neccessary.
+            superscript += "(function() { \
+                var proxied = window.XMLHttpRequest.prototype.open; \
+                window.XMLHttpRequest.prototype.open = function (method, uri, async) { \
+                    var add_comment_uri_fragment = 'comment_servlet?add_comment=1'; \
+                    var load_comment_uri_fragment = 'watch_fragments_ajax?frags=comments'; \
+                    if (uri.indexOf(add_comment_uri_fragment) != -1 || uri.indexOf(load_comment_uri_fragment != -1)) { \
+                        uri = uri + '&proxmate=" + proxmate_parameter + "'; \
+                    } \
+                    return proxied.apply(this, [method, uri, async]); \
+                } \
+            })();"
+
             script_count = $("script").length;
             iteration = 0;
             $("script").each(function () {
                 iteration++;
                 if ($(this).contents()[0] !== undefined) {
                     scriptcontent = $(this).contents()[0].data;
-                    n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26"); // Append our proxmate param so the pac script wil care of it
+                    // Append proxmate parameter to youtube streaming urls
+                    n = scriptcontent.replace(/videoplayback%3F/g, "videoplayback%3Fproxmate%3D" + proxmate_parameter + "%26");
                     superscript += " " + n;
                 }
 
