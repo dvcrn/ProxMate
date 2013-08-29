@@ -106,7 +106,7 @@ $.when(global, youtube, general).done(function () {
                 window.XMLHttpRequest.prototype.open = function (method, uri, async) { \
                     var add_comment_uri_fragment = 'comment_servlet?add_comment=1'; \
                     var load_comment_uri_fragment = 'watch_fragments_ajax?frags=comments'; \
-                    if (uri.indexOf(add_comment_uri_fragment) != -1 || uri.indexOf(load_comment_uri_fragment != -1)) { \
+                    if (uri.indexOf(add_comment_uri_fragment) !== -1 || uri.indexOf(load_comment_uri_fragment) !== -1) { \
                         uri = uri + '&proxmate=" + proxmate_parameter + "'; \
                     } \
                     return proxied.apply(this, [method, uri, async]); \
