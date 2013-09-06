@@ -1,0 +1,6 @@
+// Extends the config to add custom rules
+{
+	"US": [
+		"url.indexOf('my-cool-rule') != -1"
+	]
+}

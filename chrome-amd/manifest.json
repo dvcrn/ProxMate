@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "name": "ProxMate - Proxy on steroids!",
+  "version": "2.4.3",
+  "description": "Supercharge your internet experience.",
+  "background": {
+    "page": "background.html"
+  },
+  "options_page": "ressources/options/options.html",
+  "homepage_url": "http://proxmate.dave.cx/",
+  "browser_action": {
+    "default_title": "Click to enable / disable ProxMate",
+    "default_icon": "ressources/images/icon128.png"
+  },
+  "icons": {
+    "48": "ressources/images/icon48.png",
+    "24": "ressources/images/icon24.png",
+    "16": "ressources/images/icon16.png",
+    "128": "ressources/images/icon128.png"
+   },
+   "web_accessible_resources": [
+    "elements/overlay.html",
+    "elements/banner.html",
+    "elements/overlay.css",
+    "ressources/images/load.gif",
+    "ressources/images/waitajax.gif",
+    "ressources/images/background-wrapper.png",
+    "ressources/images/background-body.png",
+    "ressources/images/icon48.png",
+    "ressources/images/cross.png",
+    "elements/youtube-proxmatebar.html",
+    "elements/youtube-proxmatebar.css",
+    "ressources/images/uk.png",
+    "ressources/images/us.png",
+    "lib/jquery-1.7.1.min.js",
+    "lib/jquery-2.0.3.min.js",
+    "lib/jquery-2.0.3.min.map"
+  ],
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "proxy",
+    "http://youtube.com/",
+    "*://*/",
+    "tabs",
+    "webNavigation",
+    "storage"
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
