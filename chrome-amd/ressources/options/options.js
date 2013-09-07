@@ -47,14 +47,16 @@ var PreferencePacker = function () {
             'custom_proxy_port': 1337
         };
 
-        if (overrides.nodes !== undefined && overrides.nodes.CUSTOM) {
+        if (overrides.nodes !== undefined && overrides.nodes.CUSTOM !== undefined) {
             if (overrides.nodes.CUSTOM !== undefined) {
                 var proxy = overrides.nodes.CUSTOM[0].split(':');
+                config.custom_proxy_url = proxy[0];
+                config.custom_proxy_port = proxy[1];
             }
 
-            config.use_custom_proxy = true;
-            config.custom_proxy_url = proxy[0];
-            config.custom_proxy_port = proxy[1];
+            if (overrides.nodes.US !== undefined || overrides.nodes.UK !== undefined) {
+                config.use_custom_proxy = true;
+            }
         }
 
         return config;
@@ -85,6 +87,8 @@ var PreferencePacker = function () {
         if (Object.keys(overrides.services).length === 0) {
             delete overrides.services;
         }
+
+        console.info(overrides);
 
         return JSON.stringify(overrides);
     };
