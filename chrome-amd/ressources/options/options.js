@@ -120,7 +120,7 @@ app.controller('MainCtrl', function($scope) {
     };
 
     var synchronise_preferences = function () {
-        $scope.status = 'Saving...';
+        $scope.status = 'Synchronising...';
         clearTimeout(synchronise_timeout);
         synchronise_timeout = setTimeout(function () {
             var sync_promises = [];
@@ -147,7 +147,7 @@ app.controller('MainCtrl', function($scope) {
 
     var init = function (callback) {
         console.info("init");
-        $scope.status = 'Loading...';
+        $scope.status = 'Synchronising...';
         callback = callback || function () {};
         promises = [];
 
@@ -191,7 +191,7 @@ app.controller('MainCtrl', function($scope) {
         });
 
         $.when.apply($, promises).then(function() {
-            $scope.status = 'Loaded! Everything up to date!';
+            $scope.status = 'Synchronised! Everything up to date!';
             $scope.$digest();
             callback.call(this);
         });
