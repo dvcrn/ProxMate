@@ -2,9 +2,9 @@
 	"debug": true,
 	"_comment" : "1 = errors, 2 = errors + warns, 3 = infos",
 	"verbosity": 3,
-	"primary_server": "http://127.0.0.1:8000",
+	"primary_server": "http://proxmate.dave.cx",
 	"secondary_server": "http://web02.proxmate.dave.cx",
-	"fallback_config": "http://something.amazonaws.com/config.json",
+	"fallback_config": "http://proxmatedavecx.s3.amazonaws.com/etc/config.json",
 	"pull_interval": 300000,
 	"first_start_tabs": [
 		"http://proxmate.dave.cx/?ref=chrome_installation",
