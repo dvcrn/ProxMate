@@ -22,7 +22,7 @@ define(['logger'], function (Logger) {
 	var set_proxy_autoconfig = function (string, callback) {
 		callback = callback || function () {};
 
-		Logger.log("[proxy.js]: Setting proxy auto config.");
+		Logger.log("[proxy.js]: Setting proxy auto config to {0}.".format(string));
 		var config = {
 	        mode: "pac_script",
 	        pacScript: {

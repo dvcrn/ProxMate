@@ -146,7 +146,12 @@ define([
 		conditions = [];
 		for (index in countries_available) {
 			var country_identifier = countries_available[index];
+			var proxystring = shuffle_array(config.nodes[country_identifier]).join('; PROXY ');
 			var condition_head = 'if';
+
+			if (config.nodes[country_identifier].length === 1) {
+				proxystring = 'PROXY {0}'.format(proxystring);
+			}
 
 			if (index != 0) {
 				condition_head = 'else if';
@@ -155,7 +160,7 @@ define([
 			conditions.push('{0} ({1}) { return "{2}"; }'.format(
 					condition_head,
 					country_specific_rules[country_identifier].join(' || '),
-					shuffle_array(config.nodes[country_identifier]).join('; PROXY ')
+					proxystring
 				));
 
 		}
