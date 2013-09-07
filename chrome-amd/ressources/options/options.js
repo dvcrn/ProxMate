@@ -1,10 +1,109 @@
-var app = angular.module('options', []);
+var PreferencePacker = function () {
+    this.original_preferences = {};
 
+    this.unpack = function (preference_name, preference_value) {
+        var unpack_function_name = 'unpack_' + preference_name;
+        var unpack_function = this[unpack_function_name];
+
+        this.original_preferences[preference_name] = preference_value;
+
+        if (typeof unpack_function === 'function') {
+            console.info("Unpacking " + preference_name);
+            return unpack_function.call(this, preference_value);
+        } else {
+            return preference_value;
+        }
+    };
+
+    this.pack = function (preference_name, preference_value) {
+        var pack_function_name = 'pack_' + preference_name;
+        var pack_function = this[pack_function_name];
+
+        if (typeof pack_function === 'function') {
+            console.info("Packing " + preference_name);
+            return pack_function.call(this, preference_value);
+        } else {
+            return preference_value;
+        }
+    };
+
+    this.unpack_disabled_services = function (services) {
+        if (services != null) {
+            var parsed_services = $.map(services.split(','), function(value){
+                return parseInt(value, 10);
+            });
+
+            return parsed_services;
+        }
+
+        return [];
+    };
+
+    this.unpack_config_overrides = function (overrides) {
+        var overrides = JSON.parse(overrides);
+        var config = {
+            'use_custom_proxy': false,
+            'custom_proxy_url': '127.0.0.1',
+            'custom_proxy_port': 1337
+        };
+
+        if (overrides.nodes !== undefined && overrides.nodes.CUSTOM) {
+            if (overrides.nodes.CUSTOM !== undefined) {
+                var proxy = overrides.nodes.CUSTOM[0].split(':');
+            }
+
+            config.use_custom_proxy = true;
+            config.custom_proxy_url = proxy[0];
+            config.custom_proxy_port = proxy[1];
+        }
+
+        return config;
+    };
+
+    this.pack_config_overrides = function (override_object) {
+        console.info(override_object);
+        var old_overrides = JSON.parse(this.original_preferences.config_overrides);
+
+        var overrides = {};
+        overrides.nodes = {};
+        overrides.services = {};
+
+        overrides.nodes.CUSTOM = [override_object.custom_proxy_url + ':' + override_object.custom_proxy_port];
+        if (override_object.use_custom_proxy) {
+            overrides.nodes.US = overrides.nodes.CUSTOM;
+            overrides.nodes.UK = overrides.nodes.CUSTOM;
+        }
+
+        if (old_overrides.services !== undefined) {
+            $.apply(old_overrides.services, overrides.services);
+        }
+
+        if (Object.keys(overrides.nodes).length === 0) {
+            delete overrides.nodes;
+        }
+
+        if (Object.keys(overrides.services).length === 0) {
+            delete overrides.services;
+        }
+
+        return JSON.stringify(overrides);
+    };
+};
+
+var preference_packer = new PreferencePacker();
+
+var app = angular.module('options', []);
 app.controller('MainCtrl', function($scope) {
 
     var promises = [];
     var disabled_services = [];
     var synchronise_timeout;
+    var preferences = [
+        'disabled_services',
+        'proxmate_token',
+        'allow_data_collection',
+        'config_overrides'
+    ];
 
     $scope.account_type = 'Loading account status...';
 
@@ -22,23 +121,17 @@ app.controller('MainCtrl', function($scope) {
         synchronise_timeout = setTimeout(function () {
             var sync_promises = [];
 
-            add_promise(sync_promises, function (promise) {
-                Proxmate.preferences_set('disabled_services', disabled_services, function () {
-                    promise.resolve();
-                });
-            });
+            for (i in preferences) {
+                var index = preferences[i];
+                add_promise(sync_promises, function (promise) {
+                    var index = preferences[i];
+                    var val = preference_packer.pack(index, $scope[index]);
 
-            add_promise(sync_promises, function (promise) {
-                Proxmate.preferences_set('proxmate_token', $scope.proxmate_token, function () {
-                    promise.resolve();
+                    Proxmate.preferences_set(index, val, function () {
+                        promise.resolve();
+                    });
                 });
-            });
-
-            add_promise(sync_promises, function (promise) {
-                Proxmate.preferences_set('allow_data_collection', $scope.allow_data_collection, function () {
-                    promise.resolve();
-                });
-            });
+            }
 
             $.when.apply(sync_promises).then(function () {
                 Proxmate.update_offline_config();
@@ -69,6 +162,7 @@ app.controller('MainCtrl', function($scope) {
                 $scope.config_date = config.meta.generated_at * 1000;
                 $scope.account_type = config.meta.account_type
                 $scope.token_expires_at = config.meta.token_expires_at * 1000;
+
                 promise.resolve();
             });
         });
@@ -81,16 +175,11 @@ app.controller('MainCtrl', function($scope) {
         });
 
         add_promise(promises, function (promise) {
-            Proxmate.preferences_get(['disabled_services', 'proxmate_token', 'allow_data_collection'],
-                function (services, proxmate_token, allow_data_collection) {
-                if (services != null) {
-                    var parsed_services = $.map(services.split(','), function(value){
-                        return parseInt(value, 10);
-                    });
-
-                    disabled_services = parsed_services;
-                    $scope.proxmate_token = proxmate_token;
-                    $scope.allow_data_collection = allow_data_collection;
+            Proxmate.preferences_get(preferences, function (services) {
+                // Dynamically add all preferences to $scope
+                for (i in preferences) {
+                    var index = preferences[i];
+                    $scope[index] = preference_packer.unpack(index, arguments[i]);
                 }
 
                 promise.resolve();
@@ -110,18 +199,18 @@ app.controller('MainCtrl', function($scope) {
     });
 
     $scope.toggle_service = function (service_id) {
-        var in_array_index = $.inArray(service_id, disabled_services);
+        var in_array_index = $.inArray(service_id, $scope.disabled_services);
         if (in_array_index != -1) {
-            disabled_services.splice(in_array_index, 1);
+            $scope.disabled_services.splice(in_array_index, 1);
         } else {
-            disabled_services.push(service_id);
+            $scope.disabled_services.push(service_id);
         }
 
         synchronise_preferences();
     };
 
     $scope.is_disabled = function (service_id) {
-        if ($.inArray(service_id, disabled_services) != -1) {
+        if ($.inArray(service_id, $scope.disabled_services) != -1) {
             return true
         }
 

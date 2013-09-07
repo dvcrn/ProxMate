@@ -89,8 +89,11 @@ define([
 					Storage.get('offline_config', function (config) {
 						var config = JSON.parse(config);
 
-						Preferences.get(['config_extras', 'config_overrides', 'disabled_services'],
-							function (config_extras, config_overrides, services) {
+						Preferences.get([
+							'config_extras',
+							'config_overrides',
+							'disabled_services'
+						], function (config_extras, config_overrides, services) {
 								var extras = JSON.parse(config_extras);
 								var overrides = JSON.parse(config_overrides);
 								var disabled_services = [];

@@ -35,14 +35,14 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 
 	// Key: Default
 	var default_config = {
-		addon_is_active: true,			// bool
-		uuid: generate_uuid(),			// string
-		proxmate_token: null,			// string
-		allow_data_collection: true,	// bool
-		config_overrides: '{}',			// json
-		config_extras: '{}',			// json
-		first_start: true,				// bool
-		disabled_services: null 		// array
+		addon_is_active: true,					// bool
+		uuid: generate_uuid(),					// string
+		proxmate_token: null,					// string
+		allow_data_collection: true,			// bool
+		config_overrides: '{}',					// json
+		config_extras: '{}',					// json
+		first_start: true,						// bool
+		disabled_services: null 				// array
 	};
 
 	/**
@@ -80,7 +80,7 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 		callback = callback || function () {};
 		preference_data[key] = value;
 
-		Logger.log("[preferences.js]: Settings '{0}' with value ‘{1}'.".format(key, value));
+		Logger.log("[preferences.js]: Settings '{0}' with value '{1}'.".format(key, value));
 		Mediator.publish('preferences_update', JSON.stringify(preference_data));
 		callback();
 	};

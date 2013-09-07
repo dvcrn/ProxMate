@@ -1,3 +1,9 @@
+@font-face {
+	font-family: "Lucida Grande";
+	src: url(../fonts/LucidaGrande.eot);
+	src: local("Lucida Grande"), url(../fonts/LucidaGrande.ttf) format("truetype"), url(../fonts/LucidaGrande.woff) format("woff");
+}
+    
 body {
     background: #f3f3f3;
     font-family: "Lucida Grande", "Lucida Sans Unicode", Helvetica, Verdana, sans-serif;
@@ -162,8 +168,23 @@ a:hover {
     text-decoration: underline;
 }
 
-.donationkey {
+input[type=text] {
     width: 220px;
     line-height: 20px;
     font-size: 13px;
+}
+
+.general .custom_proxy {
+    position: relative;
+    left: 50px
+}
+
+.general .custom_proxy input {
+    position: absolute;
+    left: 90px;
+    width: 200px;
+}
+
+section {
+    margin-bottom: 30px
 }
