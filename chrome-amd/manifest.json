@@ -17,7 +17,6 @@
       "matches": ["*://*.youtube.com/watch*"],
       "js": [
         "vendor/jquery/jquery.min.js",
-        "vendor/angular/angular.min.js",
         "ressources/scripts/proxmate.js",
         "ressources/scripts/page-communicator.js",
         "ressources/scripts/page-worker/youtube.js"
@@ -25,7 +24,12 @@
     },
     {
       "matches": ["*://*/*"],
-      "js": ["vendor/jquery/jquery.min.js", "vendor/angular/angular.min.js", "ressources/scripts/proxmate.js"]
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/banner.js",
+        "ressources/scripts/page-worker/banner-loader.js"
+      ]
     }
   ],
   "icons": {

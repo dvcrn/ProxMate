@@ -1,0 +1,15 @@
+#proxmate_banner html{color:#000;background:#FFF}#proxmate_banner body,#proxmate_banner div,#proxmate_banner dl,#proxmate_banner dt,#proxmate_banner dd,#proxmate_banner ul,#proxmate_banner ol,#proxmate_banner li,#proxmate_banner h1,#proxmate_banner h2,#proxmate_banner h3,#proxmate_banner h4,#proxmate_banner h5,#proxmate_banner h6,#proxmate_banner pre,#proxmate_banner code,#proxmate_banner form,#proxmate_banner fieldset,#proxmate_banner legend,#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner p,#proxmate_banner blockquote,#proxmate_banner th,#proxmate_banner td{margin:0;padding:0}#proxmate_banner table{border-collapse:collapse;border-spacing:0}#proxmate_banner fieldset,#proxmate_banner img{border:0}#proxmate_banner address,#proxmate_banner caption,#proxmate_banner cite,#proxmate_banner code,#proxmate_banner dfn,#proxmate_banner em,#proxmate_banner strong,#proxmate_banner th,#proxmate_banner var{font-style:normal;font-weight:normal}#proxmate_banner ol,#proxmate_banner ul{list-style:none}#proxmate_banner caption,#proxmate_banner th{text-align:left}#proxmate_banner h1,#proxmate_banner h2,#proxmate_banner h3,#proxmate_banner h4,#proxmate_banner h5,#proxmate_banner h6{font-size:100%;font-weight:normal}#proxmate_banner q:before,#proxmate_banner q:after{content:''}#proxmate_banner abbr,#proxmate_banner acronym{border:0;font-variant:normal}#proxmate_banner sup{vertical-align:text-top}#proxmate_banner sub{vertical-align:text-bottom}#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner select{font-family:inherit;font-size:inherit;font-weight:inherit}#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner select{*font-size:100%}#proxmate_banner legend{color:#000}
+
+section#proxmate_banner {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	background: red;
+	width: 100%;
+	z-index: 1000000;
+	text-align: left;
+	padding: 0;
+	margin: 0;
+	font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
