@@ -109,6 +109,7 @@ define([
 								}
 
 								var pac = ProxmateConfig.generate_pac_from_config(config, overrides, extras);
+								Storage.set('offline_pac_script', pac);
 								Proxy.set_proxy_autoconfig(pac);
 								Mediator.publish('proxy_update');
 						});

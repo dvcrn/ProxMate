@@ -107,6 +107,32 @@
 		this.update_offline_config = function () {
 			this.emit_event_to_backend_mediator('do_offlineconfig_update');
 		};
+
+		/**
+		 * Checks back if ProxMate is activated for the id service_id and executes callback
+		 * @param  {int} service_id the service id
+		 * @param {Function} callback callback to execute in case
+		 */
+		this.is_active_for_id = function (service_id, callback) {
+			this.preferences_get('disabled_services', function (disabled_services) {
+	            var disabled_service_array = $.map(disabled_services.split(','), function(value){
+	                return parseInt(value, 10);
+	            });
+				if ($.inArray(service_id, disabled_service_array) == -1) {
+					console.info("Service is in array, executing callback");
+					callback.call(this);
+				}
+			});
+		};
+
+		/**
+		 * Returns a full url to a packaged ressource
+		 * @param  {string} url url
+		 * @return {string}     packaged url
+		 */
+		this.get_addon_url = function (url) {
+			return chrome.extension.getURL(url);
+		};
 	};
 
 	window.Proxmate = new Proxmate();
