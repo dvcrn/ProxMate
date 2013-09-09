@@ -33,6 +33,7 @@
                 <p>
                     <input type="checkbox" ng-model="config_overrides.use_custom_proxy" ng-change="update_preferences()"/> Use custom proxy <strong ng-show="config_overrides.use_custom_proxy">(active!)</strong>
                     <div class="custom_proxy" ng-show="config_overrides.use_custom_proxy">
+                    <p>This will override ProxMate's proxy servers. The only server ProxMate will use to load content is the one put here.</p>
                     <p>
                         <label for="custom_proxy_url">Proxy URL</label>
                         <input type="text" name="custom_proxy_url" ng-change="update_preferences()" ng-model="config_overrides.custom_proxy_url" />

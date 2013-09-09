@@ -91,14 +91,19 @@ var PreferencePacker = function () {
     };
 
     this.pack_config_extras = function (config_object) {
+        var config_to_save = [];
         for (index in config_object) {
             var current_element = config_object[index];
 
-            $.extend(config_object[index], {
-                'rule': 'url.indexOf("'+current_element.rule+'") != -1'
+            // Copy the element to avoid jumpy angular re-render
+            config_to_save.push({
+                'rule': 'url.indexOf("'+current_element.rule+'") != -1',
+                'server': current_element.server,
+                'is_active': current_element.is_active
             });
         }
-        return JSON.stringify(config_object);
+
+        return JSON.stringify(config_to_save);
     };
 
     this.unpack_config_extras = function (config) {
