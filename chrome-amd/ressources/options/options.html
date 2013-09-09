@@ -50,8 +50,8 @@
                 <p class="description">Did a donation over 3&euro; this month? Add your donation key here!<br />
                 No idea what this is? <a target="_blank" href="http://proxmate.dave.cx/support/">Click here for infos!</a></p>
                 <p>
-                    <strong>Your key:</strong>
-                    <input class="donationkey" type="text" value="{{ proxmate_token }}" ng-model="proxmate_token" ng-change="update_preferences()" />
+                    <label for="donationkey">Your Key</label>
+                    <input name="donationkey" class="donationkey" type="text" value="{{ proxmate_token }}" ng-model="proxmate_token" ng-change="update_preferences()" />
                     <span ng-show="token_expires_at">(valid until {{ token_expires_at | date:'dd.MM.yyyy' }})</span>
                 </p>
                 <p>Your are currently rocking a <strong>{{ account_type }}</strong> account.</p>
@@ -59,6 +59,37 @@
             <section class="rules">
                 <h2>Custom rules</h2>
                 <p class="description">Add your custom proxy to url mappings here. ProxMate will then route all requests to the specific URL over the server set.</p>
+                <p><strong>NOTE:</strong> ProxMate will try to match the URL fragment. <strong>Adding 'example.com' will load ALL URLs containing 'example.com' over your proxy. Even if the url is 'my-cool-page.com/domain_whois/example.com'</strong>, so be careful.</p>
+                <table>
+                    <tr>
+                        <th>URL fragment</th>
+                        <th>Proxy (address:port)</th>
+                        <th>Active</th>
+                    </tr>
+                    <tr>
+                        <td>example.com</td>
+                        <td>127.0.0.1:1337</td>
+                        <td>
+                            <input disabled="disabled" type="checkbox" checked="checked">
+                            /
+                            <button disabled="disabled">Delete</button>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="config_extra in config_extras">
+                        <td>{{ config_extra.rule }}</td>
+                        <td>{{ config_extra.server }}</td>
+                        <td>
+                            <input type="checkbox" ng-model="config_extras[$index].is_active" ng-change="update_preferences()">
+                            /
+                            <button ng-click="delete_custom_rule($index)">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="custom_rule_rule" ng-model="custom_rule_rule"></td>
+                        <td><input type="text" name="custom_rule_server" ng-model="custom_rule_server"></td>
+                        <td><button ng-click="add_custom_rule()">Add</button></td>
+                    </tr>
+                </table>
             </section>
         </div>
 

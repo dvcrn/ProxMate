@@ -47,9 +47,9 @@ var PreferencePacker = function () {
             'custom_proxy_port': 1337
         };
 
-        if (overrides.nodes !== undefined && overrides.nodes.CUSTOM !== undefined) {
-            if (overrides.nodes.CUSTOM !== undefined) {
-                var proxy = overrides.nodes.CUSTOM[0].split(':');
+        if (overrides.nodes !== undefined && overrides.nodes.CUSTOMPROXY !== undefined) {
+            if (overrides.nodes.CUSTOMPROXY !== undefined) {
+                var proxy = overrides.nodes.CUSTOMPROXY[0].split(':');
                 config.custom_proxy_url = proxy[0];
                 config.custom_proxy_port = proxy[1];
             }
@@ -70,10 +70,10 @@ var PreferencePacker = function () {
         overrides.nodes = {};
         overrides.services = {};
 
-        overrides.nodes.CUSTOM = [override_object.custom_proxy_url + ':' + override_object.custom_proxy_port];
+        overrides.nodes.CUSTOMPROXY = [override_object.custom_proxy_url + ':' + override_object.custom_proxy_port];
         if (override_object.use_custom_proxy) {
-            overrides.nodes.US = overrides.nodes.CUSTOM;
-            overrides.nodes.UK = overrides.nodes.CUSTOM;
+            overrides.nodes.US = overrides.nodes.CUSTOMPROXY;
+            overrides.nodes.UK = overrides.nodes.CUSTOMPROXY;
         }
 
         if (old_overrides.services !== undefined) {
@@ -92,6 +92,37 @@ var PreferencePacker = function () {
 
         return JSON.stringify(overrides);
     };
+
+    this.pack_config_extras = function (config_object) {
+        console.info(config_object);
+        for (index in config_object) {
+            var current_element = config_object[index];
+
+            $.extend(config_object[index], {
+                'rule': 'url.indexOf("'+current_element.rule+'") != -1'
+            });
+        }
+        return JSON.stringify(config_object);
+    };
+
+    this.unpack_config_extras = function (config) {
+        var config_object = JSON.parse(config);
+        var regex = /url\.indexOf\(\"(.*)\"\)/g; // = url.indexOf("(.*)");
+
+        console.info(config);
+
+        // Extract url fragment from javascript rule for displaying
+        for (index in config_object) {
+            var current_element = config_object[index];
+            var match = regex.exec(current_element.rule);
+
+            if (match !== null) {
+                config_object[index].rule = match[1];
+            }
+        }
+
+        return config_object;
+    };
 };
 
 var preference_packer = new PreferencePacker();
@@ -106,7 +137,8 @@ app.controller('MainCtrl', function($scope) {
         'disabled_services',
         'proxmate_token',
         'allow_data_collection',
-        'config_overrides'
+        'config_overrides',
+        'config_extras'
     ];
 
     $scope.account_type = 'Loading account status...';
@@ -222,6 +254,25 @@ app.controller('MainCtrl', function($scope) {
     };
 
     $scope.update_preferences = function () {
+        synchronise_preferences();
+    };
+
+    $scope.add_custom_rule = function () {
+        if ($scope.custom_rule_rule.length !== undefined && $scope.custom_rule_server.length != undefined) {
+            $scope.config_extras.push({
+                'rule': $scope.custom_rule_rule,
+                'server': $scope.custom_rule_server,
+                'is_active': true
+            });
+        }
+
+        $scope.custom_rule_rule = '';
+        $scope.custom_rule_server = '';
+        synchronise_preferences();
+    };
+
+    $scope.delete_custom_rule = function (index) {
+        $scope.config_extras.splice(index, 1);
         synchronise_preferences();
     };
 });

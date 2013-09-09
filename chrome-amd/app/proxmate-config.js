@@ -112,18 +112,30 @@ define([
 			}
 		}
 
-		// Add extra rules by creating and adding them to a custom service
-		if (Object.keys(extras).length > 0) {
-			var extra_config = {};
+		// Add extra rules by creating and adding them to a custom service / custom country
+		if (extras.length > 0) {
+			var extra_config = {
+				'nodes': {},
+				'services': {}
+			};
 
 			for (index in extras) {
-				extra_config['extras-{0}'.format(index)] = {
-					'rules': extras[index],
-					'country': index.toUpperCase(),
+				var extra_element = extras[index];
+				if (!extra_element.is_active) {
+					continue;
+				}
+
+				var config_index = 'CUSTOMRULE{0}'.format(index);
+				extra_config.nodes[config_index] = [extra_element['server']];
+				extra_config.services[config_index] = {
+					'rules': ['{0}'.format(extra_element['rule'])],
+					'country': config_index,
+					'id': config_index
 				}
 			}
 
-			$.extend(config.services, extra_config);
+			$.extend(config.services, extra_config.services);
+			$.extend(config.nodes, extra_config.nodes);
 		}
 
 		for (index in config.services) {
