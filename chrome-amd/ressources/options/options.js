@@ -63,7 +63,6 @@ var PreferencePacker = function () {
     };
 
     this.pack_config_overrides = function (override_object) {
-        console.info(override_object);
         var old_overrides = JSON.parse(this.original_preferences.config_overrides);
 
         var overrides = {};
@@ -88,13 +87,10 @@ var PreferencePacker = function () {
             delete overrides.services;
         }
 
-        console.info(overrides);
-
         return JSON.stringify(overrides);
     };
 
     this.pack_config_extras = function (config_object) {
-        console.info(config_object);
         for (index in config_object) {
             var current_element = config_object[index];
 
@@ -108,8 +104,6 @@ var PreferencePacker = function () {
     this.unpack_config_extras = function (config) {
         var config_object = JSON.parse(config);
         var regex = /url\.indexOf\(\"(.*)\"\)/g; // = url.indexOf("(.*)");
-
-        console.info(config);
 
         // Extract url fragment from javascript rule for displaying
         for (index in config_object) {
