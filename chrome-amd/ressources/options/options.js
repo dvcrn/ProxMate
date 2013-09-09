@@ -108,10 +108,10 @@ var PreferencePacker = function () {
 
     this.unpack_config_extras = function (config) {
         var config_object = JSON.parse(config);
-        var regex = /url\.indexOf\(\"(.*)\"\)/g; // = url.indexOf("(.*)");
 
         // Extract url fragment from javascript rule for displaying
         for (index in config_object) {
+            var regex = /url\.indexOf\(\"(.*)\"\)/g; // = url.indexOf("(.*)");
             var current_element = config_object[index];
             var match = regex.exec(current_element.rule);
 

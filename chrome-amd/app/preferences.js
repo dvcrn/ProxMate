@@ -40,7 +40,7 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 		proxmate_token: null,					// string
 		allow_data_collection: true,			// bool
 		config_overrides: '{}',					// json
-		config_extras: '{}',					// json
+		config_extras: '[]',					// json
 		first_start: true,						// bool
 		disabled_services: null 				// array
 	};
