@@ -24,6 +24,10 @@ Proxmate.preferences_get('addon_is_active', function (global_status) {
 		            console.info("loading PM banner");
 		            PmBanner.load_banner_stylesheet();
 		            PmBanner.load_banner_html();
+		            // Collapse the banner after 5s
+		            setTimeout(function () {
+		            	$('#proxmate_banner').removeClass('proxmate_banner_expanded');
+		            }, 5000);
 		        });
 		    }
 		});

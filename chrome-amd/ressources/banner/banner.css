@@ -4,9 +4,7 @@ section#proxmate_banner {
 	position: fixed;
 	bottom: 0;
 	left: 0;
-	background: #f3f3f3;
-	box-shadow: 2px 2px 10px 0px #000;
-	width: 100%;
+	border-radius: .8em;
 	z-index: 1000001;
 	text-align: left;
 	padding: 0;
@@ -19,6 +17,24 @@ section#proxmate_banner {
 	line-height: 45px;
 	display: inline-block;
 	background-repeat: no-repeat;
+	transition:
+		width 0.50s ease-in-out,
+		background 0.50s ease-in-out
+	;
+
+	width: 40px;
+	background-color: rgba(255, 255, 255, 0);
+	box-shadow: none;
+}
+
+section#proxmate_banner:hover, section#proxmate_banner.proxmate_banner_expanded {
+	background-color: #f3f3f3;
+	box-shadow: 2px 2px 10px 0px #000;
+	width: 100%;
+}
+
+section#proxmate_banner:hover *, section#proxmate_banner.proxmate_banner_expanded * {
+	opacity: 1;
 }
 
 section#proxmate_banner:before {
@@ -30,6 +46,7 @@ section#proxmate_banner:before {
 	bottom: 0px;
 	content: ' ';
 	left: 0;
+	border-radius: 1.2em;
 }
 
 section#proxmate_banner:after {
@@ -41,6 +58,7 @@ section#proxmate_banner:after {
 	bottom: 7px;
 	content: ' ';
 	left: 0;
+	border-radius: 1.2em;
 }
 
 section#proxmate_banner * {
@@ -54,6 +72,11 @@ section#proxmate_banner * {
 	right: none;
 	bottom: none;
 	top: none;
+	opacity: 0;
+	transition:
+		opacity 0.50s ease-in-out
+	;
+	color: black;
 }
 
 section#proxmate_banner .heart {
@@ -76,14 +99,6 @@ section#proxmate_banner:hover .heart {
 	bottom: 54px;
 }
 
-section#proxmate_banner .wrapper a {
-	font-weight: bold;
-}
-
-section#proxmate_banner .wrapper .logo {
-
-}
-
 section#proxmate_banner .wrapper p, section#proxmate_banner .wrapper h3 {
 	position: relative;
 	left: 45px;
@@ -94,6 +109,7 @@ section#proxmate_banner .wrapper div {
     position: relative;
     left: 50px;
     top: -2px;
+    min-width: 80px;
 }
 
 section#proxmate_banner .wrapper h3 {
@@ -104,6 +120,7 @@ section#proxmate_banner .wrapper h3 {
 section#proxmate_banner .wrapper a {
 	text-decoration: none;
 	color: #1f90e0;
+	font-weight: bold;
 }
 
 section#proxmate_banner .wrapper a:hover {
