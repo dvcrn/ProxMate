@@ -17,6 +17,9 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 		identifier_put_together,
 		identifier;
 
+		random_string_1 = '';
+		random_string_2 = '';
+
 	    possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 	    for (var i = 0; i < 9; i++ ) {
@@ -42,7 +45,8 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 		config_overrides: '{}',					// json
 		config_extras: '[]',					// json
 		first_start: true,						// bool
-		disabled_services: null 				// array
+		disabled_services: null, 				// array
+		feedback_sent_date: 0					// int
 	};
 
 	/**

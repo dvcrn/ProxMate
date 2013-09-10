@@ -19,7 +19,13 @@ define([
 		Chrome.set_badge_text("Init...");
 		Storage.apply_from_cloud(function () {
 			Preferences.initialise();
-			Preferences.get(['addon_is_active', 'first_start'], function (status, first_start) {
+			Preferences.get([
+				'addon_is_active',
+				'first_start',
+				'feedback_sent_date',
+				'uuid',
+				'allow_data_collection'
+			], function (status, first_start, feedback_sent_date, uuid, allow_data_collection) {
 				Mediator.publish('do_global_status_change', [status]);
 				Mediator.publish('do_offlineconfig_update');
 
@@ -32,11 +38,15 @@ define([
 					});
 				}
 
-				Chrome.bind_event('test_event', function (p1, send_response) {
-					console.info("Received the test event");
-					console.info(arguments);
-					send_response('arrived');
-				});
+				if ((new Date().getTime() - feedback_sent_date) >= 2592000000) {
+					Logger.log('[app.js]: Data collection feedback is due. Pinging server...');
+					Ajax.post('{0}/api/feedback.json'.format(Config.get('secondary_server')), {
+						'uuid': uuid,
+						'allow_feedback': allow_data_collection
+					}, function () {
+						Preferences.set('feedback_sent_date', new Date().getTime());
+					});
+		        }
 			});
 		});
 
