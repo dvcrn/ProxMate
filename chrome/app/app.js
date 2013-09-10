@@ -30,13 +30,6 @@ define([
 				Mediator.publish('do_offlineconfig_update');
 
 				if (first_start) {
-					Preferences.set('first_start', false, function () {
-						var tabs = Config.get('first_start_tabs');
-						for (var index in tabs) {
-							Chrome.create_tab(tabs[index]);
-						}
-					});
-
 					if (localStorage['firststart']) {
 						Logger.log('[app.js]: Found used localStorage entry. Trying to migrate from older ProxMate...');
 						var migrate = {
@@ -50,6 +43,13 @@ define([
 						Logger.log('[app.js]: Finished migrating. Deleting old localStorage content...');
 						localStorage.clear();
 						Mediator.publish('do_global_status_change', [status]);
+					} else {
+						Preferences.set('first_start', false, function () {
+							var tabs = Config.get('first_start_tabs');
+							for (var index in tabs) {
+								Chrome.create_tab(tabs[index]);
+							}
+						});
 					}
 				}
 
