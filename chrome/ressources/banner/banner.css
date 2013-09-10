@@ -19,7 +19,8 @@ section#proxmate_banner {
 	background-repeat: no-repeat;
 	transition:
 		width 0.50s ease-in-out,
-		background 0.50s ease-in-out
+		background 0.50s ease-in-out,
+		box-shadow 0.50s ease-in-out
 	;
 
 	width: 40px;
