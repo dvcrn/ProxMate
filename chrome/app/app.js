@@ -34,7 +34,8 @@ define([
 						Logger.log('[app.js]: Found used localStorage entry. Trying to migrate from older ProxMate...');
 						var migrate = {
 							'proxmate_token': 'api_key',
-							'uuid': 'uuid'
+							'uuid': 'uuid',
+							'first_start': false
 						};
 						var key;
 						for (key in migrate) {
