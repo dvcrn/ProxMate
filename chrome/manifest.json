@@ -23,6 +23,15 @@
       ]
     },
     {
+      "matches": ["*://*.youtube.com/results*"],
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube-search.js"
+      ]
+    },
+    {
       "matches": ["*://*/*"],
       "js": [
         "vendor/jquery/jquery.min.js",
