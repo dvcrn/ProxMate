@@ -1,0 +1,19 @@
+// Overrides particular properties // objects
+{
+	"services": {
+		// This will change country of service  '23'
+		"23": {
+			"country": "UK"
+		},
+		// This will change the name of service '25'
+		"25": {
+			"name": "Muhkuh"
+		}
+	},
+	"nodes": {
+		// This will override all US servers with one
+		"US": [
+			"127.0.0.1:8000"
+		]
+	}
+}

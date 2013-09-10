@@ -1,0 +1,128 @@
+#proxmate_banner html{color:#000;background:#FFF}#proxmate_banner body,#proxmate_banner div,#proxmate_banner dl,#proxmate_banner dt,#proxmate_banner dd,#proxmate_banner ul,#proxmate_banner ol,#proxmate_banner li,#proxmate_banner h1,#proxmate_banner h2,#proxmate_banner h3,#proxmate_banner h4,#proxmate_banner h5,#proxmate_banner h6,#proxmate_banner pre,#proxmate_banner code,#proxmate_banner form,#proxmate_banner fieldset,#proxmate_banner legend,#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner p,#proxmate_banner blockquote,#proxmate_banner th,#proxmate_banner td{margin:0;padding:0}#proxmate_banner table{border-collapse:collapse;border-spacing:0}#proxmate_banner fieldset,#proxmate_banner img{border:0}#proxmate_banner address,#proxmate_banner caption,#proxmate_banner cite,#proxmate_banner code,#proxmate_banner dfn,#proxmate_banner em,#proxmate_banner strong,#proxmate_banner th,#proxmate_banner var{font-style:normal;font-weight:normal}#proxmate_banner ol,#proxmate_banner ul{list-style:none}#proxmate_banner caption,#proxmate_banner th{text-align:left}#proxmate_banner h1,#proxmate_banner h2,#proxmate_banner h3,#proxmate_banner h4,#proxmate_banner h5,#proxmate_banner h6{font-size:100%;font-weight:normal}#proxmate_banner q:before,#proxmate_banner q:after{content:''}#proxmate_banner abbr,#proxmate_banner acronym{border:0;font-variant:normal}#proxmate_banner sup{vertical-align:text-top}#proxmate_banner sub{vertical-align:text-bottom}#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner select{font-family:inherit;font-size:inherit;font-weight:inherit}#proxmate_banner input,#proxmate_banner textarea,#proxmate_banner select{*font-size:100%}#proxmate_banner legend{color:#000}
+
+section#proxmate_banner {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	border-radius: .8em;
+	z-index: 1000001;
+	text-align: left;
+	padding: 0;
+	margin: 0;
+	font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
+	font-size: 12px;
+	height: 54px;
+	background-image: url('../images/icon48.png');
+	background-size: 40px 40px;
+	line-height: 45px;
+	display: inline-block;
+	background-repeat: no-repeat;
+	transition:
+		width 0.50s ease-in-out,
+		background 0.50s ease-in-out
+	;
+
+	width: 40px;
+	background-color: rgba(255, 255, 255, 0);
+	box-shadow: none;
+}
+
+section#proxmate_banner:hover, section#proxmate_banner.proxmate_banner_expanded {
+	background-color: #f3f3f3;
+	box-shadow: 2px 2px 10px 0px #000;
+	width: 100%;
+}
+
+section#proxmate_banner:hover *, section#proxmate_banner.proxmate_banner_expanded * {
+	opacity: 1;
+}
+
+section#proxmate_banner:before {
+	background: #feb32d;
+	width: 100%;
+	position: absolute;
+	z-index: 1000001;
+	height: 7px;
+	bottom: 0px;
+	content: ' ';
+	left: 0;
+	border-radius: 1.2em;
+}
+
+section#proxmate_banner:after {
+	background: #1f90e0;
+	width: 100%;
+	position: absolute;
+	z-index: 1000001;
+	height: 7px;
+	bottom: 7px;
+	content: ' ';
+	left: 0;
+	border-radius: 1.2em;
+}
+
+section#proxmate_banner * {
+	display: inline-block;
+	border: none;
+	vertical-align: middle;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	left: none;
+	right: none;
+	bottom: none;
+	top: none;
+	opacity: 0;
+	transition:
+		opacity 0.50s ease-in-out
+	;
+	color: black;
+}
+
+section#proxmate_banner .heart {
+	position: absolute;
+	background-image: url('../images/heart-shape.png');
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	opacity: 0;
+	transition: opacity 0.50s ease-in-out, bottom 0.50s ease-in-out;
+	right: inherit;
+	top: inherit;
+	left: inherit;
+	bottom: 34px;
+	z-index: 1000002;
+}
+
+section#proxmate_banner:hover .heart {
+	opacity: 1;
+	bottom: 54px;
+}
+
+section#proxmate_banner .wrapper p, section#proxmate_banner .wrapper h3 {
+	position: relative;
+	left: 45px;
+	display: inline-block;
+}
+
+section#proxmate_banner .wrapper div {
+    position: relative;
+    left: 50px;
+    top: -2px;
+    min-width: 80px;
+}
+
+section#proxmate_banner .wrapper h3 {
+	text-shadow: 0 3px 3px #ccc;
+	font-weight: bold;
+}
+
+section#proxmate_banner .wrapper a {
+	text-decoration: none;
+	color: #1f90e0;
+	font-weight: bold;
+}
+
+section#proxmate_banner .wrapper a:hover {
+    text-decoration: underline;
+}

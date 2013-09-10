@@ -1,0 +1,8 @@
+// Extends the config to add custom rules
+[
+	{
+		"server": "127.0.0.1",
+		"rule": "url.indexOf('my-cool-rule') != -1",
+		"is_active": true
+	}
+]

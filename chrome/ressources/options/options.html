@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ProxMate Options</title>
+	<link rel="stylesheet" href="options.css">
+    <script type="text/javascript" src="../../vendor/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../../ressources/scripts/proxmate.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+</head>
+<body ng-app="options" ng-controller="MainCtrl">
+    <div id="headerbg"></div>
+    <div id="contentbg"></div>
+	<div id="wrapper">
+        <header>
+            <a href="/" id="logo"></a>
+            <h1>ProxMate Options</h1>
+            <div class="infobar">Config generated at {{ config_date | date:'dd.MM.yyyy @ h:mm a'}} <br /> {{ status }}</div>
+        </header>
+        <div id="content">
+            <section class="packages">
+                <h2>Available packages</h2>
+                <p class="description">These are all currently installed packages. Click to disable them!</p>
+                <a ng-class="{disabled: is_disabled({{service.id}})}" ng-click="toggle_service({{ service.id }})" ng-repeat="service in services" class="package">
+                    <img src="{{ service.image }}" alt="{{ service.name }} logo">
+                    {{ service.name }}
+                    <span>Disabled</span>
+                </a>
+            </section>
+            <section class="general">
+                <h2>General settings</h2>
+                <p class="description">Tweak ProxMate the way you like it!</p>
+                <p>
+                    <input type="checkbox" ng-model="config_overrides.use_custom_proxy" ng-change="update_preferences()"/> Use custom proxy <strong ng-show="config_overrides.use_custom_proxy">(active!)</strong>
+                    <div class="custom_proxy" ng-show="config_overrides.use_custom_proxy">
+                    <p>This will override ProxMate's proxy servers. The only server ProxMate will use to load content is the one put here.</p>
+                    <p>
+                        <label for="custom_proxy_url">Proxy URL</label>
+                        <input type="text" name="custom_proxy_url" ng-change="update_preferences()" ng-model="config_overrides.custom_proxy_url" />
+                    </p>
+                    <p>
+                        <label for="custom_proxy_port">Proxy port</label>
+                        <input type="text" name="custom_proxy_port" ng-change="update_preferences()" ng-model="config_overrides.custom_proxy_port" />
+                    </p>
+                    </div>
+                </p>
+                <p><input type="checkbox" ng-model="allow_data_collection" ng-change="update_preferences()" /> Allow anonymous data collection (thank you!)</p>
+            </section>
+            <section class="donation">
+                <h2>ProxMate key</h2>
+                <div class="heart">
+                    <img src="../images/heart-shape.png" alt="Support ProxMate!">
+                    <form method="post" action="https://www.paypal.com/cgi-bin/webscr">
+                        <input type="hidden" value="_s-xclick" name="cmd">
+                        <input type="hidden" value="L996QVYDFS67G" name="hosted_button_id">
+                        <input class="paypalbtn" type="image" border="0" alt="PayPal - The safer, easier way to pay online!" name="submit" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif">
+                        <img width="1" height="1" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" alt="">
+                    </form>
+                </div>
+                <p class="description">Did a donation over 3&euro; this month? Add your donation key here!<br />
+                No idea what this is? <a target="_blank" href="http://proxmate.dave.cx/support/">Click here for infos!</a></p>
+                <p>
+                    <label for="donationkey">Your Key</label>
+                    <input name="donationkey" class="donationkey" type="text" value="{{ proxmate_token }}" ng-model="proxmate_token" ng-change="update_preferences()" />
+                    <span ng-show="token_expires_at">(valid until {{ token_expires_at | date:'dd.MM.yyyy' }})</span>
+                </p>
+                <p>Your are currently rocking a <strong>{{ account_type }}</strong> account.</p>
+            </section>
+            <section class="rules">
+                <h2>Custom rules</h2>
+                <p class="description">Add your custom proxy to url mappings here. ProxMate will then route all requests to the specific URL over the server set.</p>
+                <p><strong>NOTE:</strong> ProxMate will try to match the URL fragment. <strong>Adding 'example.com' will load ALL URLs containing 'example.com' over your proxy. Even if the url is 'my-cool-page.com/domain_whois/example.com'</strong>, so be careful.</p>
+                <table>
+                    <tr>
+                        <th>URL fragment</th>
+                        <th>Proxy (address:port)</th>
+                        <th>Active</th>
+                    </tr>
+                    <tr>
+                        <td>example.com</td>
+                        <td>127.0.0.1:1337</td>
+                        <td>
+                            <input disabled="disabled" type="checkbox" checked="checked">
+                            /
+                            <button disabled="disabled">Delete</button>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="config_extra in config_extras">
+                        <td>{{ config_extra.rule }}</td>
+                        <td>{{ config_extra.server }}</td>
+                        <td>
+                            <input type="checkbox" ng-model="config_extras[$index].is_active" ng-change="update_preferences()">
+                            /
+                            <button ng-click="delete_custom_rule($index)">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="custom_rule_rule" ng-model="custom_rule_rule"></td>
+                        <td><input type="text" name="custom_rule_server" ng-model="custom_rule_server"></td>
+                        <td><button ng-click="add_custom_rule()">Add</button></td>
+                    </tr>
+                </table>
+            </section>
+            <section class="thankyou">
+                <h2>Thank you!</h2>
+                <p class="description">ProxMate is brought to you by Personalitycores.</p>
+                <p>Keeping the ProxMate project alive is not an easy job. Wanna help us doing it? Please share this addon and consider donating :)</p>
+                <p>Oh, and <a href="https://www.facebook.com/ProxMate" target="_blank">join us on Facebook for updates and news!</a></p>
+            </section>
+        </div>
+
+        <footer>
+          <p>ProxMate {{ proxmate_version }} delivered to you by <a href="mailto:proxmate@personalitycores.com">Personalitycores</a></p>
+        </footer>
+	</div>
+</body>
+</html>
