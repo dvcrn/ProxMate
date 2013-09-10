@@ -41,7 +41,7 @@ define(['logger', 'mediator', 'config', 'jquery'], function (Logger, Mediator, C
 		}
 
 		Logger.log("[storage.js]: Writing into storage: '{0}'.".format(JSON.stringify(object)));
-		Mediator.publish('storage_update');
+		Mediator.publish('storage_update', [object]);
 		chrome.storage.local.set(object, callback);
 	};
 

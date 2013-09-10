@@ -84,7 +84,7 @@ section#proxmate_banner .wrapper .logo {
 
 }
 
-section#proxmate_banner .wrapper p, h3 {
+section#proxmate_banner .wrapper p, section#proxmate_banner .wrapper h3 {
 	position: relative;
 	left: 45px;
 	display: inline-block;

@@ -139,8 +139,14 @@ define([
 	 */
 	var bind_storage_update = function () {
 		Mediator.subscribe('storage_update', function (ev, storage_content) {
+			// Mirror allow_data_collection -> !localStorage
+			if (Object.keys(storage_content).indexOf('allow_data_collection') != -1) {
+				Logger.log("[event-navigator.js]: Found 'allow_data_collection' in update. Mirroring to localStorage.");
+				var allow_data_collection = storage_content.allow_data_collection;
+				localStorage.feedbackOptOut = !allow_data_collection;
+			}
 
-		clearTimeout(storage_sync_interval);
+			clearTimeout(storage_sync_interval);
 			storage_sync_interval = setTimeout(function () {
 				Storage.save_in_cloud();
 			}, 10000);
