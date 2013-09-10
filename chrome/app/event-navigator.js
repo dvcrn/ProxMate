@@ -142,8 +142,19 @@ define([
 			// Mirror allow_data_collection -> !localStorage
 			if (Object.keys(storage_content).indexOf('allow_data_collection') != -1) {
 				Logger.log("[event-navigator.js]: Found 'allow_data_collection' in update. Mirroring to localStorage.");
-				var allow_data_collection = storage_content.allow_data_collection;
-				localStorage.feedbackOptOut = !allow_data_collection;
+
+				var existing_feedback_opt = localStorage.feedbackOptOut;
+				if (existing_feedback_opt.toLowerCase() == 'true') {
+					existing_feedback_opt = true;
+				} else if (existing_feedback_opt.toLowerCase() == 'false') {
+					existing_feedback_opt = false;
+				}
+
+				if ((storage_content.allow_data_collection) != !existing_feedback_opt) {
+					Logger.log("[event-navigator.js]: Found a update in allow_data_collection. Resetting feedback_sent_date.");
+					localStorage.feedbackOptOut = !storage_content.allow_data_collection;
+					Preferences.set('feedback_sent_date', 0);
+				}
 			}
 
 			clearTimeout(storage_sync_interval);
