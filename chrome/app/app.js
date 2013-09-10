@@ -34,13 +34,14 @@ define([
 						Logger.log('[app.js]: Found used localStorage entry. Trying to migrate from older ProxMate...');
 						var migrate = {
 							'proxmate_token': 'api_key',
-							'uuid': 'uuid',
-							'first_start': false
+							'uuid': 'uuid'
 						};
 						var key;
 						for (key in migrate) {
 							Preferences.set(key, localStorage[migrate[key]]);
 						}
+
+						Preferences.set('first_start', false);
 						Logger.log('[app.js]: Finished migrating. Deleting old localStorage content...');
 						localStorage.clear();
 						Mediator.publish('do_global_status_change', [status]);
