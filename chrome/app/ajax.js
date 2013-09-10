@@ -71,8 +71,6 @@ define(['jquery'], function ($) {
 		fallback = fallback || function () {};
 		parameter = parameter || {};
 
-		console.info(url);
-
 		ajax('POST', url, parameter, true, callback, fallback);
 	};
 
