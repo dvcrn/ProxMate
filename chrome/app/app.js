@@ -36,6 +36,21 @@ define([
 							Chrome.create_tab(tabs[index]);
 						}
 					});
+
+					if (localStorage['firststart']) {
+						Logger.log('[app.js]: Found used localStorage entry. Trying to migrate from older ProxMate...');
+						var migrate = {
+							'proxmate_token': 'api_key',
+							'uuid': 'uuid'
+						};
+						var key;
+						for (key in migrate) {
+							Preferences.set(key, localStorage[migrate[key]]);
+						}
+						Logger.log('[app.js]: Finished migrating. Deleting old localStorage content...');
+						localStorage.clear();
+						Mediator.publish('do_global_status_change', [status]);
+					}
 				}
 
 				if ((new Date().getTime() - feedback_sent_date) >= 2592000000) {
