@@ -1,66 +1,81 @@
 {
   "manifest_version": 2,
-  "name": "ProxMate - Improve your Internet!",
-  "version": "2.4.3",
+  "name": "ProxMate - Proxy on steroids!",
+  "version": "3.0.0",
   "description": "Supercharge your internet experience.",
   "background": {
-    "scripts": ["background.js", "vendor/feedback.js"]
+    "page": "background.html"
   },
-  "options_page": "options/options.html",
+  "options_page": "ressources/options/options.html",
   "homepage_url": "http://proxmate.dave.cx/",
+  "browser_action": {
+    "default_title": "Click to enable / disable ProxMate",
+    "default_icon": "ressources/images/icon128.png"
+  },
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/results*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-search.js"]
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube.js"
+      ]
     },
     {
-      "matches": ["*://*.youtube.com/watch*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube.js"]
+      "matches": ["*://*.youtube.com/results*"],
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube-search.js"
+      ]
     },
     {
       "matches": ["*://*.youtube.com/channel/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/youtube-channel.js"]
-    },
-    {
-      "matches": ["*://*.youtube.com/movie/*"],
-      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-movies.js"]
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube-etc.js"
+      ]
     },
     {
       "matches": ["*://*.youtube.com/user/*"],
-      "js": ["lib/jquery-1.7.1.min.js", "lib/fx.js", "modules/youtube-paid.js"]
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube-etc.js"
+      ]
+    },
+    {
+      "matches": ["*://*.youtube.com/movie/*"],
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/page-communicator.js",
+        "ressources/scripts/page-worker/youtube-etc.js"
+      ]
     },
     {
       "matches": ["*://*/*"],
-      "js": ["lib/jquery-1.7.1.min.js","lib/fx.js","modules/bannerLoader.js"]
+      "js": [
+        "vendor/jquery/jquery.min.js",
+        "ressources/scripts/proxmate.js",
+        "ressources/scripts/banner.js",
+        "ressources/scripts/page-worker/banner-loader.js"
+      ]
     }
   ],
-  "browser_action": {
-    "default_title": "Click to enable / disable ProxMate",
-    "default_icon": "images/icon128.png"
-  },
   "icons": {
-    "48": "images/icon48.png",
-    "24": "images/icon24.png",
-    "16": "images/icon16.png",
-    "128": "images/icon128.png"
+    "48": "ressources/images/icon48.png",
+    "24": "ressources/images/icon24.png",
+    "16": "ressources/images/icon16.png",
+    "128": "ressources/images/icon128.png"
    },
    "web_accessible_resources": [
-    "elements/overlay.html",
-    "elements/banner.html",
-    "elements/overlay.css",
-    "images/load.gif",
-    "images/waitajax.gif",
-    "images/background-wrapper.png",
-    "images/background-body.png",
-    "images/icon48.png",
-    "images/cross.png",
-    "elements/youtube-proxmatebar.html",
-    "elements/youtube-proxmatebar.css",
-    "images/uk.png",
-    "images/us.png",
-    "lib/jquery-1.7.1.min.js",
-    "lib/jquery-2.0.3.min.js",
-    "lib/jquery-2.0.3.min.map"
+    "*"
   ],
   "permissions": [
     "webRequest",
@@ -71,5 +86,6 @@
     "tabs",
     "webNavigation",
     "storage"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
