@@ -115,9 +115,13 @@
 		 */
 		this.is_active_for_id = function (service_id, callback) {
 			this.preferences_get('disabled_services', function (disabled_services) {
+				if (disabled_services === null) {
+					disabled_services = '';
+				}
 	            var disabled_service_array = $.map(disabled_services.split(','), function(value){
 	                return parseInt(value, 10);
 	            });
+
 				if ($.inArray(service_id, disabled_service_array) == -1) {
 					console.info("Service is in array, executing callback");
 					callback.call(this);

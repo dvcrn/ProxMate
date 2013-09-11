@@ -19,7 +19,8 @@ Proxmate.preferences_get('addon_is_active', function (global_status) {
 		    var evaluated_pac = FindProxyForURL(window.location.href, window.location.hostname);
 
 
-		    if ((account_type === 'Free' && evaluated_pac !== 'DIRECT') || window.location.href.indexOf('http://proxmate.dave.cx/') != -1) {
+		    if (((account_type === 'Free' && evaluated_pac !== 'DIRECT')
+		    	|| window.location.href.indexOf('http://proxmate.dave.cx/') != -1)) {
 		        $(document).ready(function () {
 		            console.info("loading PM banner");
 		            PmBanner.load_banner_stylesheet();
@@ -28,6 +29,9 @@ Proxmate.preferences_get('addon_is_active', function (global_status) {
 		            setTimeout(function () {
 		            	$('#proxmate_banner').removeClass('proxmate_banner_expanded');
 		            }, 5000);
+		            $(document).on('click', '#proxmate_close_button', function () {
+		            	$('#proxmate_banner').fadeOut('slow');
+		            });
 		        });
 		    }
 		});

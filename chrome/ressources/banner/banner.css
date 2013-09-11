@@ -127,3 +127,18 @@ section#proxmate_banner .wrapper a {
 section#proxmate_banner .wrapper a:hover {
     text-decoration: underline;
 }
+
+section#proxmate_banner #proxmate_close_button {
+    background: url('../images/close.png');
+    width: 25px;
+    height: 25px;
+    background-size: 25px 25px;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+section#proxmate_banner #proxmate_close_button:hover {
+	cursor: pointer;
+}
