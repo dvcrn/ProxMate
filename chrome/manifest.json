@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Proxy on steroids!",
-  "version": "3.0.3",
+  "version": "3.0.6",
   "description": "Supercharge your internet experience.",
   "background": {
     "page": "background.html"
