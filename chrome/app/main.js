@@ -2,7 +2,6 @@
 require.config({
     paths: {
         "jquery": "../vendor/jquery/jquery",
-        "underscore": "../vendor/underscore-amd/underscore",
         "text" : "../vendor/requirejs-text/text"
     }
 });
