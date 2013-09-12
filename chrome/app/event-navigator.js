@@ -16,7 +16,7 @@ define([
 		bind_chrome_click_to_proxmate_status();
 		bind_do_global_status_change();
 		bind_do_offlineconfig_update();
-		bind_offlineconfig_update();
+		bind_offlineconfig_and_do_proxy_update();
 		bind_preferences_update();
 		bind_storage_update();
 	};
@@ -78,10 +78,10 @@ define([
 	};
 
 	/**
-	 * Binds offlineconfig_update: Reads proxy from offline storage, applies extras and overrides and sets proxy
+	 * Binds offlineconfig_update and do_proxy_update: Reads proxy from offline storage, applies extras and overrides and sets proxy
 	 */
-	var bind_offlineconfig_update = function () {
-		Mediator.subscribe('offlineconfig_update', function () {
+	var bind_offlineconfig_and_do_proxy_update = function () {
+		Mediator.subscribe('offlineconfig_update do_proxy_update', function () {
 
 			Preferences.get('addon_is_active', function (is_active) {
 				if (is_active) {
