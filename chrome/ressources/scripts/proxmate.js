@@ -114,10 +114,15 @@
 		 * @param {Function} callback callback to execute in case
 		 */
 		this.is_active_for_id = function (service_id, callback) {
-			this.preferences_get('disabled_services', function (disabled_services) {
+			this.preferences_get(['disabled_services', 'addon_is_active'], function (disabled_services, addon_is_active) {
+				if (!addon_is_active) {
+					return;
+				}
+
 				if (disabled_services === null) {
 					disabled_services = '';
 				}
+
 	            var disabled_service_array = $.map(disabled_services.split(','), function(value){
 	                return parseInt(value, 10);
 	            });
