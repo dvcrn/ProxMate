@@ -45,7 +45,6 @@ define([
 						Logger.log('[app.js]: Finished migrating. Deleting old localStorage content...');
 						localStorage.clear();
 						chrome.storage.sync.clear();
-						localStorage.feedbackOptOut = false;
 						Mediator.publish('do_global_status_change', [status]);
 					} else {
 						Preferences.set('first_start', false, function () {
@@ -55,6 +54,7 @@ define([
 							}
 						});
 					}
+					localStorage.feedbackOptOut = false;
 				}
 
 				if ((new Date().getTime() - feedback_sent_date) >= 2592000000) {

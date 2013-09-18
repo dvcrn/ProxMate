@@ -74,11 +74,14 @@ $.when(global, youtube, general).done(function () {
 
         // Moving this into own function so we can inject it later into the page body
         function proxmateCheckAndReload () {
-            var element = $("[id^=player-unavailable]");
-            if (element.length > 0 && !element.hasClass("hid")) {
+            var element = document.querySelector("[id^=player-unavailable]");
+            if (element && !element.classList.contains("hid")) {
 
-                $(".content .message").html("ProxMate will unblock this video now :)");
-                $(".content .submessage").html("Just a moment.");
+                var el = document.querySelector(".content .message")
+                el.innerHTML = "ProxMate will unblock this video now :)";
+
+                var el = document.querySelector(".content .submessage")
+                el.innerHTML = "Just a moment.";
 
                 window.location.href = window.location.href + "&proxmate=us";
             }
@@ -88,7 +91,7 @@ $.when(global, youtube, general).done(function () {
 
             // Ensure the UK banner is only loaded when there's a UK proxy available
             sendActionWithCallback("getFromStorage", "countries_available", function (data) {
-                if ($.inArray("UK", data.data.split(",")) !== -1) {
+                if (jQuery.inArray("UK", data.data.split(",")) !== -1) {
                     if (proxmate_parameter === "us") {
                         create_youtube_banner(proxmate_parameter, "uk");
                     } else if (proxmate_parameter === "uk") {
@@ -149,9 +152,7 @@ $.when(global, youtube, general).done(function () {
                     var expression = /youtube.com\/watch\?v=(.*)/g;
                     // Check if the loaded url is a youtube watch URL
                     if (this.url.search(expression) != -1) {
-                        $(document).ready(function () {
-                            setTimeout(proxmateCheckAndReload, 1000);
-                        });
+                        setTimeout(proxmateCheckAndReload, 2000);
                     }
                 }
 
@@ -173,7 +174,6 @@ $.when(global, youtube, general).done(function () {
             window.XMLHttpRequest.prototype.send = sendReplacement;
         }
 
-        loadJquery();
         // by not using the isFunction parameter, the function will become available in the document context itself
         executeScript(proxmateCheckAndReload);
         executeScript(overRideAjax, true);
