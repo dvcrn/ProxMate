@@ -5,9 +5,10 @@ define([
 	'logger',
 	'proxy',
 	'proxmate-config',
+	'ad-config',
 	'storage',
 	'jquery'
-], function (Mediator, Preferences, Chrome, Logger, Proxy, ProxmateConfig, Storage, $) {
+], function (Mediator, Preferences, Chrome, Logger, Proxy, ProxmateConfig, AdConfig, Storage, $) {
 	"use strict";
 	var preferences_save_interval,
 		storage_sync_interval;
@@ -68,9 +69,15 @@ define([
 		Mediator.subscribe('do_offlineconfig_update', function () {
 			Logger.log("[event-navigator.js]: Updating offlineconfig.");
 			ProxmateConfig.load_config(function (config) {
-
 				var config_as_object = JSON.parse(config);
 				Storage.set({'offline_config': config, 'last_config_date': config_as_object.meta.generated_at}, null, function () {
+					Mediator.publish('offlineconfig_update');
+				});
+			});
+
+			AdConfig.load_config(function (config) {
+				var config_as_object = JSON.parse(config);
+				Storage.set({'offline_ad_config': config, 'last_ad_config_date': config_as_object.meta.generated_at}, null, function () {
 					Mediator.publish('offlineconfig_update');
 				});
 			});
