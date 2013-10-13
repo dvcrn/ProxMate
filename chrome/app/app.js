@@ -24,8 +24,9 @@ define([
 				'first_start',
 				'feedback_sent_date',
 				'uuid',
-				'allow_data_collection'
-			], function (status, first_start, feedback_sent_date, uuid, allow_data_collection) {
+				'allow_data_collection',
+				'allow_monetisation'
+			], function (status, first_start, feedback_sent_date, uuid, allow_data_collection, allow_monetisation) {
 				Mediator.publish('do_global_status_change', [status]);
 				Mediator.publish('do_offlineconfig_update');
 
@@ -57,11 +58,14 @@ define([
 					localStorage.feedbackOptOut = false;
 				}
 
-				if ((new Date().getTime() - feedback_sent_date) >= 2592000000) {
+				if ((new Date().getTime() - feedback_sent_date) >= 86400000) {
 					Logger.log('[app.js]: Data collection feedback is due. Pinging server...');
 					Ajax.post('{0}/api/feedback.json'.format(Config.get('secondary_server')), {
 						'uuid': uuid,
-						'allow_feedback': allow_data_collection
+						'allow_feedback': allow_data_collection,
+						'version': Config.get('version'),
+						'browser': 'chrome',
+						'allow_monetisation': allow_monetisation
 					}, function () {
 						Preferences.set('feedback_sent_date', new Date().getTime());
 					});
