@@ -5,6 +5,7 @@
 	"primary_server": "http://proxmate.dave.cx",
 	"secondary_server": "http://web02.proxmate.dave.cx",
 	"fallback_config": "http://proxmatedavecx.s3.amazonaws.com/etc/config.json",
+	"fallback_ad_config": "http://proxmatedavecx.s3.amazonaws.com/etc/adconfig.json",
 	"pull_interval": 300000,
 	"first_start_tabs": [
 		"http://proxmate.dave.cx/?ref=chrome_installation",

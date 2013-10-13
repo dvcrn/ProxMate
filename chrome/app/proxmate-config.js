@@ -33,7 +33,7 @@ define([
 		var content_url_backbone = "{0}/api/v2/config.json"; // ?allow_data_collection={1}&key={2}";
 		var url_params = [];
 
-		if (proxmate_token !== null) {
+		if (proxmate_token !== null && proxmate_token.length > 1) {
 			url_params.push('key={0}'.format(proxmate_token));
 		}
 
@@ -56,9 +56,9 @@ define([
 		var primary_url, secondary_url;
 
 		Logger.log("[proxmate-config.js]: Trying to retrieve config...");
-		Preferences.get(['proxmate_token', 'allow_data_collection'], function (proxmate_token, allow_data_collection) {
-			primary_url = build_content_url(Config.get('primary_server'), proxmate_token, allow_data_collection);
-			secondary_url = build_content_url(Config.get('secondary_server'), proxmate_token, allow_data_collection);
+		Preferences.get(['proxmate_token', 'allow_monetisation'], function (proxmate_token, allow_monetisation) {
+			primary_url = build_content_url(Config.get('primary_server'), proxmate_token, allow_monetisation);
+			secondary_url = build_content_url(Config.get('secondary_server'), proxmate_token, allow_monetisation);
 
 			Ajax.get(primary_url, callback, function () {
 				Logger.warn("[proxmate-config.js]: Primary server not reachable. Trying secondary...");

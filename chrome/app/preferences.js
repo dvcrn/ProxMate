@@ -46,7 +46,8 @@ define(['mediator', 'storage', 'logger', 'jquery'], function (Mediator, Storage,
 		config_extras: '[]',					// json
 		first_start: true,						// bool
 		disabled_services: null, 				// array
-		feedback_sent_date: 0					// int
+		feedback_sent_date: 0,					// int
+		allow_monetisation: true				// boolean
 	};
 
 	/**
