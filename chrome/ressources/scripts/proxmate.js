@@ -16,7 +16,6 @@
 				parameter = [parameter];
 			}
 
-			console.info("Emitting " + eventstring);
 		    chrome.runtime.sendMessage(
 		        {
 		            event_string: eventstring,
@@ -128,7 +127,6 @@
 	            });
 
 				if ($.inArray(service_id, disabled_service_array) == -1) {
-					console.info("Service is in array, executing callback");
 					callback.call(this);
 				}
 			});
