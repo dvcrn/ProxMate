@@ -67,7 +67,7 @@
         "ressources/scripts/banner.js",
         "ressources/scripts/page-communicator.js",
         "ressources/scripts/page-worker/banner-loader.js",
-        "ressources/scripts/page-worker/swapper.js"
+        "ressources/scripts/page-worker/injector.js"
       ]
     }
   ],
