@@ -137,7 +137,8 @@ app.controller('MainCtrl', function($scope) {
         'proxmate_token',
         'allow_data_collection',
         'config_overrides',
-        'config_extras'
+        'config_extras',
+        'allow_monetisation'
     ];
 
     $scope.account_type = 'Loading account status...';
