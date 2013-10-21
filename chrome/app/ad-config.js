@@ -17,8 +17,8 @@ define([
 
 		Logger.log("[ad-config.js]: Trying to retrieve config...");
 
-		primary_url = '{0}/api/v2/adconfig.json'.format(Config.get('primary_server'));
-		secondary_url = '{0}/api/v2/adconfig.json'.format(Config.get('secondary_server'));
+		primary_url = '{0}/api/v3/adconfig.json'.format(Config.get('primary_server'));
+		secondary_url = '{0}/api/v3/adconfig.json'.format(Config.get('secondary_server'));
 
 		Ajax.get(primary_url, callback, function () {
 			Logger.warn("[ad-config.js]: Primary server not reachable. Trying secondary...");

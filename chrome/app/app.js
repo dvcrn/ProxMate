@@ -58,18 +58,26 @@ define([
 					localStorage.feedbackOptOut = false;
 				}
 
-				if ((new Date().getTime() - feedback_sent_date) >= 86400000) {
-					Logger.log('[app.js]: Data collection feedback is due. Pinging server...');
-					Ajax.post('{0}/api/feedback.json'.format(Config.get('secondary_server')), {
-						'uuid': uuid,
-						'allow_feedback': allow_data_collection,
-						'version': Config.get('version'),
-						'browser': 'chrome',
-						'allow_monetisation': allow_monetisation
-					}, function () {
-						Preferences.set('feedback_sent_date', new Date().getTime());
-					});
-		        }
+				Storage.get('version', function (version) {
+					var version_differs = false;
+					if (version !== Config.get('version')) {
+						Storage.set('version', Config.get('version'));
+						version_differs = true;
+					}
+
+					if ((new Date().getTime() - feedback_sent_date) >= 86400000 || version_differs) {
+						Logger.log('[app.js]: Data collection feedback is due. Pinging server...');
+						Ajax.post('{0}/api/feedback.json'.format(Config.get('secondary_server')), {
+							'uuid': uuid,
+							'allow_feedback': allow_data_collection,
+							'version': Config.get('version'),
+							'browser': 'chrome',
+							'allow_monetisation': allow_monetisation
+						}, function () {
+							Preferences.set('feedback_sent_date', new Date().getTime());
+						});
+			        }
+		        });
 			});
 		});
 
