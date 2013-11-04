@@ -21,7 +21,8 @@
         "ressources/scripts/proxmate.js",
         "ressources/scripts/page-communicator.js",
         "ressources/scripts/page-worker/youtube.js"
-      ]
+      ],
+      "run_at": "document_start"
     },
     {
       "matches": ["*://*.youtube.com/results*"],
