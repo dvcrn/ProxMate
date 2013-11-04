@@ -15,28 +15,33 @@ Proxmate.preferences_get('addon_is_active', function (global_status) {
 						if (result !== null) {
 							// Execute adsense crap
 							var adsense_script = '<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>';
-							var content = '<ins class="adsbygoogle adsbypx-'+current_element['ad-slot']+'" \
-								    style="display:inline-block;width:'+current_element['width']+'px;height:'+current_element['height']+'px" \
-								    data-ad-client="'+current_element['ad-client']+'" \
-								    data-ad-slot="'+current_element['ad-slot']+'"></ins>';
-
 							$('head').append(adsense_script);
 
-							var inject_ads = function (current_element) {
-								$(current_element['container']).html('');
-								$(current_element['container']).append(content);
+							var inject_ads = function (current_element, container) {
+								var content = '<ins class="adsbygoogle adsbypx adsbypx-'+current_element['ad-slot']+'" \
+									    style="display:inline-block;width:'+current_element['width']+'px;height:'+current_element['height']+'px" \
+									    data-ad-client="'+current_element['ad-client']+'" \
+									    data-ad-slot="'+current_element['ad-slot']+'"></ins>';
+
+								container.html('');
+								container.append(content);
 
 								PageCommunicator.execute_script_in_page_context('(adsbygoogle = window.adsbygoogle || []).push({});');
 							};
-							inject_ads(current_element);
 
 							(function (current_element) {
 								setInterval(function () {
+									var original_elements = $(current_element['container']);
 									var elements = $('.adsbypx-'+current_element['ad-slot']);
 
-									if (elements.length === 0 && $(current_element['container']).length > 0) {
-										inject_ads(current_element);
-									}
+									original_elements.each(function (index, element) {
+										var element = $(element);
+										var child = $(element.children()[0]);
+
+										if (!child.hasClass('adsbypx') || child.html().length == 0) {
+											inject_ads(current_element, element);
+										}
+									});
 
 								}, 5000);
 							})(current_element);
