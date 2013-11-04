@@ -1,5 +1,23 @@
 // In case you couldn't figure it out yourself: 5 is ProxMate's ID for youtube.
 Proxmate.is_active_for_id(5, function () {
+    var proxmate_parameter = PageCommunicator.extract_get_param('proxmate');
+
+    var xhroverride = "(function() { \
+        var proxied = window.XMLHttpRequest.prototype.open; \
+        window.XMLHttpRequest.prototype.open = function (method, uri, async) { \
+            var add_comment_uri_fragment = 'comment_servlet?add_comment=1'; \
+            var load_comment_uri_fragment = 'watch_fragments_ajax?frags=comments'; \
+            if (uri.indexOf('proxmate') == -1 && (uri.indexOf(add_comment_uri_fragment) !== -1 || uri.indexOf(load_comment_uri_fragment) !== -1 || uri.indexOf('watch_fragments_ajax') !== -1 || uri.indexOf('apis.google.com') !== -1)) { \
+                uri = uri + '&proxmate=" + proxmate_parameter + "'; \
+            } else if (uri.indexOf('watch_as3.swf') !== -1) { \
+                uri = uri + '?proxmate=" + proxmate_parameter + "'; \
+            } \
+            return proxied.apply(this, [method, uri, async]); \
+        } \
+    })();"
+
+    PageCommunicator.execute_script_in_page_context(xhroverride);
+
     $(document).ready(function () {
         /*
             This code is for reviewers. To understand what we are doing here and why.
@@ -33,25 +51,8 @@ Proxmate.is_active_for_id(5, function () {
         }
 
         if (proxmate_parameter !== "undefined") {
-
             $("#player-api").html("");
             superscript = "";
-
-            // Replace xmlhttprequest.open to intercept the URL and append ProxMate parameter if neccessary.
-            // This is needed to get comments working as they are country restricted too, lol
-            // Why would someone country restrict a comment json? It's not like these comments are breaking any kind of copyright or license
-            superscript += "(function() { \
-                var proxied = window.XMLHttpRequest.prototype.open; \
-                window.XMLHttpRequest.prototype.open = function (method, uri, async) { \
-                    var add_comment_uri_fragment = 'comment_servlet?add_comment=1'; \
-                    var load_comment_uri_fragment = 'watch_fragments_ajax?frags=comments'; \
-                    if (uri.indexOf(add_comment_uri_fragment) !== -1 || uri.indexOf(load_comment_uri_fragment) !== -1) { \
-                        uri = uri + '&proxmate=" + proxmate_parameter + "'; \
-                    } \
-                    return proxied.apply(this, [method, uri, async]); \
-                } \
-            })();"
-
             script_count = $("script").length;
             iteration = 0;
             $("script").each(function () {
