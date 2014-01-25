@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Proxy on steroids!",
-  "version": "3.1.6",
+  "version": "3.1.7",
   "update_url": "http://proxmatedavecx.s3.amazonaws.com/etc/update.xml",
   "description": "Supercharge your internet experience.",
   "background": {
