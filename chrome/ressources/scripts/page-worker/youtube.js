@@ -56,49 +56,9 @@ Proxmate.is_active_for_id(5, function () {
             check_page_for_unavailable_element_and_reload();
         }
 
-        // This function will be injected in youtube to automatically monitor all ajax requests and check back with ProxMate
-        function overrides_ajax_calls () {
-            var open = window.XMLHttpRequest.prototype.open,
-                send = window.XMLHttpRequest.prototype.send,
-                onReadyStateChange;
-
-            function openReplacement (method, url, async, user, password) {
-                this.url = url;
-                return open.apply(this, arguments);
-            }
-
-            function onReadyStateChangeReplacement () {
-                if (this.readyState == 4) {
-                    var expression = /youtube.com\/watch\?v=(.*)/g;
-                    // Check if the loaded url is a youtube watch URL
-                    if (this.url.search(expression) != -1) {
-                        $(document).ready(function () {
-                            setTimeout(check_page_for_unavailable_element_and_reload, 1000);
-                        });
-                    }
-                }
-
-                if(this._onreadystatechange) {
-                    return this._onreadystatechange.apply(this, arguments);
-                }
-            }
-
-            function sendReplacement (data) {
-                if(this.onreadystatechange) {
-                    this._onreadystatechange = this.onreadystatechange;
-                }
-                this.onreadystatechange = onReadyStateChangeReplacement;
-
-                return send.apply(this, arguments);
-            }
-
-            window.XMLHttpRequest.prototype.open = openReplacement;
-            window.XMLHttpRequest.prototype.send = sendReplacement;
-        }
-
         PageCommunicator.load_packed_jquery_into_page(function () {
 	        PageCommunicator.pass_function_to_page(check_page_for_unavailable_element_and_reload);
-	        PageCommunicator.execute_function_in_page_context(overrides_ajax_calls);
+	        PageCommunicator.monitor_ajax_calls(/youtube.com\/watch\?v=(.*)/g, check_page_for_unavailable_element_and_reload);
         });
     });
 });

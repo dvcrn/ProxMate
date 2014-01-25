@@ -2,12 +2,16 @@
 	"use strict";
 	var PageCommunicator = function () {
 
+		this.monitored_ajax_calls = [];
+
 		/**
 		 * Creates a script tag with script content in page
 		 * @param  {string} script script to wrap inside script tag
 		 */
 		this.append_script_to_page = function(script) {
+			// console.info('----------');
 			// console.info(script);
+			// console.info('----------');
 		    var g, s;
 		    g = document.createElement('script');
 		    s = document.getElementsByTagName('script')[0];
@@ -27,8 +31,10 @@
 		 * Executes function in page context
 		 * @param  {string} fx the function
 		 */
-		this.execute_function_in_page_context = function (fx) {
-			var script = "(" + fx + ")();" // Wrap the script in a anonymous function
+		this.execute_function_in_page_context = function (fx, parameter) {
+			parameter = parameter || [];
+
+			var script = "(" + fx + ")(" + JSON.stringify(parameter) + ");" // Wrap the script in a anonymous function
 		    this.append_script_to_page(script);
 		};
 
@@ -76,6 +82,59 @@
 		        cb($);
 		    });
 		};
+
+		/**
+		 * Monitors ajax calls. If a ajax call to matches {expression}, callback will get executed
+		 * @param  {string} expression          regex expression
+		 * @param  {Function} function_to_execute function to execute, duh.
+		 */
+		this.monitor_ajax_calls = function(expression_array) {
+
+	        // This function will be injected in youtube to automatically monitor all ajax requests and check back with ProxMate
+	        function overrides_ajax_calls (expression_array) {
+
+	            var open = window.XMLHttpRequest.prototype.open,
+	                send = window.XMLHttpRequest.prototype.send,
+	                onReadyStateChange;
+
+	            function openReplacement (method, url, async, user, password) {
+	                this.url = url;
+	                return open.apply(this, arguments);
+	            }
+
+	            function onReadyStateChangeReplacement () {
+	                if (this.readyState == 4) {
+
+	                	for (var i = 0; i < expression_array.length; i++) {
+	                		if (this.url.search(RegExp(expression_array[i][0], "g")) != -1) {
+	                			$(document).ready(function () {
+	                				setTimeout(window[expression_array[i][1]], 1000);
+	                			});
+	                		}
+	                	}
+
+	                }
+
+	                if(this._onreadystatechange) {
+	                    return this._onreadystatechange.apply(this, arguments);
+	                }
+	            }
+
+	            function sendReplacement (data) {
+	                if(this.onreadystatechange) {
+	                    this._onreadystatechange = this.onreadystatechange;
+	                }
+	                this.onreadystatechange = onReadyStateChangeReplacement;
+
+	                return send.apply(this, arguments);
+	            }
+
+	            window.XMLHttpRequest.prototype.open = openReplacement;
+	            window.XMLHttpRequest.prototype.send = sendReplacement;
+	        }
+
+	        this.execute_function_in_page_context(overrides_ajax_calls, expression_array);
+	    };
 	};
 
 	window.PageCommunicator = new PageCommunicator();
