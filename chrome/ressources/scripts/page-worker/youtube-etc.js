@@ -4,7 +4,6 @@ Proxmate.is_active_for_id(5, function () {
     $(document).ready(function () {
         if (PageCommunicator.extract_get_param('proxmate') !== "us") {
             var block_indicator = [
-                '.yt-alert-message',
                 '.ypc-channel-offers-nooffer-warning',
                 '.channel-empty-message'
             ];
