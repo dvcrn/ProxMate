@@ -2,22 +2,6 @@
 Proxmate.is_active_for_id(5, function () {
     var proxmate_parameter = PageCommunicator.extract_get_param('proxmate');
 
-    var xhroverride = "(function() { \
-        var proxied = window.XMLHttpRequest.prototype.open; \
-        window.XMLHttpRequest.prototype.open = function (method, uri, async) { \
-            var add_comment_uri_fragment = 'comment_servlet?add_comment=1'; \
-            var load_comment_uri_fragment = 'watch_fragments_ajax?frags=comments'; \
-            if (uri.indexOf('proxmate') == -1 && (uri.indexOf(add_comment_uri_fragment) !== -1 || uri.indexOf(load_comment_uri_fragment) !== -1 || uri.indexOf('watch_fragments_ajax') !== -1 || uri.indexOf('apis.google.com') !== -1)) { \
-                uri = uri + '&proxmate=" + proxmate_parameter + "'; \
-            } else if (uri.indexOf('watch_as3.swf') !== -1) { \
-                uri = uri + '?proxmate=" + proxmate_parameter + "'; \
-            } \
-            return proxied.apply(this, [method, uri, async]); \
-        } \
-    })();"
-
-    PageCommunicator.execute_script_in_page_context(xhroverride);
-
     $(document).ready(function () {
         /*
             This code is for reviewers. To understand what we are doing here and why.
