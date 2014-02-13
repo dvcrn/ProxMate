@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Proxy on steroids!",
-  "version": "3.1.6",
+  "version": "3.1.8",
   "update_url": "http://proxmatedavecx.s3.amazonaws.com/etc/update.xml",
   "description": "Supercharge your internet experience.",
   "background": {
@@ -67,8 +67,7 @@
         "ressources/scripts/proxmate.js",
         "ressources/scripts/banner.js",
         "ressources/scripts/page-communicator.js",
-        "ressources/scripts/page-worker/banner-loader.js",
-        "ressources/scripts/page-worker/injector.js"
+        "ressources/scripts/page-worker/banner-loader.js"
       ]
     }
   ],
