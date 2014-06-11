@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "ProxMate - Proxy on steroids!",
-  "version": "3.1.8",
-  "update_url": "http://proxmatedavecx.s3.amazonaws.com/etc/update.xml",
+  "version": "3.1.9",
+  "update_url": "http://clients2.google.com/service/update2/crx",
   "description": "Supercharge your internet experience.",
   "background": {
     "page": "background.html"
