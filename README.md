@@ -1,3 +1,11 @@
+# This repository is horribly outdated. You should really check out the new repositories here:
+
+* Chrome: https://github.com/dvcrn/proxmate-chrome
+* Firefox: https://github.com/dvcrn/proxmate-firefox
+
+# Legacy Readme:
+---
+
 ## ProxMate Browser Extension
 
 ProxMate is a browser extension for accessing pages blocked by country restrictions.
